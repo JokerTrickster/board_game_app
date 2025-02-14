@@ -36,7 +36,7 @@ const FindItScreen: React.FC = observer(() => {
 
     useEffect(() => {
         if (findItViewModel.gameOver) {
-            console.log("게임 종료 페이지로 이동!");
+            console.log("게임 종료 페이지로 이동ㅇㅇㅇㅇ!");
             navigation.navigate('GameOver');
         }
     }, [findItViewModel.gameOver]);
