@@ -16,6 +16,21 @@ export const styles = StyleSheet.create({
         borderWidth: 3,
         borderColor: 'green',
     },
+    infoRow: {
+        flexDirection: 'row', // ✅ 가로 배치
+        alignItems: 'center', // ✅ 세로 중앙 정렬
+        justifyContent: 'space-around', // ✅ 요소 간 간격 균등 배분
+        width: '100%', // ✅ 전체 너비 사용
+        padding: 10, // ✅ 여백 추가
+        backgroundColor: '#fff', // ✅ 배경색 추가
+        borderRadius: 10, // ✅ 둥근 모서리
+        elevation: 3, // ✅ Android 그림자 효과
+        shadowColor: '#000', // ✅ iOS 그림자 효과
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+
 
     wrongXContainer: {
         position: 'absolute',

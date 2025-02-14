@@ -12,11 +12,12 @@ const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-
+    const currentImage = findItViewModel.images[findItViewModel.currentImageIndex];
     useEffect(() => {
         findItViewModel.startTimer(() => {
-            console.log('타이머 종료! 다음 라운드로 이동 또는 게임 오버');
-            if (findItViewModel.gameOver) {
+            console.log('타이머 종료! 남은 정답 개수를 목숨에서 차감');
+            if (findItViewModel.lives <= 0) {
+                console.log('💀 게임 종료!');
                 navigation.navigate('GameOver');
             }
         });
@@ -30,6 +31,7 @@ const FindItScreen: React.FC = observer(() => {
         }, 500);
     }, []);
 
+    
     useEffect(() => {
         console.log(`라운드 ${findItViewModel.round} 시작!`);
     }, [findItViewModel.round]);
@@ -96,12 +98,12 @@ const FindItScreen: React.FC = observer(() => {
             </View>
 
             {/* 정상 이미지 */}
-            <Image source={require('../../assets/images/normal_image.png')} style={styles.image} />
+            <Image source={currentImage.normal} style={styles.image} />
 
             {/* 틀린 그림 찾기 */}
             <TouchableWithoutFeedback onPress={handleImageClick}>
                 <View ref={imageRef} style={styles.imageContainer}>
-                    <Image source={require('../../assets/images/different_image.png')} style={styles.image} />
+                    <Image source={currentImage.different} style={styles.image} />
 
                     {/* ✅ 클릭한 정답(⭕) 위치 표시 */}
                     {findItViewModel.correctClicks.map((pos, index) => (
@@ -118,18 +120,12 @@ const FindItScreen: React.FC = observer(() => {
                 </View>
             </TouchableWithoutFeedback>
 
-            {/* 게임 정보 */}
-            <View style={styles.infoContainer}>
-                <Text>❤️ 목숨: {findItViewModel.lives}</Text>
-                <Text>💡 힌트: {findItViewModel.hints}</Text>
-            </View>
-
-            {/* 버튼 */}
-
-
-            <View style={styles.buttonContainer}>
-                <Button title="힌트 사용" onPress={() => findItViewModel.useHint()} />
-                <Button title="타이머 멈추기" onPress={() => findItViewModel.useTimerStopItem()} />
+            {/* ✅ 게임 정보 한 줄로 정리 */}
+            <View style={styles.infoRow}>
+                <Text>남은 개수: {5 - findItViewModel.correctClicks.length}</Text>
+                <Text>❤️ {findItViewModel.lives}</Text>
+                <Button title={`💡 ${findItViewModel.hints}`} onPress={() => findItViewModel.useHint()} />
+                <Button title={`⏳ ${findItViewModel.item_timer_stop}`} onPress={() => findItViewModel.useTimerStopItem()} />
             </View>
         </View>
     );

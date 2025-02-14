@@ -13,6 +13,11 @@ class GameViewModel {
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerStopped = false; // ✅ 타이머 멈춤 상태
     timerColor = 'black'; // ✅ 타이머 색상
+    currentImageIndex = 0; // 현재 이미지 인덱스
+    images = [
+        { normal: require('../../assets/images/normal1.png'), different: require('../../assets/images/different1.png') },
+        { normal: require('../../assets/images/normal2.png'), different: require('../../assets/images/different2.png') },
+    ];
 
     constructor() {
         makeAutoObservable(this, {
@@ -120,7 +125,6 @@ class GameViewModel {
     }
     startTimer(callback?: () => void) {
         this.stopTimer();
-
         this.timerStopped = false;
         this.updateTimerColor('black');
 
@@ -129,6 +133,20 @@ class GameViewModel {
                 this.updateTimer(this.timer - 1);
             } else {
                 this.stopTimer();
+                console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
+
+                // ✅ 남은 정답 개수 계산
+                const remainingMistakes = 5 - this.correctClicks.length;
+                this.lives -= remainingMistakes;
+
+                if (this.lives > 0) {
+                    console.log('➡️ 다음 라운드로 이동');
+                    this.nextRound();
+                } else {
+                    console.log('💀 게임 종료!');
+                    this.gameOver = true;
+                }
+
                 if (callback) callback();
             }
         }, 1000);
@@ -142,11 +160,14 @@ class GameViewModel {
     }
 
     nextRound() {
+        if (this.lives <= 0) return;
         this.round += 1;
         this.updateTimer(60);
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();
+        // ✅ 다음 이미지로 변경 (배열 길이를 초과하면 0으로 순환)
+        this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
     }
 
     resetGame() {
