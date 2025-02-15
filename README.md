@@ -1,97 +1,61 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
-
-# Getting Started
-
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
-
-## Step 1: Start Metro
-
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
-
-To start the Metro dev server, run the following command from the root of your React Native project:
-
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+# 틀린 그림 찾기 게임 기획
+## 1. 게임 개요 (Game Overview)
+- 게임 제목: 멀티플레이 틀린 그림 찾기
+- 장르: 캐주얼 / 퍼즐 / 멀티플레이
+- 플랫폼: 모바일 (iOS, Android)
+- 개발 엔진: React Native + WebSocket
+- 타겟 유저: 보드 게임 및 퍼즐 게임을 좋아하는 모든 연령층
+## 2. 게임 목표 및 승리 조건
+### 게임 목표
+ 두 명의 플레이어가 동일한 그림에서 차이를 찾아 클릭 
+제한 시간 내에 5개의 틀린 부분을 먼저 찾는 플레이어가 승리
+시간 초과 시 남은 정답 개수만큼 목숨 감소
+목숨이 0이 되면 게임 종료
+## 3. 멀티플레이 시스템
+1) 매칭 시스템
+ 매칭 대기열에 있는 플레이어와 자동 매칭 
+ 매칭 완료 후 게임 시작 요청 가능
+2) 게임 진행 흐름
+ 두 명의 플레이어에게 동일한 이미지 제공
+ 한 명이 정답을 맞추면 상대방 화면에도 실시간 반영
+ 5개의 정답을 먼저 맞추면 다음 라운드로 이동
+3) 게임 종료 조건
+ 승리: 최종 라운드(30라운드) 도달 시 승리
+ 승리 시 게임 코인 획득 및 명예의 전당 등록
+ 패배: 목숨이 0이 되면 패배
+4. UI/UX 기획
+### 홈 화면
+로그인 / 회원가입 / 비밀번호 찾기
+### 게임 메인 화면
+매칭 버튼 / 설정 / 기록 보기 / 프로필 정보
+### 게임 화면
+상단: 타이머, 목숨 표시
+중앙: 틀린 그림 비교
+하단: 힌트 버튼, 타이머 정지 버튼
+### 게임 종료 화면
+최종 라운드, 플레이 타임, 각 플레이어별 정답 개수
+## 5. 핵심 기능
+1) 틀린 그림 체크 로직
+좌표 기반 충돌 감지
+정답 체크 및 실시간 반영
+2) 타이머 시스템
+60초 제한 (타이머 바 시각적 구현)
+타이머 정지 아이템 사용 가능
+3) 멀티플레이 통신 (WebSocket)
+정답 체크 및 반영
+실시간 타이머 동기화
+게임 종료 이벤트 처리
+## 6. 기술 스택
+- 프론트엔드: React Native (TypeScript)
+- 백엔드: Golang + WebSocket + RabbitMQ
+- 데이터베이스: MySQL + Redis (캐시)
+- 배포 환경: AWS (EC2, S3, RDS 등)
+## 7. 개발 일정 (2주 프로젝트)
+1주차
+기획 및 UI 디자인
+틀린 그림 찾기 로직 구현
+WebSocket 연결 및 기본 기능 구현
+2주차
+멀티플레이 실시간 동기화
+게임 최적화 및 테스트
+배포 및 출시
