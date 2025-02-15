@@ -14,6 +14,7 @@ class GameViewModel {
     timerStopped = false; // ✅ 타이머 멈춤 상태
     timerColor = 'black'; // ✅ 타이머 색상
     currentImageIndex = 0; // 현재 이미지 인덱스
+    remainingTime = 60; // ✅ 현재 남은 타이머 시간 저장
     images = [
         { normal: require('../../assets/images/normal1.png'), different: require('../../assets/images/different1.png') },
         { normal: require('../../assets/images/normal2.png'), different: require('../../assets/images/different2.png') },
@@ -27,7 +28,7 @@ class GameViewModel {
             startTimer: action,
             stopTimer: action,
             updateTimer: action,
-            useTimerStopItem: action,
+            useTimerStopItem: action, // ✅ 추가
         });
     }
 
@@ -78,51 +79,7 @@ class GameViewModel {
         }, 3000);
     }
 
-    useHint() {
-        if (this.hints > 0) {
-            this.hints -= 1;
 
-            // 힌트로 정답 중 하나를 자동으로 추가
-            const correctAreas = [
-                { x: 50, y: 60 },
-                { x: 200, y: 150 }
-            ];
-
-            const remainingHints = correctAreas.filter(
-                (area) => !this.correctClicks.some((click) => click.x === area.x && click.y === area.y)
-            );
-
-            if (remainingHints.length > 0) {
-                const hintSpot = remainingHints[0];
-                this.addCorrectClick(hintSpot.x, hintSpot.y);
-            }
-        }
-    }
-    /** ✅ 타이머 멈춤 기능 (5초간 멈춤, 색상 변경) */
-    useTimerStopItem() {
-        if (this.item_timer_stop > 0) {
-            this.item_timer_stop -= 1;
-            if (!this.timerStopped) {
-                console.log("⏸ 타이머 멈춤 기능 사용! 5초 동안 멈춥니다.");
-                this.stopTimer();
-                this.updateTimerColor('red'); // ✅ 타이머 색상 빨간색으로 변경
-
-                setTimeout(() => {
-                    console.log("▶ 타이머 재시작!");
-                    this.updateTimerColor('black'); // ✅ 원래 색상으로 변경
-                    this.startTimer();
-                }, 5000); // 5초 후 재시작
-            } else {
-                console.log("❌ 이미 타이머가 멈춰 있습니다.");
-            }
-        }
-    }
-    updateTimerColor(color: string) {
-        this.timerColor = color;
-    }
-    updateTimer(value: number) {
-        this.timer = value;
-    }
     startTimer(callback?: () => void) {
         this.stopTimer();
         this.timerStopped = false;
@@ -130,7 +87,9 @@ class GameViewModel {
 
         this.timerInterval = setInterval(() => {
             if (this.timer > 0) {
+                console.log(`⏲️ 남은 시간: ${this.timer}초`);
                 this.updateTimer(this.timer - 1);
+                this.remainingTime = this.timer; // ✅ 남은 시간 저장
             } else {
                 this.stopTimer();
                 console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
@@ -151,6 +110,54 @@ class GameViewModel {
             }
         }, 1000);
     }
+    updateTimer(value: number) {
+        this.timer = value;
+    }
+    /*
+       아이템 사용
+    */
+    /** ✅ 타이머 멈춤 기능 (5초간 멈춤, 타이머 바 유지) */
+    useTimerStopItem() {
+        if (this.item_timer_stop > 0 && !this.timerStopped) {
+            this.item_timer_stop -= 1;
+            this.stopTimer();
+            this.timerStopped = true;
+            this.updateTimerColor('red');
+
+            setTimeout(() => {
+                console.log("▶ 타이머 다시 시작!");
+                this.updateTimerColor('black');
+                this.startTimer(); // ✅ 기존 진행 상태에서 재개
+            }, 5000);
+        }
+    }
+
+    useHint() {
+        if (this.hints > 0) {
+            this.hints -= 1;
+
+            // 힌트로 정답 중 하나를 자동으로 추가
+            const correctAreas = [
+                { x: 50, y: 60 },
+                { x: 200, y: 150 }
+            ];
+
+            const remainingHints = correctAreas.filter(
+                (area) => !this.correctClicks.some((click) => click.x === area.x && click.y === area.y)
+            );
+
+            if (remainingHints.length > 0) {
+                const hintSpot = remainingHints[0];
+                this.addCorrectClick(hintSpot.x, hintSpot.y);
+            }
+        }
+    }
+ 
+    updateTimerColor(color: string) {
+        this.timerColor = color;
+    }
+
+   
     stopTimer() {
         this.timerStopped = true;
         if (this.timerInterval) {
@@ -163,6 +170,7 @@ class GameViewModel {
         if (this.lives <= 0) return;
         this.round += 1;
         this.updateTimer(60);
+        this.remainingTime = 60; // ✅ 다음 라운드 타이머 초기화
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();
@@ -176,10 +184,10 @@ class GameViewModel {
         this.item_timer_stop = 2;
         this.round = 1;
         this.updateTimer(60);
+        this.remainingTime = 60;
         this.correctClicks = [];
         this.wrongClicks = [];
         this.gameOver = false;
-        this.startTimer();
     }
 }
 
