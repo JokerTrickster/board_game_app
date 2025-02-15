@@ -86,7 +86,7 @@ const FindItScreen: React.FC = observer(() => {
         }
     }, [findItViewModel.correctClicks.length]); // ✅ 정답 개수를 감지
 
-    
+
     const handleImageClick = (event: any) => {
         const { pageX, pageY } = event.nativeEvent;
         const relativeX = pageX - imagePosition.x;
@@ -150,8 +150,13 @@ const FindItScreen: React.FC = observer(() => {
                 <Text style={styles.roundText}>Round {findItViewModel.round}</Text>
             </View>
 
-            {/* 정상 이미지 */}
-            <Image source={currentImage.normal} style={styles.image} />
+            {/* ✅ 정상 이미지 + 정답(⭕) 표시 */}
+            <View style={styles.imageContainer}>
+                <Image source={currentImage.normal} style={styles.image} />
+                {findItViewModel.correctClicks.map((pos, index) => (
+                    <View key={`correct-normal-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                ))}
+            </View>
             {/* ✅ 타이머 바 추가 */}
             <View style={styles.timerBarContainer}>
                 <Animated.View style={[styles.timerBar, {
@@ -162,17 +167,17 @@ const FindItScreen: React.FC = observer(() => {
                     backgroundColor: findItViewModel.timerStopped ? 'red' : 'green'
                 }]} />
             </View>
-            {/* 틀린 그림 찾기 */}
+            {/* ✅ 틀린 그림 + 정답(⭕) & 오답(❌) 표시 */}
             <TouchableWithoutFeedback onPress={handleImageClick}>
                 <View ref={imageRef} style={styles.imageContainer}>
                     <Image source={currentImage.different} style={styles.image} />
 
-                    {/* ✅ 클릭한 정답(⭕) 위치 표시 */}
+                    {/* ✅ 정답 표시 (⭕) */}
                     {findItViewModel.correctClicks.map((pos, index) => (
-                        <View key={`correct-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                        <View key={`correct-diff-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
                     ))}
 
-                    {/* ✅ 클릭한 오답(❌) 위치 표시 */}
+                    {/* ✅ 오답 표시 (❌) */}
                     {findItViewModel.wrongClicks.map((pos, index) => (
                         <View key={`wrong-${index}`} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
                             <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
