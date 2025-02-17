@@ -5,35 +5,45 @@ class GameService {
     private users: any[] = [];
     private imageID: number | null = null;
     private gameInfo: any = {};
+    private round: number | null = null;
 
-    // ✅ roomID 저장 (매칭 시 사용)
     async setRoomID(id: number) {
         this.roomID = id;
         await AsyncStorage.setItem('roomID', String(id));
     }
-    async setImageID(id: number){
+
+    async setImageID(id: number) {
         this.imageID = id;
         await AsyncStorage.setItem('imageID', String(id));
     }
-    // ✅ roomID 가져오기
+
+    async setRound(id: number) {
+        this.round = id;
+        await AsyncStorage.setItem('round', String(id));
+    }
+
     async getRoomID() {
         if (!this.roomID) {
             const storedID = await AsyncStorage.getItem('roomID');
-            if (storedID) {
-                this.roomID = parseInt(storedID, 10);
-            }
+            this.roomID = storedID ? parseInt(storedID, 10) : null;
         }
         return this.roomID;
     }
-    // ✅  imageID 가져오기
+
     async getImageID() {
         if (!this.imageID) {
             const storedID = await AsyncStorage.getItem('imageID');
-            if (storedID) {
-                this.imageID = parseInt(storedID, 10);
-            }
+            this.imageID = storedID ? parseInt(storedID, 10) : null;
         }
         return this.imageID;
+    }
+
+    async getRound() {
+        if (!this.round) {
+            const storedID = await AsyncStorage.getItem('round');
+            this.round = storedID ? parseInt(storedID, 10) : null;
+        }
+        return this.round;
     }
      
     // ✅ 게임 정보 저장

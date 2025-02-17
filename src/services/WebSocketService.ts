@@ -8,8 +8,9 @@ class WebSocketService {
     private userID: number | null = null; // ✅ 사용자 ID 저장
     private roomID: number | null = null; // ✅ 방 ID 저장
     private imageID: number | null = null; // ✅ 이미지 ID 저장
+    private round: number | null = null; // ✅ 라운드 저장
     private navigation: NavigationRefType = null;
-    private messageListeners: ((data: any) => void)[] = []; // ✅ 메시지 리스너 배열 추가
+    private gameStarted: boolean = false; // ✅ 게임 시작 여부
     constructor() { }
     // ✅ 네비게이션 설정 (외부에서 NavigationContainerRef를 받아 설정)
     setNavigation(navigation: NavigationRefType) {
@@ -63,15 +64,23 @@ class WebSocketService {
                     
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
+                        this.roomID = data.gameInfo.roomID; // ✅ roomID 저장
+                        this.imageID = data.gameInfo.imageInfo.id; // ✅ imageID 저장
+                        this.round = data.gameInfo.round; // ✅ 라운드 저장
+
+                        // ✅ 게임 정보 저장
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
+                        await gameService.setRound(data.gameInfo.round);
+
                         findItViewModel.life = data.gameInfo.life; // ✅ 목숨 업데이트
                         findItViewModel.hints = data.gameInfo.itemHintCount; // ✅ 힌트 아이템 수 업데이트
                         findItViewModel.item_timer_stop = data.gameInfo.itemTimerCount; // ✅ 타이머 정지 아이템 수 업데이트
                         findItViewModel.round = data.gameInfo.round; // ✅ 라운드 업데이트
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (data.gameInfo.allReady && data.gameInfo.isFull) {
+                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull) {
                             if (gameService.isOwner(this.userID!)) {
+                                this.gameStarted = true;
                                 this.sendStartEvent();
                             } else {
                                 console.log("🛑 나는 방장이 아닙니다. START 이벤트를 전송하지 않습니다.");
@@ -81,29 +90,28 @@ class WebSocketService {
                     // ✅ 유저 정보 업데이트 (정답 좌표 저장)
                     if (data.users) {
                         gameService.setUsers(data.users);
+                        // ✅ 모든 유저의 정답 & 오답을 처리
+                        data.users.forEach((user: any) => {
+                            // ✅ 정답 처리 (각 유저의 correctPositions)
+                            if (user.correctPositions && user.correctPositions.length > 0) {
+                                console.log(`⭕ 유저 ${user.id} 정답 추가:`, user.correctPositions);
+                                user.correctPositions.forEach((pos: number[]) => {
+                                    findItViewModel.addCorrectClick(pos[0], pos[1], user.id);
+                                });
+                            }
+
+                            // ✅ 오답 처리 (모든 유저에게 동일한 오답 표시)
+                            if (data.gameInfo.wrongPosition && (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
+                                console.log(`❌ 유저 ${user.id} 오답 표시:`, data.gameInfo.wrongPosition);
+                                findItViewModel.addWrongClick(
+                                    data.gameInfo.wrongPosition.x,
+                                    data.gameInfo.wrongPosition.y,
+                                    user.id
+                                );
+                            }
+                        });
                     }
-                    // ✅ 모든 유저의 정답 & 오답을 처리
-                    data.users.forEach((user: any) => {
-                        // ✅ 정답 처리 (각 유저의 correctPositions)
-                        if (user.correctPositions && user.correctPositions.length > 0) {
-                            console.log(`⭕ 유저 ${user.id} 정답 추가:`, user.correctPositions);
-                            user.correctPositions.forEach((pos: number[]) => {
-                                findItViewModel.addCorrectClick(pos[0], pos[1], user.id);
-                            });
-                        }
-
-                        // ✅ 오답 처리 (모든 유저에게 동일한 오답 표시)
-                        if (data.gameInfo.wrongPosition && (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
-                            console.log(`❌ 유저 ${user.id} 오답 표시:`, data.gameInfo.wrongPosition);
-                            findItViewModel.addWrongClick(
-                                data.gameInfo.wrongPosition.x,
-                                data.gameInfo.wrongPosition.y,
-                                user.id
-                            );
-                        }
-                    });
                     
-
                     // ✅ 이벤트별 처리
                     switch (rawData.event) {
                         case "MATCH":
@@ -118,7 +126,15 @@ class WebSocketService {
                         case "SUBMIT_POSITION":
                             console.log("📥 좌표 제출 이벤트 수신:", rawData.message);
                             break;
-                            
+                        case "TIMER_ITEM":
+                            findItViewModel.useTimerStopItem(); // ✅ 타이머 멈춤 실행
+                            break;
+                        case "HINT_ITEM":
+                            if (data.gameInfo.hintPosition) {
+                                console.log("🔍 힌트 아이템 사용:", data.gameInfo.hintPosition);
+                                findItViewModel.setHintPosition(data.gameInfo.hintPosition.x, data.gameInfo.hintPosition.y);
+                            }
+                            break;
                         default:
                             console.warn("⚠️ 알 수 없는 이벤트:", rawData.event);
                     }
@@ -146,6 +162,83 @@ class WebSocketService {
         } catch (error) {
             console.error("❌ 액세스 토큰 가져오기 실패:", error);
         }
+    }
+    async sendHintItemEvent() {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            console.error("❌ 웹소켓이 연결되지 않았습니다.");
+            return;
+        }
+
+        // ✅ 필요한 값이 `null`인 경우 `AsyncStorage`에서 가져오기
+        if (!this.roomID) this.roomID = await gameService.getRoomID();
+        if (!this.userID) {
+            const storedUserID = await AsyncStorage.getItem('user_id');
+            this.userID = storedUserID ? parseInt(storedUserID, 10) : null;
+        }
+        if (!this.imageID) this.imageID = await gameService.getImageID();
+        if (!this.round) this.round = await gameService.getRound();
+
+        // ✅ 다시 한 번 `null` 체크 후 전송
+        if (!this.roomID || !this.userID || !this.imageID || !this.round) {
+            console.error("❌ 필요한 게임 정보가 누락되었습니다. 전송 중단:", {
+                roomID: this.roomID,
+                userID: this.userID,
+                imageID: this.imageID,
+                round: this.round
+            });
+            return;
+        }
+
+        const hintItemEvent = {
+            roomID: this.roomID,
+            userID: this.userID,
+            event: "HINT_ITEM",
+            message: JSON.stringify({
+                round: this.round,
+                imageID: this.imageID
+            })
+        };
+
+        console.log("📤 힌트 아이템 이벤트 전송:", hintItemEvent);
+        this.socket.send(JSON.stringify(hintItemEvent));
+    }
+
+    async sendTimerItemEvent() {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            console.error("❌ 웹소켓이 연결되지 않았습니다.");
+            return;
+        }
+
+        if (!this.roomID) this.roomID = await gameService.getRoomID();
+        if (!this.userID) {
+            const storedUserID = await AsyncStorage.getItem('user_id');
+            this.userID = storedUserID ? parseInt(storedUserID, 10) : null;
+        }
+        if (!this.imageID) this.imageID = await gameService.getImageID();
+        if (!this.round) this.round = await gameService.getRound();
+
+        if (!this.roomID || !this.userID || !this.imageID || !this.round) {
+            console.error("❌ 필요한 게임 정보가 누락되었습니다. 전송 중단:", {
+                roomID: this.roomID,
+                userID: this.userID,
+                imageID: this.imageID,
+                round: this.round
+            });
+            return;
+        }
+
+        const timerItemEvent = {
+            roomID: this.roomID,
+            userID: this.userID,
+            event: "TIMER_ITEM",
+            message: JSON.stringify({
+                round: this.round,
+                imageID: this.imageID
+            })
+        };
+
+        console.log("📤 타이머 정지 아이템 이벤트 전송:", timerItemEvent);
+        this.socket.send(JSON.stringify(timerItemEvent));
     }
 
     // ✅ 매칭 요청 이벤트 전송

@@ -13,13 +13,14 @@ const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const currentImage = findItViewModel.images[findItViewModel.currentImageIndex];
+    const currentImage = findItViewModel.images[findItViewModel.currentImageID];
     // ✅ 타이머 바 애니메이션 설정
     const timerWidth = useRef(new Animated.Value(100)).current;
     const timerAnimation = useRef<Animated.CompositeAnimation | null>(null);
     const remainingTime = useRef(findItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
     const isRoundChanging = useRef(false); // ✅ 현재 라운드 변경 중인지 여부
+    const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
 
     // ✅ 타이머 바 애니메이션 시작 (남은 시간만큼 진행)
     const startTimerAnimation = (duration: number) => {
@@ -42,6 +43,13 @@ const FindItScreen: React.FC = observer(() => {
         timerAnimation.current.start();
     };
 
+    // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
+    useEffect(() => {
+        if (findItViewModel.hintPosition) {
+            setHintVisible(true);
+            setTimeout(() => setHintVisible(false), 5000);
+        }
+    }, [findItViewModel.hintPosition]);
 
     useEffect(() => {
         startTimerAnimation(findItViewModel.timer);  // ✅ 라운드가 시작될 때 애니메이션 시작
@@ -107,15 +115,25 @@ const FindItScreen: React.FC = observer(() => {
         }
 
         const currentRound = findItViewModel.round;
-        const currentImageId = findItViewModel.currentImageIndex; // ✅ 현재 이미지 ID
+        const currentImageId = findItViewModel.currentImageID; // ✅ 현재 이미지 ID
 
         // ✅ 서버로 클릭한 좌표 전송 (반올림된 좌표)
         webSocketService.sendSubmitPosition(currentRound, currentImageId, relativeX, relativeY);
     };
+    // ✅ 힌트 아이템 사용d
+    const handleHint = () => {
+        if (findItViewModel.hints > 0) {
+            console.log("💡 힌트 아이템 사용!");
+
+            // ✅ 서버에 아이템 사용 이벤트 전송
+            webSocketService.sendHintItemEvent();
+        }
+       
+    };
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
         if (findItViewModel.item_timer_stop > 0 && !findItViewModel.timerStopped) {
-            console.log('check ', findItViewModel.timer);
+            console.log("⏳ 타이머 멈춤 아이템 사용!");
             findItViewModel.useTimerStopItem();
 
             if (timerAnimation.current) {
@@ -124,13 +142,14 @@ const FindItScreen: React.FC = observer(() => {
 
             remainingTime.current = findItViewModel.timer; // ✅ 현재 남은 시간 저장
             isPaused.current = true;
-            console.log('check2 ', findItViewModel.timer);
 
             setTimeout(() => {
                 console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
                 isPaused.current = false;
                 startTimerAnimation(remainingTime.current); // ✅ 남은 시간만큼 다시 진행
             }, 5000);
+            // ✅ 서버에 아이템 사용 이벤트 전송
+            webSocketService.sendTimerItemEvent();
         }
     };
     return (
@@ -174,6 +193,11 @@ const FindItScreen: React.FC = observer(() => {
                             <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
                         </View>
                     ))}
+
+                    {/* ✅ 힌트 위치 표시 (🟢 초록색 원) */}
+                    {findItViewModel.hintPosition && (
+                        <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
+                    )}
                 </View>
             </TouchableWithoutFeedback>
 
@@ -183,7 +207,7 @@ const FindItScreen: React.FC = observer(() => {
                 <Text style={styles.infoText}>❤️ {findItViewModel.life}</Text>
 
                 {/* 힌트 버튼 */}
-                <TouchableOpacity style={styles.infoButton} onPress={() => findItViewModel.useHint()}>
+                <TouchableOpacity style={styles.infoButton} onPress={handleHint}>
                     <Text style={styles.infoButtonText}>💡 {findItViewModel.hints}</Text>
                 </TouchableOpacity>
 

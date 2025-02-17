@@ -13,8 +13,9 @@ class GameViewModel {
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerStopped = false; // ✅ 타이머 멈춤 상태
     timerColor = 'black'; // ✅ 타이머 색상
-    currentImageIndex = 0; // 현재 이미지 인덱스
+    currentImageID = 0; // 현재 이미지 인덱스
     remainingTime = 60; // ✅ 현재 남은 타이머 시간 저장
+    hintPosition: { x: number; y: number } | null = null; // ✅ 힌트 좌표 저장
     images = [
         { normal: require('../../assets/images/normal1-level1.png'), different: require('../../assets/images/abnormal1-level1.png') },
         { normal: require('../../assets/images/normal2-level1.png'), different: require('../../assets/images/abnormal2-level1.png') },
@@ -29,6 +30,7 @@ class GameViewModel {
             stopTimer: action,
             updateTimer: action,
             useTimerStopItem: action, // ✅ 추가
+            setHintPosition: action, // ✅ 추가
         });
     }
 
@@ -116,7 +118,6 @@ class GameViewModel {
     /** ✅ 타이머 멈춤 기능 (5초간 멈춤, 타이머 바 유지) */
     useTimerStopItem() {
         if (this.item_timer_stop > 0 && !this.timerStopped) {
-            this.item_timer_stop -= 1;
             this.stopTimer();
             this.timerStopped = true;
             this.updateTimerColor('red');
@@ -129,22 +130,13 @@ class GameViewModel {
         }
     }
 
-    useHint() {
-        if (this.hints > 0) {
-            this.hints -= 1;
 
-            // 힌트로 정답 중 하나를 자동으로 추가
-            const correctAreas = [
-                { x: 50, y: 60 },
-                { x: 200, y: 150 }
-            ];
-
-            const remainingHints = correctAreas.filter(
-                (area) => !this.correctClicks.some((click) => click.x === area.x && click.y === area.y)
-            );
-
-          
-        }
+    setHintPosition(x: number, y: number) {
+        this.hintPosition = { x, y };
+        console.log("힌트 좌표 저장", this.hintPosition);   
+        setTimeout(() => {
+            this.hintPosition = null;
+        }, 4000);
     }
  
     updateTimerColor(color: string) {
@@ -169,7 +161,7 @@ class GameViewModel {
         this.wrongClicks = [];
         this.startTimer();
         // ✅ 다음 이미지로 변경 (배열 길이를 초과하면 0으로 순환)
-        this.currentImageIndex = (this.currentImageIndex + 1) % this.images.length;
+        this.currentImageID = (this.currentImageID + 1) % this.images.length;
     }
 
     resetGame() {

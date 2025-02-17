@@ -87,7 +87,14 @@ export const styles = StyleSheet.create({
         height: 5,
         backgroundColor: 'red',
     },
-
+    hintCircle: {
+        position: 'absolute',
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        borderWidth: 3,
+        borderColor: 'black',
+    },
     wrongXRotate45: { transform: [{ rotate: '45deg' }] },
     wrongXRotate135: { transform: [{ rotate: '135deg' }] },
 
