@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게�
 import findItViewModel from './FindItViewModel'; // ✅ 올바른 경로로 변경
 import { styles } from './FindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
+import { webSocketService } from '../../services/WebSocketService';
 
 const FindItScreen: React.FC = observer(() => {
     
@@ -46,7 +47,7 @@ const FindItScreen: React.FC = observer(() => {
         startTimerAnimation(findItViewModel.timer);  // ✅ 라운드가 시작될 때 애니메이션 시작
         findItViewModel.startTimer(() => {
             console.log('타이머 종료! 남은 정답 개수를 목숨에서 차감');
-            if (findItViewModel.lives <= 0) {
+            if (findItViewModel.life <= 0) {
                 console.log('💀 게임 종료!');
                 navigation.navigate('GameOver');
             }
@@ -61,14 +62,16 @@ const FindItScreen: React.FC = observer(() => {
         }, 500);
     }, []);
 
-    
     useEffect(() => {
-        console.log(`라운드 ${findItViewModel.round} 시작!`);
-    }, [findItViewModel.round]);
+        console.log(`🔄 게임 상태 변경됨! (목숨: ${findItViewModel.life}, 힌트: ${findItViewModel.hints}, 타이머 정지: ${findItViewModel.item_timer_stop}, 라운드: ${findItViewModel.round})`);
 
+        // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
+    }, [findItViewModel.life, findItViewModel.hints, findItViewModel.item_timer_stop, findItViewModel.round]);
+
+ 
     useEffect(() => {
         if (findItViewModel.gameOver) {
-            console.log("게임 종료 페이지로 이동ㅇㅇㅇㅇ!");
+            console.log("게임 종료 페이지로 이동!");
             navigation.navigate('GameOver');
         }
     }, [findItViewModel.gameOver]);
@@ -89,38 +92,25 @@ const FindItScreen: React.FC = observer(() => {
 
     const handleImageClick = (event: any) => {
         const { pageX, pageY } = event.nativeEvent;
-        const relativeX = pageX - imagePosition.x;
-        const relativeY = pageY - imagePosition.y;
+        let relativeX = pageX - imagePosition.x;
+        let relativeY = pageY - imagePosition.y;
 
-        console.log(`클릭 좌표: X=${relativeX}, Y=${relativeY}`);
+        // ✅ 좌표를 소수점 2자리까지 반올림
+        relativeX = parseFloat(relativeX.toFixed(2));
+        relativeY = parseFloat(relativeY.toFixed(2));
+
+        console.log(`📍 클릭 좌표: X=${relativeX}, Y=${relativeY}`);
 
         if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) {
-            console.log('이미 클릭된 위치입니다!');
+            console.log('⚠️ 이미 클릭된 위치입니다!');
             return;
         }
 
-        const correctAreas = [
-            { x: 50, y: 60, radius: 20 },
-            { x: 200, y: 150, radius: 20 },
-            { x: 120, y: 80, radius: 20 },
-            { x: 180, y: 200, radius: 20 },
-            { x: 90, y: 130, radius: 20 }
-        ];
+        const currentRound = findItViewModel.round;
+        const currentImageId = findItViewModel.currentImageIndex; // ✅ 현재 이미지 ID
 
-        let isCorrect = correctAreas.some(area => {
-            const distance = Math.sqrt(
-                Math.pow(relativeX - area.x, 2) + Math.pow(relativeY - area.y, 2)
-            );
-            return distance <= area.radius;
-        });
-        isCorrect = true;
-
-        if (isCorrect) {
-            findItViewModel.addCorrectClick(relativeX, relativeY);
-        } else {
-            findItViewModel.addWrongClick(relativeX, relativeY);
-            findItViewModel.decreaseLife();
-        }
+        // ✅ 서버로 클릭한 좌표 전송 (반올림된 좌표)
+        webSocketService.sendSubmitPosition(currentRound, currentImageId, relativeX, relativeY);
     };
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
@@ -190,7 +180,7 @@ const FindItScreen: React.FC = observer(() => {
             {/* ✅ 게임 정보 한 줄로 정리 */}
             <View style={styles.infoRow}>
                 <Text style={styles.infoText}>남은 개수: {5 - findItViewModel.correctClicks.length}</Text>
-                <Text style={styles.infoText}>❤️ {findItViewModel.lives}</Text>
+                <Text style={styles.infoText}>❤️ {findItViewModel.life}</Text>
 
                 {/* 힌트 버튼 */}
                 <TouchableOpacity style={styles.infoButton} onPress={() => findItViewModel.useHint()}>

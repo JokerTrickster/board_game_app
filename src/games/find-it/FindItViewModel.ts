@@ -1,14 +1,14 @@
 import { action, makeAutoObservable } from 'mobx';
 
 class GameViewModel {
-    lives = 3; // 목숨 개수
+    life = 3; // 목숨 개수
     hints = 2; // 힌트 개수
     item_timer_stop = 3; // ✅ 타이머 멈춤 아이템 개수
     timer = 60; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
-    correctClicks: { x: number; y: number }[] = []; // 맞춘 위치 저장
-    wrongClicks: { id: string; x: number; y: number }[] = []; // 틀린 위치 저장
+    correctClicks: { x: number; y: number; userID:number}[] = []; // 맞춘 위치 저장
+    wrongClicks: { x: number; y: number; userID: number }[] = []; // 틀린 위치 저장
     isClickable = true; // 연속 클릭 방지
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerStopped = false; // ✅ 타이머 멈춤 상태
@@ -16,8 +16,8 @@ class GameViewModel {
     currentImageIndex = 0; // 현재 이미지 인덱스
     remainingTime = 60; // ✅ 현재 남은 타이머 시간 저장
     images = [
-        { normal: require('../../assets/images/normal1.png'), different: require('../../assets/images/different1.png') },
-        { normal: require('../../assets/images/normal2.png'), different: require('../../assets/images/different2.png') },
+        { normal: require('../../assets/images/normal1-level1.png'), different: require('../../assets/images/abnormal1-level1.png') },
+        { normal: require('../../assets/images/normal2-level1.png'), different: require('../../assets/images/abnormal2-level1.png') },
     ];
 
     constructor() {
@@ -33,10 +33,10 @@ class GameViewModel {
     }
 
     decreaseLife() {
-        if (this.lives > 0) {
-            this.lives -= 1;
+        if (this.life > 0) {
+            this.life -= 1;
         }
-        if (this.lives === 0) {
+        if (this.life === 0) {
             console.log('게임 종료!');
             this.gameOver = true;
             this.stopTimer();
@@ -56,27 +56,24 @@ class GameViewModel {
         const distance = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
         return distance <= radius;
     }
-
-    /** 정답 클릭 */
-    addCorrectClick(x: number, y: number) {
+    /** ✅ 정답 클릭 저장 (유저 ID 포함) */
+    addCorrectClick(x: number, y: number, userID: number) {
         if (this.isAlreadyClicked(x, y)) return; // 이미 클릭된 영역이면 무시
-        this.correctClicks.push({ x, y });
+        this.correctClicks.push({ x, y, userID });
     }
 
-    /** 오답 클릭 */
-    addWrongClick(x: number, y: number) {
-        if (this.isAlreadyClicked(x, y)) return; // 연속 클릭 방지 + 이미 클릭된 영역 무시
+    /** ✅ 오답 클릭 저장 (유저 ID 포함, 3초 후 삭제) */
+    addWrongClick(x: number, y: number, userID: number) {
+        if (this.isAlreadyClicked(x, y)) return; // 중복 클릭 방지
         this.isClickable = false;
 
-        // ✅ ❌에 고유 ID 추가
-        const wrongClick = { id: Date.now().toString(), x, y };
-        this.wrongClicks = [...this.wrongClicks, wrongClick]; // ❌ 여러 개 유지
+        const wrongClick = { id: Date.now().toString(), x, y, userID };
+        this.wrongClicks = [...this.wrongClicks, wrongClick];
 
-        // ✅ 개별 ❌ 클릭마다 3초 후 삭제
         setTimeout(() => {
-            this.wrongClicks = this.wrongClicks.filter(click => click.id !== wrongClick.id);
+            this.wrongClicks = this.wrongClicks.filter(click => click.userID !== wrongClick.userID);
             this.isClickable = true;
-        }, 3000);
+        }, 3000); // 3초 후 제거
     }
 
 
@@ -96,9 +93,9 @@ class GameViewModel {
 
                 // ✅ 남은 정답 개수 계산
                 const remainingMistakes = 5 - this.correctClicks.length;
-                this.lives -= remainingMistakes;
+                this.life -= remainingMistakes;
 
-                if (this.lives > 0) {
+                if (this.life > 0) {
                     console.log('➡️ 다음 라운드로 이동');
                     this.nextRound();
                 } else {
@@ -146,10 +143,7 @@ class GameViewModel {
                 (area) => !this.correctClicks.some((click) => click.x === area.x && click.y === area.y)
             );
 
-            if (remainingHints.length > 0) {
-                const hintSpot = remainingHints[0];
-                this.addCorrectClick(hintSpot.x, hintSpot.y);
-            }
+          
         }
     }
  
@@ -167,7 +161,7 @@ class GameViewModel {
     }
 
     nextRound() {
-        if (this.lives <= 0) return;
+        if (this.life <= 0) return;
         this.round += 1;
         this.updateTimer(60);
         this.remainingTime = 60; // ✅ 다음 라운드 타이머 초기화
@@ -179,7 +173,7 @@ class GameViewModel {
     }
 
     resetGame() {
-        this.lives = 3;
+        this.life = 3;
         this.hints = 2;
         this.item_timer_stop = 2;
         this.round = 1;
