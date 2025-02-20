@@ -1,4 +1,5 @@
 import { action, makeAutoObservable } from 'mobx';
+import { webSocketService } from '../../services/WebSocketService';
 
 class GameViewModel {
     life = 3; // 목숨 개수
@@ -16,10 +17,10 @@ class GameViewModel {
     currentImageID = 0; // 현재 이미지 인덱스
     remainingTime = 60; // ✅ 현재 남은 타이머 시간 저장
     hintPosition: { x: number; y: number } | null = null; // ✅ 힌트 좌표 저장
-    images = [
-        { normal: require('../../assets/images/normal1-level1.png'), different: require('../../assets/images/abnormal1-level1.png') },
-        { normal: require('../../assets/images/normal2-level1.png'), different: require('../../assets/images/abnormal2-level1.png') },
-    ];
+    // ✅ 서버에서 받은 이미지 URL 저장
+    normalImage: string | null = null;
+    abnormalImage: string | null = null;
+
 
     constructor() {
         makeAutoObservable(this, {
@@ -31,6 +32,7 @@ class GameViewModel {
             updateTimer: action,
             useTimerStopItem: action, // ✅ 추가
             setHintPosition: action, // ✅ 추가
+            setImage: action, // ✅ 이미지 설정 함수
         });
     }
 
@@ -92,11 +94,6 @@ class GameViewModel {
             } else {
                 this.stopTimer();
                 console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
-
-                // ✅ 남은 정답 개수 계산
-                const remainingMistakes = 5 - this.correctClicks.length;
-                this.life -= remainingMistakes;
-
                 if (this.life > 0) {
                     console.log('➡️ 다음 라운드로 이동');
                     this.nextRound();
@@ -112,6 +109,14 @@ class GameViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
+
+    /** ✅ 서버에서 받은 이미지 URL 설정 */
+    setImage(normal: string, abnormal: string) {
+        this.normalImage = normal;
+        this.abnormalImage = abnormal;
+        console.log("✅ 이미지 업데이트:", { normal, abnormal });
+    }
+
     /*
        아이템 사용
     */
@@ -160,8 +165,6 @@ class GameViewModel {
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();
-        // ✅ 다음 이미지로 변경 (배열 길이를 초과하면 0으로 순환)
-        this.currentImageID = (this.currentImageID + 1) % this.images.length;
     }
 
     resetGame() {

@@ -67,16 +67,24 @@ class WebSocketService {
                         this.roomID = data.gameInfo.roomID; // ✅ roomID 저장
                         this.imageID = data.gameInfo.imageInfo.id; // ✅ imageID 저장
                         this.round = data.gameInfo.round; // ✅ 라운드 저장
-
+                        
+                        
                         // ✅ 게임 정보 저장
+
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                        await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
                         await gameService.setRound(data.gameInfo.round);
 
                         findItViewModel.life = data.gameInfo.life; // ✅ 목숨 업데이트
                         findItViewModel.hints = data.gameInfo.itemHintCount; // ✅ 힌트 아이템 수 업데이트
                         findItViewModel.item_timer_stop = data.gameInfo.itemTimerCount; // ✅ 타이머 정지 아이템 수 업데이트
                         findItViewModel.round = data.gameInfo.round; // ✅ 라운드 업데이트
+                        if (data.gameInfo.imageInfo) {
+                            await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
+                            await gameService.setNormalImage(data.gameInfo.imageInfo.normalImageUrl);
+                            await gameService.setAbnormalImage(data.gameInfo.imageInfo.abnormalImageUrl);
+                            findItViewModel.normalImage = data.gameInfo.imageInfo.normalImageUrl;
+                            findItViewModel.abnormalImage = data.gameInfo.imageInfo.abnormalImageUrl;
+                        }
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull) {
                             if (gameService.isOwner(this.userID!)) {
@@ -135,6 +143,13 @@ class WebSocketService {
                                 findItViewModel.setHintPosition(data.gameInfo.hintPosition.x, data.gameInfo.hintPosition.y);
                             }
                             break;
+                        case "TIME_OUT":
+                            console.log("다음 라운드 진출");
+                            this.sendNextRoundEvent();
+                            break;
+                        case "GAME_OVER":
+                            // 연결을 끊고 결과 화면창을 띄운다.
+                            break;
                         default:
                             console.warn("⚠️ 알 수 없는 이벤트:", rawData.event);
                     }
@@ -162,6 +177,42 @@ class WebSocketService {
         } catch (error) {
             console.error("❌ 액세스 토큰 가져오기 실패:", error);
         }
+    }
+    async sendNextRoundEvent() {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            console.error("❌ 웹소켓이 연결되지 않았습니다.");
+            return;
+        }
+        const nextRoundEvent = {
+            roomID: this.roomID,
+            userID: this.userID,
+            event: "NEXT_ROUND",
+            message: JSON.stringify({
+                round: this.round,
+                imageID: this.imageID
+            })
+        };
+        console.log("📤 다음 라운드 이동 이벤트 전송:", nextRoundEvent);
+        this.socket.send(JSON.stringify(nextRoundEvent));
+    }
+    async sendTimeOutEvent() {
+        if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+            console.error("❌ 웹소켓이 연결되지 않았습니다.");
+            return;
+        }
+
+        const timeOutEvent = {
+            roomID: this.roomID,
+            userID: this.userID,
+            event: "TIME_OUT",
+            message: JSON.stringify({
+                round: this.round,
+                imageID: this.imageID
+            })
+        };
+        console.log("📤 타임 아웃 이벤트 전송:", timeOutEvent);
+        this.socket.send(JSON.stringify(timeOutEvent));
+
     }
     async sendHintItemEvent() {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {

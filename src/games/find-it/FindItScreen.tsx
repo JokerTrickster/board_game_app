@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { View, Text, Image, Button, TouchableWithoutFeedback, Animated, TouchableOpacity, Easing } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +13,6 @@ const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const currentImage = findItViewModel.images[findItViewModel.currentImageID];
     // ✅ 타이머 바 애니메이션 설정
     const timerWidth = useRef(new Animated.Value(100)).current;
     const timerAnimation = useRef<Animated.CompositeAnimation | null>(null);
@@ -21,6 +20,10 @@ const FindItScreen: React.FC = observer(() => {
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
     const isRoundChanging = useRef(false); // ✅ 현재 라운드 변경 중인지 여부
     const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
+    // ✅ MobX 상태를 `useMemo`로 감싸 렌더링 최적화
+    const normalImage = useMemo(() => findItViewModel.normalImage, []);
+    const abnormalImage = useMemo(() => findItViewModel.abnormalImage, []);
+
 
     // ✅ 타이머 바 애니메이션 시작 (남은 시간만큼 진행)
     const startTimerAnimation = (duration: number) => {
@@ -98,28 +101,24 @@ const FindItScreen: React.FC = observer(() => {
     }, [findItViewModel.correctClicks.length]); // ✅ 정답 개수를 감지
 
 
-    const handleImageClick = (event: any) => {
+    // ✅ 클릭 핸들러를 `useCallback`으로 최적화
+    const handleImageClick = useCallback((event: any) => {
         const { pageX, pageY } = event.nativeEvent;
         let relativeX = pageX - imagePosition.x;
         let relativeY = pageY - imagePosition.y;
 
-        // ✅ 좌표를 소수점 2자리까지 반올림
         relativeX = parseFloat(relativeX.toFixed(2));
         relativeY = parseFloat(relativeY.toFixed(2));
 
-        console.log(`📍 클릭 좌표: X=${relativeX}, Y=${relativeY}`);
+        if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) return;
 
-        if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) {
-            console.log('⚠️ 이미 클릭된 위치입니다!');
-            return;
-        }
-
-        const currentRound = findItViewModel.round;
-        const currentImageId = findItViewModel.currentImageID; // ✅ 현재 이미지 ID
-
-        // ✅ 서버로 클릭한 좌표 전송 (반올림된 좌표)
-        webSocketService.sendSubmitPosition(currentRound, currentImageId, relativeX, relativeY);
-    };
+        webSocketService.sendSubmitPosition(
+            findItViewModel.round,
+            findItViewModel.currentImageID,
+            relativeX,
+            relativeY
+        );
+    }, [imagePosition]);
     // ✅ 힌트 아이템 사용d
     const handleHint = () => {
         if (findItViewModel.hints > 0) {
@@ -159,12 +158,13 @@ const FindItScreen: React.FC = observer(() => {
                 <Text style={styles.roundText}>Round {findItViewModel.round}</Text>
             </View>
 
-            {/* ✅ 정상 이미지 + 정답(⭕) 표시 */}
+            {/* ✅ 정상 이미지 */}
             <View style={styles.imageContainer}>
-                <Image source={currentImage.normal} style={styles.image} />
-                {findItViewModel.correctClicks.map((pos, index) => (
-                    <View key={`correct-normal-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
-                ))}
+                {normalImage ? (
+                    <Image source={{ uri: normalImage }} style={styles.image} />
+                ) : (
+                    <Text>이미지를 불러오는 중...</Text>
+                )}
             </View>
             {/* ✅ 타이머 바 추가 */}
             <View style={styles.timerBarContainer}>
@@ -176,26 +176,30 @@ const FindItScreen: React.FC = observer(() => {
                     backgroundColor: findItViewModel.timerStopped ? 'red' : 'green'
                 }]} />
             </View>
-            {/* ✅ 틀린 그림 + 정답(⭕) & 오답(❌) 표시 */}
+            {/* ✅ 틀린 그림 */}
             <TouchableWithoutFeedback onPress={handleImageClick}>
                 <View ref={imageRef} style={styles.imageContainer}>
-                    <Image source={currentImage.different} style={styles.image} />
+                    {abnormalImage ? (
+                        <Image source={{ uri: abnormalImage }} style={styles.image} />
+                    ) : (
+                        <Text>이미지를 불러오는 중...</Text>
+                    )}
 
-                    {/* ✅ 정답 표시 (⭕) */}
+                    {/* ✅ 정답 표시 */}
                     {findItViewModel.correctClicks.map((pos, index) => (
-                        <View key={`correct-diff-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                        <View key={index} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
                     ))}
 
-                    {/* ✅ 오답 표시 (❌) */}
+                    {/* ✅ 오답 표시 */}
                     {findItViewModel.wrongClicks.map((pos, index) => (
-                        <View key={`wrong-${index}`} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
+                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
                             <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
                             <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
                         </View>
                     ))}
 
-                    {/* ✅ 힌트 위치 표시 (🟢 초록색 원) */}
-                    {findItViewModel.hintPosition && (
+                    {/* ✅ 힌트 표시 */}
+                    {hintVisible && findItViewModel.hintPosition && (
                         <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
                     )}
                 </View>

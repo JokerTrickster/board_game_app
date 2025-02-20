@@ -6,6 +6,8 @@ class GameService {
     private imageID: number | null = null;
     private gameInfo: any = {};
     private round: number | null = null;
+    private normalImageUrl: string | null = null;
+    private abnormalImageUrl: string | null = null;
 
     async setRoomID(id: number) {
         this.roomID = id;
@@ -20,6 +22,36 @@ class GameService {
     async setRound(id: number) {
         this.round = id;
         await AsyncStorage.setItem('round', String(id));
+    }
+    async setNormalImage(imageUrl: string) {
+        this.normalImageUrl = imageUrl
+        await AsyncStorage.setItem('normalImageUrl',String(imageUrl))
+    }
+    async setAbnormalImage(imageUrl: string) {
+        this.abnormalImageUrl = imageUrl
+        await AsyncStorage.setItem('abnormalImageUrl', String(imageUrl))
+    }
+
+    /** ✅ 서버에서 받은 정상 이미지 URL 가져오기 */
+    async getNormalImage(): Promise<string | null> {
+        if (!this.normalImageUrl) {
+            const storedUrl = await AsyncStorage.getItem('normalImageUrl');
+            if (storedUrl) {
+                this.normalImageUrl = storedUrl;
+            }
+        }
+        return this.normalImageUrl;
+    }
+
+    /** ✅ 서버에서 받은 틀린 이미지 URL 가져오기 */
+    async getAbnormalImage(): Promise<string | null> {
+        if (!this.abnormalImageUrl) {
+            const storedUrl = await AsyncStorage.getItem('abnormalImageUrl');
+            if (storedUrl) {
+                this.abnormalImageUrl = storedUrl;
+            }
+        }
+        return this.abnormalImageUrl;
     }
 
     async getRoomID() {
