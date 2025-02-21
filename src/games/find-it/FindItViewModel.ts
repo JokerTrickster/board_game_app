@@ -20,6 +20,8 @@ class GameViewModel {
     // ✅ 서버에서 받은 이미지 URL 저장
     normalImage: string | null = null;
     abnormalImage: string | null = null;
+    roundClearEffect = false; // ✅ "클리어" 이펙트 상태 추가
+
 
 
     constructor() {
@@ -33,6 +35,7 @@ class GameViewModel {
             useTimerStopItem: action, // ✅ 추가
             setHintPosition: action, // ✅ 추가
             setImage: action, // ✅ 이미지 설정 함수
+            setRoundClearEffect: action, // ✅ 액션 추가
         });
     }
 
@@ -116,6 +119,11 @@ class GameViewModel {
         this.normalImage = normal;
         this.abnormalImage = abnormal;
         console.log("✅ 이미지 업데이트:", { normal, abnormal });
+    }
+    
+    // ✅ "클리어" 이펙트 상태 변경
+    setRoundClearEffect(value: boolean) {
+        this.roundClearEffect = value;
     }
 
     /*

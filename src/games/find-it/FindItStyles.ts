@@ -120,4 +120,21 @@ export const styles = StyleSheet.create({
         width: 250,
         marginTop: 10,
     },
+    clearEffectContainer: {
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: [{ translateX: -100 }, { translateY: -50 }],
+        backgroundColor: 'rgba(0, 255, 0, 0.8)',
+        padding: 20,
+        borderRadius: 10,
+        zIndex: 10,
+    },
+    clearEffectText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+
 });

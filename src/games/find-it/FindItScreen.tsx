@@ -7,6 +7,7 @@ import findItViewModel from './FindItViewModel'; // ✅ 올바른 경로로 변�
 import { styles } from './FindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
+import AnimatedCircle from './AnimatedCircle';
 
 const FindItScreen: React.FC = observer(() => {
     
@@ -87,19 +88,6 @@ const FindItScreen: React.FC = observer(() => {
         }
     }, [findItViewModel.gameOver]);
     
-    useEffect(() => {
-        if (findItViewModel.correctClicks.length === 5 && !isRoundChanging.current) {
-            console.log("라운드 클리어! 1초 후 다음 라운드로 이동");
-            isRoundChanging.current = true; // ✅ 중복 실행 방지
-
-            setTimeout(() => {
-                startTimerAnimation(60); // ✅ 다음 라운드에서 타이머 바 초기화
-                findItViewModel.nextRound();
-                isRoundChanging.current = false; // ✅ 라운드 변경 완료 후 다시 false
-            }, 1000);
-        }
-    }, [findItViewModel.correctClicks.length]); // ✅ 정답 개수를 감지
-
 
     // ✅ 클릭 핸들러를 `useCallback`으로 최적화
     const handleImageClick = useCallback((event: any) => {
@@ -164,8 +152,9 @@ const FindItScreen: React.FC = observer(() => {
                         <Image source={{ uri: normalImage }} style={styles.image} />
 
                         {/* ✅ 정답 위치 (⭕) - 정상 이미지에도 표시 */}
+            
                         {findItViewModel.correctClicks.map((pos, index) => (
-                            <View key={`correct-normal-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                            <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
                         ))}
                     </>
                 ) : (
@@ -192,8 +181,9 @@ const FindItScreen: React.FC = observer(() => {
                     )}
 
                     {/* ✅ 정답 표시 */}
+       
                     {findItViewModel.correctClicks.map((pos, index) => (
-                        <View key={index} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                        <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
                     ))}
 
                     {/* ✅ 오답 표시 */}
@@ -226,6 +216,11 @@ const FindItScreen: React.FC = observer(() => {
                     <Text style={styles.infoButtonText}>⏳ {findItViewModel.item_timer_stop}</Text>
                 </TouchableOpacity>
             </View>
+            {findItViewModel.roundClearEffect && (
+                <View style={styles.clearEffectContainer}>
+                    <Text style={styles.clearEffectText}>🎉 ROUND CLEAR! 🎉</Text>
+                </View>
+            )}
         </View>
     );
 });

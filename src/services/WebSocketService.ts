@@ -167,6 +167,21 @@ class WebSocketService {
                             console.log("다음 라운드 진출");
                             this.sendNextRoundEvent();
                             break;
+                        case "NEXT_ROUND":
+                            console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
+
+                            // ✅ "클리어" 이펙트 활성화
+                            findItViewModel.setRoundClearEffect(true);
+
+                            setTimeout(() => {
+                                // ✅ 클리어 이펙트 숨기기
+                                findItViewModel.setRoundClearEffect(false);
+
+                                // ✅ 타이머 초기화 및 라운드 변경
+                                findItViewModel.updateTimer(60); // 타이머 60초로 초기화
+                                findItViewModel.nextRound();
+                            }, 2000);
+                            break;
                         case "GAME_OVER":
                             // ✅ 웹소켓 종료
                             webSocketService.disconnect();
@@ -223,6 +238,7 @@ class WebSocketService {
         console.log("📤 다음 라운드 이동 이벤트 전송:", nextRoundEvent);
         this.socket.send(JSON.stringify(nextRoundEvent));
     }
+
     async sendTimeOutEvent() {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error("❌ 웹소켓이 연결되지 않았습니다.");
@@ -242,6 +258,7 @@ class WebSocketService {
         this.socket.send(JSON.stringify(timeOutEvent));
 
     }
+
     async sendHintItemEvent() {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error("❌ 웹소켓이 연결되지 않았습니다.");
