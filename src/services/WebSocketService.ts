@@ -101,10 +101,30 @@ class WebSocketService {
                         // ✅ 모든 유저의 정답 & 오답을 처리
                         data.users.forEach((user: any) => {
                             // ✅ 정답 처리 (각 유저의 correctPositions)
-                            if (user.correctPositions && user.correctPositions.length > 0) {
+                            if (Array.isArray(user.correctPositions) && user.correctPositions.length > 0) {
                                 console.log(`⭕ 유저 ${user.id} 정답 추가:`, user.correctPositions);
-                                user.correctPositions.forEach((pos: number[]) => {
-                                    findItViewModel.addCorrectClick(pos[0], pos[1], user.id);
+
+                                user.correctPositions.forEach((pos: any) => {
+                                    // ✅ pos가 배열인지, 객체인지 확인
+                                    let x, y;
+                                    if (Array.isArray(pos) && pos.length === 2) {
+                                        [x, y] = pos; // ✅ 배열 형태일 경우
+                                    } else if (typeof pos === "object" && pos !== null) {
+                                        x = pos.x;
+                                        y = pos.y;
+                                    } else {
+                                        console.warn("⚠️ 올바르지 않은 좌표 데이터:", pos);
+                                        return;
+                                    }
+
+                                    // ✅ 중복 확인: 이미 저장된 정답인지 체크
+                                    const isAlreadyAdded = findItViewModel.correctClicks.some(
+                                        (click) => findItViewModel.isNearby(click.x, click.y, x, y, 5) // 좌표 반경 내 존재 여부 확인
+                                    );
+
+                                    if (!isAlreadyAdded) {
+                                        findItViewModel.addCorrectClick(x, y, user.id);
+                                    }
                                 });
                             }
 
@@ -178,6 +198,8 @@ class WebSocketService {
             console.error("❌ 액세스 토큰 가져오기 실패:", error);
         }
     }
+
+    
     async sendNextRoundEvent() {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error("❌ 웹소켓이 연결되지 않았습니다.");
@@ -327,7 +349,7 @@ class WebSocketService {
         console.log("🚀 게임 시작 이벤트 전송:", startEvent);
     }
     // ✅ 클릭한 좌표를 서버로 전송하는 메서드 추가
-    sendSubmitPosition(round: number, imageId: number, xPosition: number, yPosition: number) {
+    sendSubmitPosition(round: number,  xPosition: number, yPosition: number) {
         if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
             console.error("❌ 웹소켓이 연결되지 않았습니다.");
             return;
@@ -339,7 +361,7 @@ class WebSocketService {
             event: "SUBMIT_POSITION", // 이벤트 타입
             message: JSON.stringify({
                 round: round,
-                imageId: imageId,
+                imageId: this.imageID,
                 xPosition: xPosition,
                 yPosition: yPosition
             })

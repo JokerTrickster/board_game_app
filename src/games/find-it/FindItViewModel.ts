@@ -94,9 +94,10 @@ class GameViewModel {
             } else {
                 this.stopTimer();
                 console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
+                webSocketService.sendTimeOutEvent();
                 if (this.life > 0) {
                     console.log('➡️ 다음 라운드로 이동');
-                    this.nextRound();
+                    webSocketService.sendNextRoundEvent();
                 } else {
                     console.log('💀 게임 종료!');
                     this.gameOver = true;

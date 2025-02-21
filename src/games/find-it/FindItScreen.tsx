@@ -114,7 +114,6 @@ const FindItScreen: React.FC = observer(() => {
 
         webSocketService.sendSubmitPosition(
             findItViewModel.round,
-            findItViewModel.currentImageID,
             relativeX,
             relativeY
         );
