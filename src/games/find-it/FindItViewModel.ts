@@ -77,7 +77,7 @@ class GameViewModel {
         setTimeout(() => {
             this.wrongClicks = this.wrongClicks.filter(click => click.userID !== wrongClick.userID);
             this.isClickable = true;
-        }, 3000); // 3초 후 제거
+        }, 1500); // 1.5초 후 제거
     }
 
 
@@ -142,7 +142,7 @@ class GameViewModel {
         console.log("힌트 좌표 저장", this.hintPosition);   
         setTimeout(() => {
             this.hintPosition = null;
-        }, 4000);
+        }, 1500);
     }
  
     updateTimerColor(color: string) {

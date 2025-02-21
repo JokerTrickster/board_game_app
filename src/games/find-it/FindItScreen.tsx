@@ -60,7 +60,7 @@ const FindItScreen: React.FC = observer(() => {
             console.log('타이머 종료! 남은 정답 개수를 목숨에서 차감');
             if (findItViewModel.life <= 0) {
                 console.log('💀 게임 종료!');
-                navigation.navigate('GameOver');
+                navigation.navigate('FindItGameOver');
             }
         });
 
@@ -83,7 +83,7 @@ const FindItScreen: React.FC = observer(() => {
     useEffect(() => {
         if (findItViewModel.gameOver) {
             console.log("게임 종료 페이지로 이동!");
-            navigation.navigate('GameOver');
+            navigation.navigate('FindItGameOver');
         }
     }, [findItViewModel.gameOver]);
     
@@ -157,10 +157,17 @@ const FindItScreen: React.FC = observer(() => {
                 <Text style={styles.roundText}>Round {findItViewModel.round}</Text>
             </View>
 
-            {/* ✅ 정상 이미지 */}
+            {/* ✅ 정상 이미지 (정답 표시 추가) */}
             <View style={styles.imageContainer}>
                 {normalImage ? (
-                    <Image source={{ uri: normalImage }} style={styles.image} />
+                    <>
+                        <Image source={{ uri: normalImage }} style={styles.image} />
+
+                        {/* ✅ 정답 위치 (⭕) - 정상 이미지에도 표시 */}
+                        {findItViewModel.correctClicks.map((pos, index) => (
+                            <View key={`correct-normal-${index}`} style={[styles.correctCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                        ))}
+                    </>
                 ) : (
                     <Text>이미지를 불러오는 중...</Text>
                 )}

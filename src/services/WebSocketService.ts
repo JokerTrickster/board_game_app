@@ -168,7 +168,13 @@ class WebSocketService {
                             this.sendNextRoundEvent();
                             break;
                         case "GAME_OVER":
-                            // 연결을 끊고 결과 화면창을 띄운다.
+                            // ✅ 웹소켓 종료
+                            webSocketService.disconnect();
+
+                            // ✅ 게임 결과 화면으로 이동
+                            if (this.navigation) {
+                                this.navigation.navigate('FindItGameOver');
+                            }
                             break;
                         default:
                             console.warn("⚠️ 알 수 없는 이벤트:", rawData.event);
