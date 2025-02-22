@@ -26,8 +26,6 @@ class GameViewModel {
 
     constructor() {
         makeAutoObservable(this, {
-            decreaseLife: action,
-            resetGame: action,
             nextRound: action,
             startTimer: action,
             stopTimer: action,
@@ -36,18 +34,10 @@ class GameViewModel {
             setHintPosition: action, // ✅ 추가
             setImage: action, // ✅ 이미지 설정 함수
             setRoundClearEffect: action, // ✅ 액션 추가
+            setNormalImage: action,
+            setAbnormalImage: action,
+            updateGameState: action,  // ✅ 액션 선언
         });
-    }
-
-    decreaseLife() {
-        if (this.life > 0) {
-            this.life -= 1;
-        }
-        if (this.life === 0) {
-            console.log('게임 종료!');
-            this.gameOver = true;
-            this.stopTimer();
-        }
     }
 
     /** 특정 좌표가 이미 클릭된 위치인지 확인 */
@@ -90,6 +80,9 @@ class GameViewModel {
         this.updateTimerColor('black');
 
         this.timerInterval = setInterval(() => {
+            if (this.gameOver) {
+                this.stopTimer();
+            }
             if (this.timer > 0) {
                 console.log(`⏲️ 남은 시간: ${this.timer}초`);
                 this.updateTimer(this.timer - 1);
@@ -110,6 +103,15 @@ class GameViewModel {
             }
         }, 1000);
     }
+    // ✅ 게임 상태 업데이트 액션 추가
+    updateGameState(life: number, hints: number, itemTimerStop: number, round: number) {
+        this.life = life;
+        this.hints = hints;
+        this.item_timer_stop = itemTimerStop;
+        this.round = round;
+    }
+
+
     updateTimer(value: number) {
         this.timer = value;
     }
@@ -118,14 +120,21 @@ class GameViewModel {
     setImage(normal: string, abnormal: string) {
         this.normalImage = normal;
         this.abnormalImage = abnormal;
-        console.log("✅ 이미지 업데이트:", { normal, abnormal });
     }
     
     // ✅ "클리어" 이펙트 상태 변경
     setRoundClearEffect(value: boolean) {
         this.roundClearEffect = value;
     }
+    // ✅ 정상 이미지 설정 함수
+    setNormalImage(url: string) {
+        this.normalImage = url;
+    }
 
+    // ✅ 틀린 이미지 설정 함수
+    setAbnormalImage(url: string) {
+        this.abnormalImage = url;
+    }
     /*
        아이템 사용
     */
@@ -160,6 +169,7 @@ class GameViewModel {
    
     stopTimer() {
         this.timerStopped = true;
+        this.remainingTime = 0;
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
@@ -167,25 +177,11 @@ class GameViewModel {
     }
 
     nextRound() {
-        if (this.life <= 0) return;
-        this.round += 1;
         this.updateTimer(60);
         this.remainingTime = 60; // ✅ 다음 라운드 타이머 초기화
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();
-    }
-
-    resetGame() {
-        this.life = 3;
-        this.hints = 2;
-        this.item_timer_stop = 2;
-        this.round = 1;
-        this.updateTimer(60);
-        this.remainingTime = 60;
-        this.correctClicks = [];
-        this.wrongClicks = [];
-        this.gameOver = false;
     }
 }
 

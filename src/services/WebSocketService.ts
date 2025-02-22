@@ -54,11 +54,11 @@ class WebSocketService {
             };
 
             this.socket.onmessage = async (event) => {
-                console.log("📩 서버 응답:", event.data);
+                console.log("📩 서버 응답:",event.data);
                 try {
                     // ✅ event.data가 문자열인지 확인 후 JSON 파싱
                     const rawData = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-
+                    console.log(rawData.event);
                     // ✅ message 필드가 JSON 문자열인지 확인 후 추가 파싱
                     const data = typeof rawData.message === 'string' ? JSON.parse(rawData.message) : rawData.message;
                     
@@ -70,21 +70,16 @@ class WebSocketService {
                         
                         
                         // ✅ 게임 정보 저장
+                        findItViewModel.updateGameState(
+                            data.gameInfo.life,
+                            data.gameInfo.itemHintCount,
+                            data.gameInfo.itemTimerCount,
+                            data.gameInfo.round
+                        );
 
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setRound(data.gameInfo.round);
 
-                        findItViewModel.life = data.gameInfo.life; // ✅ 목숨 업데이트
-                        findItViewModel.hints = data.gameInfo.itemHintCount; // ✅ 힌트 아이템 수 업데이트
-                        findItViewModel.item_timer_stop = data.gameInfo.itemTimerCount; // ✅ 타이머 정지 아이템 수 업데이트
-                        findItViewModel.round = data.gameInfo.round; // ✅ 라운드 업데이트
-                        if (data.gameInfo.imageInfo) {
-                            await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
-                            await gameService.setNormalImage(data.gameInfo.imageInfo.normalImageUrl);
-                            await gameService.setAbnormalImage(data.gameInfo.imageInfo.abnormalImageUrl);
-                            findItViewModel.normalImage = data.gameInfo.imageInfo.normalImageUrl;
-                            findItViewModel.abnormalImage = data.gameInfo.imageInfo.abnormalImageUrl;
-                        }
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull) {
                             if (gameService.isOwner(this.userID!)) {
@@ -146,6 +141,19 @@ class WebSocketService {
                             console.log("✅ 매칭 성공! ", rawData.message);
                             break;
                         case "START":
+                            await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
+                            // ✅ MobX 액션을 사용하여 이미지 변경 (strict-mode에서도 허용됨)
+                            findItViewModel.updateGameState(
+                                data.gameInfo.life,
+                                data.gameInfo.itemHintCount,
+                                data.gameInfo.itemTimerCount,
+                                data.gameInfo.round
+                            );
+                            findItViewModel.setImage(
+                                data.gameInfo.imageInfo.normalImageUrl,
+                                data.gameInfo.imageInfo.abnormalImageUrl
+                            );
+                            console.log("이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
                             console.log("🎮 게임 시작! FindItScreen으로 이동");
                             if (this.navigation) {
                                 this.navigation.navigate('FindIt'); // ✅ 게임 화면으로 이동
@@ -163,13 +171,25 @@ class WebSocketService {
                                 findItViewModel.setHintPosition(data.gameInfo.hintPosition.x, data.gameInfo.hintPosition.y);
                             }
                             break;
+                        case "ROUND_START":
+                            await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
+                           
+                            // ✅ MobX 액션을 사용하여 이미지 변경 (strict-mode에서도 허용됨)
+                            findItViewModel.setImage(
+                                data.gameInfo.imageInfo.normalImageUrl,
+                                data.gameInfo.imageInfo.abnormalImageUrl
+                            );
+                            console.log("이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
+                            break;
                         case "TIME_OUT":
                             console.log("다음 라운드 진출");
                             this.sendNextRoundEvent();
                             break;
                         case "NEXT_ROUND":
                             console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
-
+                            break;
+                        
+                        case "ROUND_CLEAR":
                             // ✅ "클리어" 이펙트 활성화
                             findItViewModel.setRoundClearEffect(true);
 
@@ -180,11 +200,14 @@ class WebSocketService {
                                 // ✅ 타이머 초기화 및 라운드 변경
                                 findItViewModel.updateTimer(60); // 타이머 60초로 초기화
                                 findItViewModel.nextRound();
+                                webSocketService.sendNextRoundEvent();
                             }, 2000);
+                        
                             break;
                         case "GAME_OVER":
                             // ✅ 웹소켓 종료
                             webSocketService.disconnect();
+                            findItViewModel.stopTimer();
 
                             // ✅ 게임 결과 화면으로 이동
                             if (this.navigation) {

@@ -19,76 +19,31 @@ const FindItScreen: React.FC = observer(() => {
     const timerAnimation = useRef<Animated.CompositeAnimation | null>(null);
     const remainingTime = useRef(findItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
-    const isRoundChanging = useRef(false); // ✅ 현재 라운드 변경 중인지 여부
     const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
-    // ✅ MobX 상태를 `useMemo`로 감싸 렌더링 최적화
-    const normalImage = useMemo(() => findItViewModel.normalImage, []);
-    const abnormalImage = useMemo(() => findItViewModel.abnormalImage, []);
-
+    // ✅ MobX 상태 변경 감지를 위한 useState 선언
+    const [normalImage, setNormalImage] = useState<string | null>(findItViewModel.normalImage);
+    const [abnormalImage, setAbnormalImage] = useState<string | null>(findItViewModel.abnormalImage);
 
     // ✅ 타이머 바 애니메이션 시작 (남은 시간만큼 진행)
-    const startTimerAnimation = (duration: number) => {
+    const startTimerAnimation = useCallback((duration: number, reset: boolean = true) => {
         if (timerAnimation.current) {
-            timerAnimation.current.stop(); // ✅ 기존 애니메이션 중지
+            timerAnimation.current.stop(); // 기존 애니메이션 중지
         }
 
-        // ✅ 현재 남은 시간 비율 계산
-        const remainingRatio = duration / 60; // 남은 시간 / 60초 (비율)
-        const remainingWidth = remainingRatio * 100; // 100% 기준으로 변환
-        timerWidth.setValue(remainingWidth); // ✅ 현재 진행 상태 반영
+        // ✅ 타이머 멈춤 아이템 사용 후 재개 시에는 초기화하지 않음
+        if (reset) {
+            timerWidth.setValue(100); // 새로운 라운드 시작 시만 타이머 바를 꽉 채움
+        }
 
         timerAnimation.current = Animated.timing(timerWidth, {
             toValue: 0,
-            duration: duration * 1000, // ✅ 남은 시간 그대로 사용 (줄어드는 속도 일정 유지)
-            easing: Easing.linear, // ✅ 선형 속도로 일정하게 줄어들도록 설정
+            duration: duration * 1000, // 남은 시간만큼 진행
+            easing: Easing.linear,
             useNativeDriver: false,
         });
 
         timerAnimation.current.start();
-    };
-
-    // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
-    useEffect(() => {
-        if (findItViewModel.hintPosition) {
-            setHintVisible(true);
-            setTimeout(() => setHintVisible(false), 5000);
-        }
-    }, [findItViewModel.hintPosition]);
-
-    useEffect(() => {
-        startTimerAnimation(findItViewModel.timer);  // ✅ 라운드가 시작될 때 애니메이션 시작
-        findItViewModel.startTimer(() => {
-            console.log('타이머 종료! 남은 정답 개수를 목숨에서 차감');
-            if (findItViewModel.life <= 0) {
-                console.log('💀 게임 종료!');
-                navigation.navigate('FindItGameOver');
-            }
-        });
-
-        setTimeout(() => {
-            if (imageRef.current) {
-                imageRef.current.measure((fx, fy, width, height, px, py) => {
-                    setImagePosition({ x: px, y: py });
-                });
-            }
-        }, 500);
     }, []);
-
-    useEffect(() => {
-        console.log(`🔄 게임 상태 변경됨! (목숨: ${findItViewModel.life}, 힌트: ${findItViewModel.hints}, 타이머 정지: ${findItViewModel.item_timer_stop}, 라운드: ${findItViewModel.round})`);
-
-        // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
-    }, [findItViewModel.life, findItViewModel.hints, findItViewModel.item_timer_stop, findItViewModel.round]);
-
- 
-    useEffect(() => {
-        if (findItViewModel.gameOver) {
-            console.log("게임 종료 페이지로 이동!");
-            navigation.navigate('FindItGameOver');
-        }
-    }, [findItViewModel.gameOver]);
-    
-
     // ✅ 클릭 핸들러를 `useCallback`으로 최적화
     const handleImageClick = useCallback((event: any) => {
         const { pageX, pageY } = event.nativeEvent;
@@ -106,20 +61,17 @@ const FindItScreen: React.FC = observer(() => {
             relativeY
         );
     }, [imagePosition]);
-    // ✅ 힌트 아이템 사용d
+    // ✅ 힌트 아이템 사용
     const handleHint = () => {
         if (findItViewModel.hints > 0) {
-            console.log("💡 힌트 아이템 사용!");
-
             // ✅ 서버에 아이템 사용 이벤트 전송
             webSocketService.sendHintItemEvent();
         }
-       
+
     };
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
         if (findItViewModel.item_timer_stop > 0 && !findItViewModel.timerStopped) {
-            console.log("⏳ 타이머 멈춤 아이템 사용!");
             findItViewModel.useTimerStopItem();
 
             if (timerAnimation.current) {
@@ -132,12 +84,65 @@ const FindItScreen: React.FC = observer(() => {
             setTimeout(() => {
                 console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
                 isPaused.current = false;
-                startTimerAnimation(remainingTime.current); // ✅ 남은 시간만큼 다시 진행
+                startTimerAnimation(remainingTime.current, false); // ✅ 남은 시간만큼 다시 진행
             }, 5000);
             // ✅ 서버에 아이템 사용 이벤트 전송
             webSocketService.sendTimerItemEvent();
         }
     };
+
+    // ✅ MobX 상태 변경 감지하여 UI 업데이트
+    useEffect(() => {
+        setNormalImage(findItViewModel.normalImage);
+        setAbnormalImage(findItViewModel.abnormalImage);
+    }, [findItViewModel.normalImage, findItViewModel.abnormalImage]);
+
+    // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작
+    useEffect(() => {
+        if (!findItViewModel.roundClearEffect) {
+            console.log(`⏳ 라운드 ${findItViewModel.round} 시작! 타이머 초기화.`);
+            startTimerAnimation(60,true);
+            findItViewModel.startTimer();
+        }
+    }, [findItViewModel.round]);
+
+    // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
+    useEffect(() => {
+        if (findItViewModel.hintPosition) {
+            setHintVisible(true);
+            setTimeout(() => setHintVisible(false), 5000);
+        }
+    }, [findItViewModel.hintPosition]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (imageRef.current) {
+                imageRef.current.measure((fx, fy, width, height, px, py) => {
+                    setImagePosition({ x: px, y: py });
+                });
+            }
+        }, 500);
+    }, []);
+
+    useEffect(() => {
+        console.log(`🔄 게임 상태 변경됨! (목숨: ${findItViewModel.life}, 힌트: ${findItViewModel.hints}, 타이머 정지: ${findItViewModel.item_timer_stop}, 라운드: ${findItViewModel.round})`);
+
+        // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
+    }, [findItViewModel.life, findItViewModel.hints, findItViewModel.item_timer_stop, findItViewModel.round]);
+
+ 
+    // ✅ 게임 종료 시 타이머 바 정지
+    useEffect(() => {
+        if (findItViewModel.gameOver) {
+            console.log("🛑 게임 종료! 타이머 바 정지");
+            if (timerAnimation.current) {
+                findItViewModel.timerStopped = true;
+                timerAnimation.current.stop();
+            }
+            navigation.navigate('FindItGameOver');
+        }
+    }, [findItViewModel.gameOver]);
+    
     return (
         <View style={styles.container}>
             {/* 상단 UI */}
