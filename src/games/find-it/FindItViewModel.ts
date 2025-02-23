@@ -84,7 +84,6 @@ class GameViewModel {
                 this.stopTimer();
             }
             if (this.timer > 0) {
-                console.log(`⏲️ 남은 시간: ${this.timer}초`);
                 this.updateTimer(this.timer - 1);
                 this.remainingTime = this.timer; // ✅ 남은 시간 저장
             } else {

@@ -1,52 +1,86 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // ✅ 네비게이션 추가
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/navigationTypes';
 import { AuthService } from '../services/AuthService';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginService } from '../services/LoginService';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../styles/LoginStyles';
 
-// ✅ 네비게이션 타입 정의
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC = () => {
+    const navigation = useNavigation<LoginScreenNavigationProp>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation<LoginScreenNavigationProp>(); // ✅ 네비게이션 추가
 
     const handleLogin = async () => {
+        const result = await LoginService.login(email, password);
+        if (result.success) {
+            navigation.replace('Home');
+        } else {
+            Alert.alert('로그인 실패', result.message);
+        }
+    };
+
+    const handleGoogleLogin = async () => {
         try {
-//            const response = await fetch('https://dev-frog-api.jokertrickster.com/v0.1/game/auth/signin', {
-            const response = await fetch('http://10.0.2.2:8080/v0.1/game/auth/signin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                await AuthService.saveAccessToken(data.accessToken);
-                await AuthService.saveUserID(data.userID);    
-                console.log('로그인 성공:', data.accessToken);
-                navigation.replace('Home'); 
-            } else {
-                Alert.alert('로그인 실패', data.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
-            }
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            await LoginService.googleLogin(userInfo);
+            // 서버와 추가 로직 필요 시 여기에 추가
         } catch (error) {
-            console.error('로그인 오류:', error);
-            Alert.alert('오류 발생', '네트워크 오류가 발생했습니다.');
+            Alert.alert('구글 로그인 실패', '다시 시도해 주세요.');
         }
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>로그인</Text>
-            <TextInput style={styles.input} placeholder="이메일" value={email} onChangeText={setEmail} keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="비밀번호" value={password} onChangeText={setPassword} secureTextEntry />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>로그인</Text>
+
+            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+                <Icon name="google" size={20} color="#DB4437" />
+                <Text style={styles.googleButtonText}>구글로 로그인</Text>
             </TouchableOpacity>
+
+            <View style={styles.orContainer}>
+                <View style={styles.orLine} />
+                <Text style={styles.orText}>or</Text>
+                <View style={styles.orLine} />
+            </View>
+
+            <TextInput
+                style={styles.input}
+                placeholder="이메일"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="비밀번호"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
+
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={styles.loginButtonText}>로그인</Text>
+            </TouchableOpacity>
+
+            <View style={styles.linkContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                    <Text style={styles.signupText}>회원가입</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => Alert.alert('비밀번호 찾기', '준비 중입니다.')}>
+                    <Text style={styles.forgotPasswordText}>비밀번호 찾기</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };

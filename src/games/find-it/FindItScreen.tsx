@@ -10,12 +10,10 @@ import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
 
 const FindItScreen: React.FC = observer(() => {
-    
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    // ✅ 타이머 바 애니메이션 설정
-    const timerWidth = useRef(new Animated.Value(100)).current;
+    const timerWidth = useRef(new Animated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
     const timerAnimation = useRef<Animated.CompositeAnimation | null>(null);
     const remainingTime = useRef(findItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
@@ -54,7 +52,7 @@ const FindItScreen: React.FC = observer(() => {
         relativeY = parseFloat(relativeY.toFixed(2));
 
         if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) return;
-
+        console.log("클릭 좌표 , ", relativeX, relativeY);
         webSocketService.sendSubmitPosition(
             findItViewModel.round,
             relativeX,
@@ -100,7 +98,6 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작
     useEffect(() => {
         if (!findItViewModel.roundClearEffect) {
-            console.log(`⏳ 라운드 ${findItViewModel.round} 시작! 타이머 초기화.`);
             startTimerAnimation(60,true);
             findItViewModel.startTimer();
         }

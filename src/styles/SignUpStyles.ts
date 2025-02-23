@@ -1,68 +1,17 @@
 import { StyleSheet } from 'react-native';
 
-const SignUpStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f9f9f9',
-        paddingHorizontal: 20,
-    },
-    title: {
-        fontSize: 26,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#333',
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        marginBottom: 15,
-        backgroundColor: '#fff',
-    },
-    button: {
-        width: '100%',
-        height: 50,
-        backgroundColor: '#28a745',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 8,
-        marginTop: 10,
-    },
-    buttonSmall: {
-        width: '50%',
-        height: 40,
-        backgroundColor: '#007bff',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    emailVerificationContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-    emailVerificationInput: {
-        flex: 1,
-        height: 50,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 8,
-        paddingHorizontal: 15,
-        backgroundColor: '#fff',
-        marginRight: 10,
-    },
+export default StyleSheet.create({
+    container: { padding: 20, backgroundColor: '#fff' },
+    backButton: { marginTop: 10, marginBottom: 20 },
+    title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center', marginBottom: 30 },
+    inputRow: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderColor: '#ccc', marginBottom: 20 },
+    input: { flex: 1, fontSize: 16, paddingVertical: 10 },
+    smallButton: { padding: 6, backgroundColor: 'white', borderRadius: 8 },
+    smallButtonText: { fontSize: 14, fontWeight: 'bold' },
+    icon: { color: '#555', marginRight: 10 },
+    checkboxRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 3 },
+    checkboxText: { flex: 1, fontSize: 14 },
+    linkText: { color: 'blue', textDecorationLine: 'underline' },
+    signupButton: { backgroundColor: '#FFD700', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 20 },
+    signupButtonText: { fontSize: 18, fontWeight: 'bold' },
 });
-
-export default SignUpStyles;

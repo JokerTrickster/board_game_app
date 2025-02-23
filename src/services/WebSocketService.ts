@@ -153,7 +153,8 @@ class WebSocketService {
                                 data.gameInfo.imageInfo.normalImageUrl,
                                 data.gameInfo.imageInfo.abnormalImageUrl
                             );
-                            console.log("이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
+                            console.log("정상 이미지 저장 ,ㅡ", findItViewModel.normalImage);
+                            console.log("비정상 이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
                             console.log("🎮 게임 시작! FindItScreen으로 이동");
                             if (this.navigation) {
                                 this.navigation.navigate('FindIt'); // ✅ 게임 화면으로 이동
@@ -179,7 +180,8 @@ class WebSocketService {
                                 data.gameInfo.imageInfo.normalImageUrl,
                                 data.gameInfo.imageInfo.abnormalImageUrl
                             );
-                            console.log("이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
+                            console.log("정상 이미지 저장 ,ㅡ", findItViewModel.normalImage);
+                            console.log("비정상 이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
                             break;
                         case "TIME_OUT":
                             console.log("다음 라운드 진출");

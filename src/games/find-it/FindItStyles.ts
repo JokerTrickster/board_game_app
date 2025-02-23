@@ -1,12 +1,25 @@
 import { StyleSheet } from 'react-native';
-
 export const styles = StyleSheet.create({
     container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f4f4', paddingTop: 0 },
     topBar: { flexDirection: 'row', justifyContent: 'space-between', width: '90%', position: 'absolute', top: 10 },
     roundText: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', flex: 1 },
     timerText: { fontSize: 18, fontWeight: 'bold', color: 'black', textAlign: 'right' },
-    imageContainer: { position: 'relative' },
-    image: { width: 400, height: 300, marginBottom: 5, borderWidth: 1, borderColor: 'black' },
+    imageContainer: {
+        width: 400, // ✅ 이미지 크기 고정 (화면 크기에 따라 변경되지 않음)
+        height: 255,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8, // ✅ 두 이미지 간격 최소화
+    },
+
+    image: {
+        width: 400, // ✅ 고정된 너비 유지
+        height: 255, // ✅ 고정된 높이 유지
+        resizeMode: 'contain', // ✅ 원본 비율 유지하며 잘리지 않도록 설정
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+
     // ✅ 타이머 막대 스타일
     timerBarContainer: {
         width: '90%',
