@@ -21,7 +21,7 @@ const AppNavigator: React.FC = () => {
     // ✅ 저장된 토큰 확인 후 초기 화면 설정
     useEffect(() => {
         const checkAuthStatus = async () => {
-            const token = await AsyncStorage.getItem('access_token');
+            const token = await AsyncStorage.getItem('accessToken');
             setInitialRoute(token ? 'Home' : 'Login');
         };
 

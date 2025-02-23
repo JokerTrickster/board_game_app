@@ -5,7 +5,6 @@ export type RootStackParamList = {
     FindIt: undefined;
     Login: undefined;
     SignUp: undefined;
-    EmailVerification: { email: string }; // ✅ 이메일 인증 시 이메일 값 전달
     FindItGameOver: undefined;
 };
 

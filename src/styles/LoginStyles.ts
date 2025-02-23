@@ -79,12 +79,6 @@ export default StyleSheet.create({
         color: '#FFF',
         fontWeight: '600',
     },
-    linkContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: 20,
-    },
     signupText: {
         fontSize: 14,
         color: '#4A90E2',
@@ -94,5 +88,17 @@ export default StyleSheet.create({
         fontSize: 14,
         color: '#999',
         fontWeight: '500',
+    },
+    linkContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center', // ✅ 가운데 정렬로 변경
+        alignItems: 'center', // ✅ 수직 가운데 정렬 추가
+        width: '100%',
+        paddingHorizontal: 20,
+    },
+    separator: { // ✅ "|" 구분선 스타일
+        fontSize: 14,
+        color: '#ccc',
+        marginHorizontal: 8,
     },
 });

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ACCESS_TOKEN_KEY = 'access_token';
-const USER_ID_KEY = 'user_id';
+const ACCESS_TOKEN_KEY = 'accessToken';
+const USER_ID_KEY = 'userID';
 export const AuthService = {
     // ✅ 액세스 토큰 저장
     saveAccessToken: async (token: string) => {

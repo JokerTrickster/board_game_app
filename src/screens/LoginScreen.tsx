@@ -77,6 +77,8 @@ const LoginScreen: React.FC = () => {
                     <Text style={styles.signupText}>회원가입</Text>
                 </TouchableOpacity>
 
+                <Text style={styles.separator}>|</Text>
+
                 <TouchableOpacity onPress={() => Alert.alert('비밀번호 찾기', '준비 중입니다.')}>
                     <Text style={styles.forgotPasswordText}>비밀번호 찾기</Text>
                 </TouchableOpacity>

@@ -103,11 +103,12 @@ class GameViewModel {
         }, 1000);
     }
     // ✅ 게임 상태 업데이트 액션 추가
-    updateGameState(life: number, hints: number, itemTimerStop: number, round: number) {
+    updateGameState(life: number, hints: number, itemTimerStop: number, round: number, timer: number) {
         this.life = life;
         this.hints = hints;
         this.item_timer_stop = itemTimerStop;
         this.round = round;
+        this.timer = timer;
     }
 
 
@@ -175,9 +176,9 @@ class GameViewModel {
         }
     }
 
-    nextRound() {
-        this.updateTimer(60);
-        this.remainingTime = 60; // ✅ 다음 라운드 타이머 초기화
+    nextRound(serverTimer: number) {
+        this.updateTimer(serverTimer);
+        this.remainingTime = serverTimer; // ✅ 서버에서 받은 타이머로 초기화
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();

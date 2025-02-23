@@ -33,8 +33,8 @@ class WebSocketService {
     // ✅ 웹소켓 연결 (AsyncStorage에서 토큰 가져와서 연결)
     async connect() {
         try {
-            const token = await AsyncStorage.getItem('access_token');
-            const storedUserID = await AsyncStorage.getItem('user_id'); // ✅ 유저 ID 가져오기
+            const token = await AsyncStorage.getItem('accessToken');
+            const storedUserID = await AsyncStorage.getItem('userID'); // ✅ 유저 ID 가져오기
 
             if (!token || !storedUserID) {
                 console.error("❌ 액세스 토큰 또는 유저 ID가 없습니다. 웹소켓을 연결할 수 없습니다.");
@@ -74,7 +74,8 @@ class WebSocketService {
                             data.gameInfo.life,
                             data.gameInfo.itemHintCount,
                             data.gameInfo.itemTimerCount,
-                            data.gameInfo.round
+                            data.gameInfo.round,
+                            data.gameInfo.timer
                         );
 
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
@@ -147,14 +148,13 @@ class WebSocketService {
                                 data.gameInfo.life,
                                 data.gameInfo.itemHintCount,
                                 data.gameInfo.itemTimerCount,
-                                data.gameInfo.round
+                                data.gameInfo.round,
+                                data.gameInfo.timer
                             );
                             findItViewModel.setImage(
                                 data.gameInfo.imageInfo.normalImageUrl,
                                 data.gameInfo.imageInfo.abnormalImageUrl
                             );
-                            console.log("정상 이미지 저장 ,ㅡ", findItViewModel.normalImage);
-                            console.log("비정상 이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
                             console.log("🎮 게임 시작! FindItScreen으로 이동");
                             if (this.navigation) {
                                 this.navigation.navigate('FindIt'); // ✅ 게임 화면으로 이동
@@ -180,8 +180,6 @@ class WebSocketService {
                                 data.gameInfo.imageInfo.normalImageUrl,
                                 data.gameInfo.imageInfo.abnormalImageUrl
                             );
-                            console.log("정상 이미지 저장 ,ㅡ", findItViewModel.normalImage);
-                            console.log("비정상 이미지 저장 ,ㅡ", findItViewModel.abnormalImage);
                             break;
                         case "TIME_OUT":
                             console.log("다음 라운드 진출");
@@ -200,8 +198,8 @@ class WebSocketService {
                                 findItViewModel.setRoundClearEffect(false);
 
                                 // ✅ 타이머 초기화 및 라운드 변경
-                                findItViewModel.updateTimer(60); // 타이머 60초로 초기화
-                                findItViewModel.nextRound();
+                                findItViewModel.updateTimer(data.gameInfo.timer); // 타이머 60초로 초기화
+                                findItViewModel.nextRound(data.gameInfo.timer);
                                 webSocketService.sendNextRoundEvent();
                             }, 2000);
                         
@@ -293,7 +291,7 @@ class WebSocketService {
         // ✅ 필요한 값이 `null`인 경우 `AsyncStorage`에서 가져오기
         if (!this.roomID) this.roomID = await gameService.getRoomID();
         if (!this.userID) {
-            const storedUserID = await AsyncStorage.getItem('user_id');
+            const storedUserID = await AsyncStorage.getItem('userID');
             this.userID = storedUserID ? parseInt(storedUserID, 10) : null;
         }
         if (!this.imageID) this.imageID = await gameService.getImageID();
@@ -332,7 +330,7 @@ class WebSocketService {
 
         if (!this.roomID) this.roomID = await gameService.getRoomID();
         if (!this.userID) {
-            const storedUserID = await AsyncStorage.getItem('user_id');
+            const storedUserID = await AsyncStorage.getItem('userID');
             this.userID = storedUserID ? parseInt(storedUserID, 10) : null;
         }
         if (!this.imageID) this.imageID = await gameService.getImageID();

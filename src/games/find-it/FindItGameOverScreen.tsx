@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { styles } from './FindItGameOverStyles';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FindItGameOverScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindItGameOver'>>();
@@ -14,9 +15,16 @@ const FindItGameOverScreen: React.FC = observer(() => {
     useEffect(() => {
         const fetchGameResult = async () => {
             try {
+                const token = await AsyncStorage.getItem('accessToken');
+                const roomID = await AsyncStorage.getItem('roomID');
+
                 const response = await fetch('http://10.0.2.2:8080/find-it/v0.1/game/result', {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'tkn': token || '',
+                    },
+                    body: JSON.stringify({ roomID: Number(roomID) }),
                 });
 
                 const result = await response.json();
@@ -40,9 +48,12 @@ const FindItGameOverScreen: React.FC = observer(() => {
             ) : (
                 gameResult && (
                     <>
-                        <Text style={styles.gameOverText}>총 진행한 라운드: {gameResult.rounds}</Text>
-                        <Text style={styles.gameOverText}>맞춘 정답 개수: {gameResult.correctAnswers}</Text>
-                        <Text style={styles.gameOverText}>점수: {gameResult.score}</Text>
+                        <Text style={styles.gameOverText}>총 진행한 라운드: {gameResult.round}</Text>
+                        {gameResult.users.map((user: any) => (
+                            <Text key={user.name} style={styles.gameOverText}>
+                                유저 {user.name} 맞춘 개수: {user.totalCorrectCount}
+                            </Text>
+                        ))}
 
                         <TouchableOpacity
                             style={styles.mainButton}

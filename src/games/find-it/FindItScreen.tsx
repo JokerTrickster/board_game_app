@@ -52,7 +52,6 @@ const FindItScreen: React.FC = observer(() => {
         relativeY = parseFloat(relativeY.toFixed(2));
 
         if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) return;
-        console.log("클릭 좌표 , ", relativeX, relativeY);
         webSocketService.sendSubmitPosition(
             findItViewModel.round,
             relativeX,
@@ -98,7 +97,7 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작
     useEffect(() => {
         if (!findItViewModel.roundClearEffect) {
-            startTimerAnimation(60,true);
+            startTimerAnimation(findItViewModel.timer,true);
             findItViewModel.startTimer();
         }
     }, [findItViewModel.round]);
