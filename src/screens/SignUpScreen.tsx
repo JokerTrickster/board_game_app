@@ -46,7 +46,11 @@ const SignUpScreen: React.FC = () => {
         nicknameMessageColor === 'blue' &&
         password &&
         confirmPassword &&
-        password === confirmPassword;
+        password === confirmPassword &&
+        agreeAge &&
+        agreeTerms &&
+        agreePrivacy;
+
     
 
     useEffect(() => {
@@ -259,38 +263,69 @@ const SignUpScreen: React.FC = () => {
             ) : null}
 
             <View style={styles.checkboxRow}>
-                <CheckBox value={agreeAll} onValueChange={toggleAgreeAll} />
-                <Text style={styles.checkboxText}>약관에 모두 동의</Text>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <CheckBox value={agreeAge} onValueChange={handleAgreeAge} />
-                <Text style={styles.checkboxText}>만 14세 이상입니다 (필수)</Text>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <CheckBox value={agreeTerms} onValueChange={handleAgreeTerms} />
-                <Text style={styles.checkboxText}>서비스 이용약관 동의 (필수)</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                    <Text style={styles.linkText}>보기</Text>
+                <TouchableOpacity onPress={() => toggleAgreeAll(!agreeAll)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name={agreeAll ? 'check-square' : 'square-o'}
+                        size={24}
+                        color={agreeAll ? '#5C9EFF' : '#aaa'}
+                    />
+                    <Text style={styles.checkboxText}>약관에 모두 동의</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.checkboxRow}>
-                <CheckBox value={agreePrivacy} onValueChange={handleAgreePrivacy} />
-                <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의 (필수)</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                    <Text style={styles.linkText}>보기</Text>
+                <TouchableOpacity onPress={() => handleAgreeAge(!agreeAge)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name={agreeAge ? 'check-square' : 'square-o'}
+                        size={24}
+                        color={agreeAge ? '#5C9EFF' : '#aaa'}
+                    />
+                    <Text style={styles.checkboxText}>만 14세 이상입니다 (필수)</Text>
                 </TouchableOpacity>
             </View>
 
             <View style={styles.checkboxRow}>
-                <CheckBox value={agreeMarketing} onValueChange={handleAgreeMarketing} />
-                <Text style={styles.checkboxText}>마케팅 수신 동의 (선택)</Text>
-                <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                    <Text style={styles.linkText}>보기</Text>
+                <TouchableOpacity onPress={() => handleAgreeTerms(!agreeTerms)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name={agreeTerms ? 'check-square' : 'square-o'}
+                        size={24}
+                        color={agreeTerms ? '#5C9EFF' : '#aaa'}
+                    />
+                    <Text style={styles.checkboxText}>서비스 이용약관 동의 (필수)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                        <Text style={styles.linkText}>보기</Text>
+                    </TouchableOpacity>
                 </TouchableOpacity>
             </View>
+
+            <View style={styles.checkboxRow}>
+                <TouchableOpacity onPress={() => handleAgreePrivacy(!agreePrivacy)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name={agreePrivacy ? 'check-square' : 'square-o'}
+                        size={24}
+                        color={agreePrivacy ? '#5C9EFF' : '#aaa'}
+                    />
+                    <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의 (필수)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                        <Text style={styles.linkText}>보기</Text>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.checkboxRow}>
+                <TouchableOpacity onPress={() => handleAgreeMarketing(!agreeMarketing)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon
+                        name={agreeMarketing ? 'check-square' : 'square-o'}
+                        size={24}
+                        color={agreeMarketing ? '#5C9EFF' : '#aaa'}
+                    />
+                    <Text style={styles.checkboxText}>마케팅 수신 동의 (선택)</Text>
+                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                        <Text style={styles.linkText}>보기</Text>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </View>
+
 
             <TouchableOpacity
                 style={[

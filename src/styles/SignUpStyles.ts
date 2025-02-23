@@ -10,7 +10,7 @@ export default StyleSheet.create({
     smallButtonText: { fontSize: 14, fontWeight: 'bold' },
     icon: { color: '#555', marginRight: 10 },
     checkboxRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 3 },
-    checkboxText: { flex: 1, fontSize: 14 },
+    checkboxText: { flex: 1, fontSize: 14, marginLeft:10 },
     linkText: { color: 'blue', textDecorationLine: 'underline' },
     signupButton: { backgroundColor: '#FFD700', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 20 },
     signupButtonText: { fontSize: 18, fontWeight: 'bold' },
