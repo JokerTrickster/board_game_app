@@ -86,7 +86,7 @@ export default StyleSheet.create({
     },
     forgotPasswordText: {
         fontSize: 14,
-        color: '#999',
+        color: '#4A90E2',
         fontWeight: '500',
     },
     linkContainer: {

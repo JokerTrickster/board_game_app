@@ -6,6 +6,7 @@ import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import FindItScreen from '../games/find-it/FindItScreen';
 import FindItGameOverScreen from '../games/find-it/FindItGameOverScreen';
+import PasswordScreen from '../screens/PasswordScreen';
 import { RootStackParamList } from './navigationTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { webSocketService } from '../services/WebSocketService';
@@ -43,6 +44,7 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="Home" component={HomeScreen} />
                     <Stack.Screen name="FindIt" component={FindItScreen} />
                     <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
+                    <Stack.Screen name="Password" component={PasswordScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
 

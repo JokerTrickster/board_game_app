@@ -90,7 +90,7 @@ const LoginScreen: React.FC = () => {
 
                 <Text style={styles.separator}>|</Text>
 
-                <TouchableOpacity onPress={() => Alert.alert('비밀번호 찾기', '준비 중입니다.')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Password')}>
                     <Text style={styles.forgotPasswordText}>비밀번호 찾기</Text>
                 </TouchableOpacity>
             </View>
