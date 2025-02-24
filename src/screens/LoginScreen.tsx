@@ -3,12 +3,10 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/navigationTypes';
-import { AuthService } from '../services/AuthService';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import { LoginService } from '../services/LoginService';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import styles from '../styles/LoginStyles';
-
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC = () => {
@@ -27,14 +25,27 @@ const LoginScreen: React.FC = () => {
 
     const handleGoogleLogin = async () => {
         try {
-            await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
-            await LoginService.googleLogin(userInfo);
-            // 서버와 추가 로직 필요 시 여기에 추가
+            const response = await GoogleSignin.signIn();
+
+            if (!response.data?.serverAuthCode) {
+                Alert.alert('구글 로그인 실패', '로그인 정보를 가져오는 데 실패했습니다.');
+                return;
+            }
+
+            const serverResponse = await LoginService.googleLogin(response.data.serverAuthCode);
+
+            if (serverResponse.success) {
+                navigation.replace('Home');
+            } else {
+                Alert.alert('구글 로그인 실패', serverResponse.message);
+            }
         } catch (error) {
+            console.error('구글 로그인 에러:', error);
             Alert.alert('구글 로그인 실패', '다시 시도해 주세요.');
         }
     };
+
+
 
     return (
         <View style={styles.container}>

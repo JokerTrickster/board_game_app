@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 const USER_ID_KEY = 'userID';
 export const AuthService = {
     // ✅ 액세스 토큰 저장
@@ -18,6 +19,25 @@ export const AuthService = {
             return await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
         } catch (error) {
             console.error('액세스 토큰 가져오기 실패:', error);
+            return null;
+        }
+    },
+
+    // ✅ 리프레시 토큰 저장
+    saveRefreshToken: async (token: string) => {
+        try {
+            await AsyncStorage.setItem(REFRESH_TOKEN_KEY, token);
+        } catch (error) {
+            console.error('리프레시 토큰 저장 실패:', error);
+        }
+    },
+
+    // ✅ 리프레시 토큰 가져오기
+    getRefreshToken: async (): Promise<string | null> => {
+        try {
+            return await AsyncStorage.getItem(REFRESH_TOKEN_KEY);
+        } catch (error) {
+            console.error('리프레시 토큰 가져오기 실패:', error);
             return null;
         }
     },

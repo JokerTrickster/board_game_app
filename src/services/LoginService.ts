@@ -29,8 +29,31 @@ export class LoginService {
         }
     }
 
-    static async googleLogin(userInfo: any) {
-        // TODO: 서버와 연동하여 추가 처리 로직 구현
-        return userInfo;
+    static async googleLogin(idToken: string) {
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/google/callback?IDToken=${encodeURIComponent(idToken)}`,
+                {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                },
+            );
+
+            const data = await response.json();
+            console.log(data);
+            if (response.ok) {
+                await AuthService.saveAccessToken(data.accessToken);
+                await AuthService.saveRefreshToken(data.refreshToken);
+                return { success: true };
+            } else {
+                return {
+                    success: false,
+                    message: data.message || '구글 로그인 처리에 실패했습니다.',
+                };
+            }
+        } catch (error) {
+            return { success: false, message: '네트워크 오류가 발생했습니다.' };
+        }
     }
+    
 }
