@@ -217,10 +217,10 @@ class FindItWebSocketService {
         navigation?.navigate('FindIt');
     }
     sendNextRoundEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { userID: this.userID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round, imageID: this.imageID });
     }
     sendTimeoutEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { userID: this.userID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round, imageID: this.imageID });
     }
 
     sendMatchEvent() {
@@ -246,8 +246,6 @@ class FindItWebSocketService {
 
     sendHintItemEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "HINT_ITEM", {
-            roomID: this.roomID,
-            userID: this.userID,
             round: this.round,
             imageID: this.imageID
         });
@@ -255,8 +253,6 @@ class FindItWebSocketService {
 
     sendTimerItemEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIMER_ITEM", {
-            roomID: this.roomID,
-            userID: this.userID,
             round: this.round,
             imageID: this.imageID
         });
