@@ -42,6 +42,7 @@ export class LoginService {
             const data = await response.json();
             console.log(data);
             if (response.ok) {
+                await AuthService.saveUserID(data.userID);
                 await AuthService.saveAccessToken(data.accessToken);
                 await AuthService.saveRefreshToken(data.refreshToken);
                 return { success: true };

@@ -8,6 +8,7 @@ import { styles } from './FindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
+import { findItWebSocketService } from '../../services/FindItWebSocketService';
 
 const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -52,8 +53,7 @@ const FindItScreen: React.FC = observer(() => {
         relativeY = parseFloat(relativeY.toFixed(2));
 
         if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) return;
-        webSocketService.sendSubmitPosition(
-            findItViewModel.round,
+        findItWebSocketService.sendSubmitPosition(
             relativeX,
             relativeY
         );
@@ -62,7 +62,7 @@ const FindItScreen: React.FC = observer(() => {
     const handleHint = () => {
         if (findItViewModel.hints > 0) {
             // ✅ 서버에 아이템 사용 이벤트 전송
-            webSocketService.sendHintItemEvent();
+            findItWebSocketService.sendHintItemEvent();
         }
 
     };
@@ -84,7 +84,7 @@ const FindItScreen: React.FC = observer(() => {
                 startTimerAnimation(remainingTime.current, false); // ✅ 남은 시간만큼 다시 진행
             }, 5000);
             // ✅ 서버에 아이템 사용 이벤트 전송
-            webSocketService.sendTimerItemEvent();
+            findItWebSocketService.sendTimerItemEvent();
         }
     };
 

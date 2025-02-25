@@ -1,5 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 import { webSocketService } from '../../services/WebSocketService';
+import { findItWebSocketService } from '../../services/FindItWebSocketService';
 
 class GameViewModel {
     life = 3; // 목숨 개수
@@ -89,10 +90,10 @@ class GameViewModel {
             } else {
                 this.stopTimer();
                 console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
-                webSocketService.sendTimeOutEvent();
+                findItWebSocketService.sendTimeoutEvent();
                 if (this.life > 0) {
                     console.log('➡️ 다음 라운드로 이동');
-                    webSocketService.sendNextRoundEvent();
+                    findItWebSocketService.sendNextRoundEvent();
                 } else {
                     console.log('💀 게임 종료!');
                     this.gameOver = true;
@@ -182,6 +183,12 @@ class GameViewModel {
         this.correctClicks = [];
         this.wrongClicks = [];
         this.startTimer();
+    }
+    resetGameState() {
+        this.correctClicks = [];
+        this.wrongClicks = [];
+        this.roundClearEffect = false;
+        this.hintPosition = null;
     }
 }
 

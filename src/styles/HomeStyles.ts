@@ -1,43 +1,44 @@
-// src/styles/HomeStyles.ts
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        backgroundColor: '#fef6e4',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 15,
         alignItems: 'center',
-        backgroundColor: '#f8f9fa',
     },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#333',
-    },
-    button: {
-        backgroundColor: '#4CAF50', // 초록색 버튼
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 8,
+    profile: { flexDirection: 'row', alignItems: 'center' },
+    profileImage: { width: 40, height: 40, borderRadius: 20 },
+    profileInfo: { marginLeft: 8 },
+    nickname: { fontWeight: 'bold', fontSize: 16 },
+    level: { fontSize: 14, color: 'gray' },
+    hearts: { flexDirection: 'row', alignItems: 'center' },
+    heartCount: { marginLeft: 5, fontSize: 16 },
+    settingsIcon: { padding: 10 },
+    gameContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', marginTop: 10 },
+    gameCard: {
+        width: '45%',
+        backgroundColor: '#fff',
+        marginVertical: 8,
+        borderRadius: 10,
+        padding: 10,
+        elevation: 4,
         alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 3,
     },
-    buttonText: {
-        fontSize: 18,
-        color: '#fff',
-        fontWeight: 'bold',
+    gameImage: { width: '100%', height: 120, borderRadius: 8 },
+    gameTitle: { marginTop: 10, fontWeight: 'bold', fontSize: 16 },
+    hashtagContainer: { flexDirection: 'row', marginTop: 5 },
+    hashtag: { marginHorizontal: 3, fontSize: 12, backgroundColor: '#eee', padding: 2, borderRadius: 5 },
+    matchButton: {
+        backgroundColor: '#6f96ff',
+        padding: 15,
+        alignItems: 'center',
+        borderRadius: 20,
+        margin: 20,
     },
-    matchingText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#666',
-    },
+    matchButtonText: { color: '#fff', fontSize: 18 },
 });
-
-export default styles;

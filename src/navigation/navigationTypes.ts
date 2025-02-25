@@ -7,6 +7,7 @@ export type RootStackParamList = {
     SignUp: undefined;
     FindItGameOver: undefined;
     Password: undefined;
+    GameDetail: { game: string };
 };
 
 // ✅ 네비게이션 참조 타입 추가

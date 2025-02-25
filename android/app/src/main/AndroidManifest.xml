@@ -9,7 +9,11 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
+      android:usesCleartextTraffic="true"
       android:supportsRtl="true">
+      <meta-data
+        android:name="com.google.android.gms.auth.api.signin"
+        android:value="486518371116-p5fbtprg2n283c6dt9gcv1glnmebcbn4.apps.googleusercontent.com" />
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
