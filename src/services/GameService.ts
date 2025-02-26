@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {API_BASE_URL} from '../config';
 class GameService {
     private roomID: number | null = null;
     private users: any[] = [];
@@ -9,7 +9,39 @@ class GameService {
     private normalImageUrl: string | null = null;
     private abnormalImageUrl: string | null = null;
     private userInfo: any = null;
+    private gameList: any[] = [];
 
+    async setGameList(games: any[]) {
+        this.gameList = games;
+        await AsyncStorage.setItem('gameList', JSON.stringify(games));
+    }
+
+    async getGameList() {
+        if (this.gameList.length === 0) {
+            const storedList = await AsyncStorage.getItem('gameList');
+            if (storedList) {
+                this.gameList = JSON.parse(storedList);
+            }
+        }
+        return this.gameList;
+    }
+    // ✅ 서버에서 게임 목록 불러오기
+    async fetchGameList(): Promise<any[]> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/v0.1/game/list`);
+            const data = await response.json();
+
+            if (response.ok && data.games) {
+                await this.setGameList(data.games); // ✅ 게임 목록 저장
+                return data.games;
+            } else {
+                throw new Error('게임 목록을 가져오는 데 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('게임 목록 불러오기 오류:', error);
+            return [];
+        }
+    }
     async setUserInfo(userData: any) {
         this.userInfo = userData;
         await AsyncStorage.setItem('userInfo', JSON.stringify(userData));

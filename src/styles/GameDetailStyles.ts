@@ -17,6 +17,14 @@ export default StyleSheet.create({
         marginVertical: 12,
         color: '#333',
     },
+    gameImage: {
+        width: '100%',  // ✅ 가로 전체 차지
+        height: 200,     // ✅ 높이 지정
+        resizeMode: 'contain',
+        borderRadius: 10,
+        marginBottom: 15,
+        backgroundColor: '#ddd', // ✅ 이미지가 없을 경우 배경 색상
+    },
     detailContainer: {
         alignItems: 'center',
     },
@@ -109,4 +117,5 @@ export default StyleSheet.create({
         fontWeight: '600',
         color: '#333',
     },
+    
 });

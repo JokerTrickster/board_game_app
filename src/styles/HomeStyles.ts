@@ -29,6 +29,7 @@ export default StyleSheet.create({
     gameContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', marginTop: 10 },
     gameCard: {
         width: '45%',
+        height: 330,
         backgroundColor: '#fff',
         marginVertical: 8,
         borderRadius: 10,
@@ -36,7 +37,7 @@ export default StyleSheet.create({
         elevation: 4,
         alignItems: 'center',
     },
-    gameImage: { width: '100%', height: 120, borderRadius: 8 },
+    gameImage: { width: '100%', height: 250, borderRadius: 8 },
     gameTitle: { marginTop: 10, fontWeight: 'bold', fontSize: 16 },
     hashtagContainer: { flexDirection: 'row', marginTop: 5 },
     hashtag: { marginHorizontal: 3, fontSize: 12, backgroundColor: '#eee', padding: 2, borderRadius: 5 },
@@ -106,5 +107,24 @@ export default StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         borderRadius: 10,
+    },
+    metaContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 5,
+    },
+    categoryText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#4A90E2',
+    },
+    separator: {
+        fontSize: 12,
+        color: '#999',
+        marginHorizontal: 5,
+    },
+    hashtagText: {
+        fontSize: 12,
+        color: '#666',
     },
 });

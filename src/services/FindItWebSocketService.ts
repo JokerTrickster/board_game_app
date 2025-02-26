@@ -4,9 +4,7 @@ import { gameService } from './GameService';
 import { webSocketService } from './WebSocketService';
 import { NavigationRefType } from '../navigation/navigationTypes';
 import findItViewModel from '../games/find-it/FindItViewModel';
-
-// const WS_BASE_URL = 'ws://10.0.2.2:8080/find-it/v0.1/rooms';
-const WS_BASE_URL = 'wss://dev-frog-api.jokertrickster.com/find-it/v0.1/rooms';
+import {WS_BASE_URL} from '../config';
 class FindItWebSocketService {
     private accessToken: string | null = null;
     private userID: number | null = null;
@@ -35,7 +33,7 @@ class FindItWebSocketService {
         const isInitialized = await this.initialize();
         if (!isInitialized) return;
 
-        const wsUrl = WS_BASE_URL+`/match/ws?tkn=${this.accessToken}`;
+        const wsUrl = WS_BASE_URL +`/find-it/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
         webSocketService.connect(wsUrl, this.handleMessage);
         this.sendMatchEvent();
     }

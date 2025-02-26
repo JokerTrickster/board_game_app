@@ -11,8 +11,8 @@ import { AuthService } from '../services/AuthService';
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const [userData, setUserData] = useState<{ success: boolean; user: any; profileImage: string | null } | null>(null);
+    const [gameList, setGameList] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-    
 
     // ✅ 유저 데이터를 불러오는 함수
     const fetchUserData = async () => {
@@ -30,46 +30,44 @@ const HomeScreen: React.FC = () => {
         setRefreshing(false);
     };
 
-    // ✅ 홈 화면이 포커스를 받을 때마다 유저 데이터를 다시 가져옴
+    // ✅ 게임 목록 불러오기
+    const loadGameList = async () => {
+        const games = await gameService.fetchGameList();
+        setGameList(games);
+    };
+
     useFocusEffect(
         useCallback(() => {
             fetchUserData();
+            loadGameList();
         }, [])
     );
 
-    const handleGamePress = (game: string) => {
-        if (game === '틀린그림찾기') {
-            navigation.navigate('GameDetail', { game});
-        } else {
-            Alert.alert('준비 중입니다.', `${game} 게임은 준비 중입니다.`);
+    // ✅ 게임 선택 시 실행 여부 확인
+    const handleGamePress = (game: any) => {
+        if (!game.isEnabled) {
+            Alert.alert('게임 준비 중', '해당 게임은 아직 준비 중입니다.');
+            return; // 🚨 게임이 비활성화되어 있으면 이동하지 않음
         }
+        navigation.navigate('GameDetail', { game });
     };
+
 
     return (
         <View style={styles.container}>
             <Header userData={userData} />
 
             <ScrollView contentContainerStyle={styles.gameContainer}>
-                <GameCard
-                    title="틀린그림찾기"
-                    hashtags={['퍼즐', '관찰력']}
-                    onPress={() => handleGamePress('틀린그림찾기')}
-                />
-                <GameCard
-                    title="장미의전쟁"
-                    hashtags={['퍼즐', '관찰력']}
-                    onPress={() => handleGamePress('장미의전쟁')}
-                />
-                <GameCard
-                    title="카르카손"
-                    hashtags={['퍼즐', '관찰력']}
-                    onPress={() => handleGamePress('카르카손')}
-                />
-                <GameCard
-                    title="카후나"
-                    hashtags={['퍼즐', '관찰력']}
-                    onPress={() => handleGamePress('카후나')}
-                />
+                {gameList.map((game, index) => (
+                    <GameCard
+                        key={index}
+                        title={game.title}
+                        hashtag={game.hashTag}
+                        category={game.category}
+                        image={game.image}
+                        onPress={() => handleGamePress(game)}
+                    />
+                ))}
             </ScrollView>
         </View>
     );

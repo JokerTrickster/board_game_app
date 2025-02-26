@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AppNavigator from './navigation/AppNavigator';
+import { GOOGLE_SIGNIN_CONFIG } from './config'; // ✅ config에서 가져오기
 
 const App: React.FC = () => {
     useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: '486518371116-p5fbtprg2n283c6dt9gcv1glnmebcbn4.apps.googleusercontent.com', // Firebase에서 받은 Web Client ID를 넣어주세요.
-            offlineAccess: true,  // 서버 인증 코드를 받으려면 반드시 true 설정
-        });
+        GoogleSignin.configure(GOOGLE_SIGNIN_CONFIG); // ✅ config 사용
     }, []);
 
     return <AppNavigator />;

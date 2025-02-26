@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Linking } from 'react-native';
 import Header from '../components/Header';
 import styles from '../styles/GameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -72,21 +72,23 @@ const GameDetailScreen: React.FC = () => {
                 <Icon name="angle-left" size={30} color="#000" />
             </TouchableOpacity>
 
-            <Text style={styles.gameTitle}>{game}</Text>
-
+            <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
             <ScrollView contentContainerStyle={styles.detailContainer}>
-                <View style={styles.summaryCard}>
-                    <Text style={styles.summaryText}>게임 썸네일</Text>
-                </View>
+                <Image source={{ uri: game.image }} style={styles.gameImage} />
 
                 <View style={styles.infoContainer}>
                     <TouchableOpacity style={styles.infoCard}>
-                        <Text style={styles.infoText}>게임설명</Text>
+                        <Text style={styles.infoText}>{game.description}</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.infoCard}>
-                        <Text style={styles.infoText}>튜토리얼 영상 (유튜브)</Text>
-                    </TouchableOpacity>
+                    {/* 유튜브 링크 */}
+                    {game.youtubeUrl && (
+                        <TouchableOpacity
+                            style={styles.infoCard}
+                            onPress={() => Linking.openURL(game.youtubeUrl)}>
+                            <Text style={styles.infoText}>🎥 튜토리얼 영상 보기</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* ✅ 매칭 상태에 따라 메시지 변경 */}

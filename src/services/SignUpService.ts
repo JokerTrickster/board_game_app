@@ -1,10 +1,9 @@
+import {API_BASE_URL} from '../config';
 // src/services/SignUpService.ts
-// const API_BASE_URL = 'http://10.0.2.2:8080/v0.1/game/auth';
-const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com/v0.1/game/auth';
 
 export class SignUpService {
     static async requestEmailVerification(email: string) {
-        const response = await fetch(`${API_BASE_URL}/signup/request`, {
+        const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/signup/request`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),
@@ -19,7 +18,7 @@ export class SignUpService {
     }
 
     static async verifyEmailCode(email: string, code: string) {
-        const response = await fetch(`${API_BASE_URL}/signup/validate`, {
+        const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/signup/validate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, code }),
@@ -34,7 +33,7 @@ export class SignUpService {
     }
 
     static async checkNickname(name: string) {
-        const response = await fetch(`${API_BASE_URL}/name/check`, {
+        const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/name/check`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name }),
@@ -58,7 +57,7 @@ export class SignUpService {
 
 
     static async signUp(email: string, name: string, password: string, authCode: string) {
-        const response = await fetch(`${API_BASE_URL}/signup`, {
+        const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, name, password, authCode }),

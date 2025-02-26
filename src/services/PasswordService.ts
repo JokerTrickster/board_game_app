@@ -1,11 +1,10 @@
+import { API_BASE_URL } from '../config';
 // src/services/PasswordService.ts
-// const API_BASE_URL = 'http://10.0.2.2:8080/v0.1/game/auth/password';
-const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com/v0.1/game/auth';
 
 export class PasswordService {
     static async requestCode(email: string) {
         try {
-            const response = await fetch(`${API_BASE_URL}/request`, {
+            const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/request`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
@@ -18,7 +17,7 @@ export class PasswordService {
 
     static async validateCode(email: string, code: string, password: string) {
         try {
-            const response = await fetch(`${API_BASE_URL}/validate`, {
+            const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/validate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, code, password }),
@@ -31,7 +30,7 @@ export class PasswordService {
 
     static async changePassword(email: string, password: string) {
         try {
-            const response = await fetch(`${API_BASE_URL}/change`, {
+            const response = await fetch(`${API_BASE_URL}/v0.1/game/auth/change`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
