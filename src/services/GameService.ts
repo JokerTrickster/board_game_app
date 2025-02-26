@@ -8,6 +8,22 @@ class GameService {
     private round: number | null = null;
     private normalImageUrl: string | null = null;
     private abnormalImageUrl: string | null = null;
+    private userInfo: any = null;
+
+    async setUserInfo(userData: any) {
+        this.userInfo = userData;
+        await AsyncStorage.setItem('userInfo', JSON.stringify(userData));
+    }
+    
+    async getUserInfo() {
+        if (!this.userInfo) {
+            const storedUser = await AsyncStorage.getItem('userInfo');
+            if (storedUser) {
+                this.userInfo = JSON.parse(storedUser);
+            }
+        }
+        return this.userInfo;
+    }
 
     async setRoomID(id: number) {
         this.roomID = id;

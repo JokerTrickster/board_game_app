@@ -1,5 +1,6 @@
 // src/services/SignUpService.ts
-const API_BASE_URL = 'http://10.0.2.2:8080/v0.1/game/auth';
+// const API_BASE_URL = 'http://10.0.2.2:8080/v0.1/game/auth';
+const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com/v0.1/game/auth';
 
 export class SignUpService {
     static async requestEmailVerification(email: string) {

@@ -1,19 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import Header from '../components/Header';
 import styles from '../styles/GameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { findItWebSocketService } from '../services/FindItWebSocketService';
-
+import { gameService } from '../services/GameService';
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
-    const { game } = route.params;
-
+    const { game } = route.params; // ✅ HomeScreen에서 전달한 Header 가져오기
+    const [userData, setUserData] = useState<any>(null);
     const [isMatching, setIsMatching] = useState(false); // ✅ 매칭 중 상태 추가
     const [matchMessage, setMatchMessage] = useState("매칭하기 또는 함께하기\n선택해 주세요!"); // ✅ 메시지 상태 추가
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const storedUser = await gameService.getUserInfo();
+            if (storedUser) {
+                setUserData(storedUser);
+            }
+        };
 
+        fetchUserData();
+    }, []);
+
+    // ✅ GameDetailScreen에서 Header 설정 (navigation.setOptions 사용)
+    useEffect(() => {
+        navigation.setOptions({
+            header: () => <Header userData={userData} />,
+        });
+    }, [userData]);
     const handleMatching = () => {
         switch (game) {
             case '틀린그림찾기':

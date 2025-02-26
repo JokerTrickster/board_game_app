@@ -7,6 +7,9 @@ import { RootStackParamList } from '../../navigation/navigationTypes';
 import { styles } from './FindItGameOverStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// const API_BASE_URL = 'http://10.0.2.2:8080/find-it/v0.1/game'; // ✅ API_BASE_URL 수정
+const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com/find-it/v0.1/game';
+
 const FindItGameOverScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindItGameOver'>>();
     const [gameResult, setGameResult] = useState<any>(null);
@@ -18,7 +21,7 @@ const FindItGameOverScreen: React.FC = observer(() => {
                 const token = await AsyncStorage.getItem('accessToken');
                 const roomID = await AsyncStorage.getItem('roomID');
 
-                const response = await fetch('http://10.0.2.2:8080/find-it/v0.1/game/result', {
+                const response = await fetch(API_BASE_URL+'/result', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

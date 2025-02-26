@@ -5,14 +5,13 @@ import styles from '../styles/HomeStyles';
 type GameCardProps = {
     title: string;
     hashtags: string[];
-    image: any;
     onPress: () => void;
 };
 
-const GameCard: React.FC<GameCardProps> = ({ title, hashtags, image, onPress }) => {
+const GameCard: React.FC<GameCardProps> = ({ title, hashtags, onPress }) => {
     return (
         <TouchableOpacity style={styles.gameCard} onPress={onPress}>
-            <Image source={image} style={styles.gameImage} />
+            <View style={styles.imagePlaceholder} />
             <Text style={styles.gameTitle}>{title}</Text>
             <View style={styles.hashtagContainer}>
                 {hashtags.map(tag => (
