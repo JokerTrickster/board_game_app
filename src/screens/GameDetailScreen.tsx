@@ -31,7 +31,7 @@ const GameDetailScreen: React.FC = () => {
         });
     }, [userData]);
     const handleMatching = () => {
-        switch (game) {
+        switch (game.title) {
             case '틀린그림찾기':
                 findItWebSocketService.connect();
                 break;
@@ -50,7 +50,7 @@ const GameDetailScreen: React.FC = () => {
         setIsMatching(true);
         setMatchMessage("매칭 중입니다...");
 
-        Alert.alert('매칭 시작', `${game} 게임 매칭을 시작합니다.`);
+        Alert.alert('매칭 시작', `${game.title} 게임 매칭을 시작합니다.`);
     };
 
     const handleCancelMatching = () => {

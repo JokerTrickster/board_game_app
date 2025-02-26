@@ -259,7 +259,6 @@ class FindItWebSocketService {
     }
 
     disconnect() {
-        console.log("여기 오니??");
         webSocketService.disconnect();
         // ✅ 게임 상태 초기화 (정답/오답 및 타이머 초기화)
         findItViewModel.resetGameState();
