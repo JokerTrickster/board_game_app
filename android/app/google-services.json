@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "486518371116-bcgvkgvkko8432i0al1rob3vkq459chd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.board_game_app",
+            "certificate_hash": "01f324d4ca930f1ddf039629539aeb9a66665434"
+          }
+        },
+        {
           "client_id": "486518371116-p5fbtprg2n283c6dt9gcv1glnmebcbn4.apps.googleusercontent.com",
           "client_type": 3
         }
