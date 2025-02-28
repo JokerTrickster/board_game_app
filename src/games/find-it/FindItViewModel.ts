@@ -22,12 +22,12 @@ class GameViewModel {
     normalImage: string | null = null;
     abnormalImage: string | null = null;
     roundClearEffect = false; // ✅ "클리어" 이펙트 상태 추가
-
+    roundFailEffect = false; // ✅ "실패" 이펙트 상태 추가
 
 
     constructor() {
         makeAutoObservable(this, {
-            nextRound: action,
+            initClicks: action,
             startTimer: action,
             stopTimer: action,
             updateTimer: action,
@@ -38,7 +38,14 @@ class GameViewModel {
             setNormalImage: action,
             setAbnormalImage: action,
             updateGameState: action,  // ✅ 액션 선언
+            setRoundFailEffect: action,
+            setTimer: action,
         });
+    }
+    /** ✅ 타이머 값을 안전하게 설정하는 함수 */
+    setTimer(value: number) {
+        this.timer = value;
+        this.remainingTime = value;
     }
 
     /** 특정 좌표가 이미 클릭된 위치인지 확인 */
@@ -76,30 +83,29 @@ class GameViewModel {
 
 
     startTimer(callback?: () => void) {
-        this.stopTimer();
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+
         this.timerStopped = false;
         this.updateTimerColor('black');
 
         this.timerInterval = setInterval(() => {
             if (this.gameOver) {
                 this.stopTimer();
+                return;
             }
+
             if (this.timer > 0) {
                 this.updateTimer(this.timer - 1);
-                this.remainingTime = this.timer; // ✅ 남은 시간 저장
+                this.remainingTime = this.timer;
             } else {
                 this.stopTimer();
-                console.log('🚨 타이머 종료! 남은 정답 개수를 목숨에서 차감');
+                console.log('🚨 타이머 종료! TIME_OUT 이벤트 발생');
                 findItWebSocketService.sendTimeoutEvent();
-                if (this.life > 0) {
-                    console.log('➡️ 다음 라운드로 이동');
-                    findItWebSocketService.sendNextRoundEvent();
-                } else {
-                    console.log('💀 게임 종료!');
+                if (this.life <= 0) {
                     this.gameOver = true;
                 }
-
-                if (callback) callback();
             }
         }, 1000);
     }
@@ -112,6 +118,15 @@ class GameViewModel {
         this.timer = timer;
     }
 
+    // ✅ 타이머 초기화 함수
+    initTimer(value: number) {
+        this.timer = value;
+        this.remainingTime = value; // ✅ 서버에서 받은 타이머로 초기
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
 
     updateTimer(value: number) {
         this.timer = value;
@@ -122,7 +137,9 @@ class GameViewModel {
         this.normalImage = normal;
         this.abnormalImage = abnormal;
     }
-    
+    setRoundFailEffect(value: boolean) {
+        this.roundFailEffect = value;
+    }
     // ✅ "클리어" 이펙트 상태 변경
     setRoundClearEffect(value: boolean) {
         this.roundClearEffect = value;
@@ -139,20 +156,21 @@ class GameViewModel {
     /*
        아이템 사용
     */
-    /** ✅ 타이머 멈춤 기능 (5초간 멈춤, 타이머 바 유지) */
+    /** ✅ 타이머 멈춤 아이템 */
     useTimerStopItem() {
         if (this.item_timer_stop > 0 && !this.timerStopped) {
-            this.stopTimer();
             this.timerStopped = true;
+            this.stopTimer();
             this.updateTimerColor('red');
 
             setTimeout(() => {
                 console.log("▶ 타이머 다시 시작!");
                 this.updateTimerColor('black');
-                this.startTimer(); // ✅ 기존 진행 상태에서 재개
+                this.startTimer();
             }, 5000);
         }
     }
+
 
 
     setHintPosition(x: number, y: number) {
@@ -177,18 +195,24 @@ class GameViewModel {
         }
     }
 
-    nextRound(serverTimer: number) {
-        this.updateTimer(serverTimer);
-        this.remainingTime = serverTimer; // ✅ 서버에서 받은 타이머로 초기화
+    initClicks() {
         this.correctClicks = [];
         this.wrongClicks = [];
-        this.startTimer();
     }
     resetGameState() {
         this.correctClicks = [];
         this.wrongClicks = [];
         this.roundClearEffect = false;
+        this.roundFailEffect = false;
         this.hintPosition = null;
+        this.isClickable = true;
+        this.timerStopped = true;
+        this.gameOver = false;
+        this.remainingTime = 0;
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
     }
 }
 

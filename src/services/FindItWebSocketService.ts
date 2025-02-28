@@ -43,36 +43,7 @@ class FindItWebSocketService {
         const navigation = webSocketService.getNavigation();
 
         try {
-            // ✅ 게임 정보가 있는 경우 처리
-            if (data.gameInfo) {
-                this.roomID = data.gameInfo.roomID; // ✅ roomID 저장
-                this.imageID = data.gameInfo.imageInfo.id; // ✅ imageID 저장
-                this.round = data.gameInfo.round; // ✅ 라운드 저장
-
-                // ✅ 게임 정보 저장
-                findItViewModel.updateGameState(
-                    data.gameInfo.life,
-                    data.gameInfo.itemHintCount,
-                    data.gameInfo.itemTimerCount,
-                    data.gameInfo.round,
-                    data.gameInfo.timer
-                );
-
-                await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                await gameService.setRound(data.gameInfo.round);
-
-                // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
-                  
-                    const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
-                    if (isOwner) {
-                        this.sendStartEvent();
-                        this.gameStarted = true;
-                    } else {
-                        console.log("🕒 게임 시작 대기 중...");
-                    }
-                }
-            }
+            
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
             if (data.users) {
                 gameService.setUsers(data.users);
@@ -119,69 +90,127 @@ class FindItWebSocketService {
             }
 
 
-            console.log(eventType);
-
+            console.log("응답으로 온 타입 , ",eventType);
+            // 게임이 시작한다. START 이벤트 
+            // next_round -> round_start
+            // 다음 라운드 진출하면 next_round 이벤트 호출
+            //next_round : 라운드 실패하거나 성공했을때 호출, 좌표 5개 모두 맞췄을 때 
+            // round_start : next_round에서 호출 
             switch (eventType) {
                 case "MATCH":
                     console.log("✅ 매칭 성공!", data.message);
+                    await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                    await gameService.setRound(data.gameInfo.round);
+                    // ✅ 게임 정보가 있는 경우 처리
+                    if (data.gameInfo) {
+                        // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
+                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
+
+                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                            if (isOwner) {
+                                console.log(this.roomID);
+                                console.log("방장이 게임 시작한다. ");
+                                this.sendStartEvent();
+                            } else {
+                                console.log("🕒 게임 시작 대기 중...");
+                            }
+                        }
+                    }
                     break;
                 case "START":
-                    await this.handleGameStart(data);
+                    if (navigation) {
+                        navigation.navigate('FindIt');
+                    }
+                    this.handleGameStart(data);
+                    // ✅ 게임 정보 저장
+                    findItViewModel.updateGameState(
+                        data.gameInfo.life,
+                        data.gameInfo.itemHintCount,
+                        data.gameInfo.itemTimerCount,
+                        data.gameInfo.round,
+                        data.gameInfo.timer
+                    );
+                    setTimeout(() => {
+                    }, 2000);
+                    
                     break;
                 case "SUBMIT_POSITION":
+                    // ✅ 게임 정보 저장
+                    findItViewModel.updateGameState(
+                        data.gameInfo.life,
+                        data.gameInfo.itemHintCount,
+                        data.gameInfo.itemTimerCount,
+                        data.gameInfo.round,
+                        data.gameInfo.timer
+                    );
                     console.log("📥 좌표 제출 이벤트 수신:", data.message);
                     break;
                 case "TIMER_ITEM":
+                    // ✅ 게임 정보 저장
+                    findItViewModel.updateGameState(
+                        data.gameInfo.life,
+                        data.gameInfo.itemHintCount,
+                        data.gameInfo.itemTimerCount,
+                        data.gameInfo.round,
+                        data.gameInfo.timer
+                    );
                     findItViewModel.useTimerStopItem();
                     break;
                 case "HINT_ITEM":
+                    // ✅ 게임 정보 저장
+                    findItViewModel.updateGameState(
+                        data.gameInfo.life,
+                        data.gameInfo.itemHintCount,
+                        data.gameInfo.itemTimerCount,
+                        data.gameInfo.round,
+                        data.gameInfo.timer
+                    );
                     if (data.gameInfo.hintPosition) {
                         console.log("🔍 힌트 아이템 사용:", data.gameInfo.hintPosition);
                         findItViewModel.setHintPosition(data.gameInfo.hintPosition.x, data.gameInfo.hintPosition.y);
                     }
                     break;
                 case "ROUND_START":
-                    await gameService.setImageID(data.gameInfo.imageInfo.id);  // ✅ imageID 저장
-
-                    // ✅ MobX 액션을 사용하여 이미지 변경 (strict-mode에서도 허용됨)
-                    findItViewModel.setImage(
-                        data.gameInfo.imageInfo.normalImageUrl,
-                        data.gameInfo.imageInfo.abnormalImageUrl
-                    );
+                    this.handleGameStart(data);
+                    setTimeout(() => {
+                    }, 2000);
                     break;
                 case "TIME_OUT":
-                    console.log("다음 라운드 진출");
-                    this.sendNextRoundEvent();
+                    console.log("여기 오니?");
                     break;
                 case "NEXT_ROUND":
+                    findItViewModel.setTimer(data.gameInfo.timer);
+                    findItViewModel.startTimer();
+                    await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                    await gameService.setRound(data.gameInfo.round);
+                     // ✅ 게임 정보 저장
+                    findItViewModel.updateGameState(
+                        data.gameInfo.life,
+                        data.gameInfo.itemHintCount,
+                        data.gameInfo.itemTimerCount,
+                        data.gameInfo.round,
+                        data.gameInfo.timer
+                    );
                     console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
                     break;
-
-                case "ROUND_CLEAR":
-                    // ✅ "클리어" 이펙트 활성화
-                    findItViewModel.setRoundClearEffect(true);
-
+                case "ROUND_FAIL":
+                    findItViewModel.setRoundFailEffect(true);
                     setTimeout(() => {
-                        // ✅ 클리어 이펙트 숨기기
-                        findItViewModel.setRoundClearEffect(false);
-
-                        // ✅ 타이머 초기화 및 라운드 변경
-                        findItViewModel.updateTimer(data.gameInfo.timer); // 타이머 60초로 초기화
-                        findItViewModel.nextRound(data.gameInfo.timer);
+                        findItViewModel.setRoundFailEffect(false);
                         this.sendNextRoundEvent();
                     }, 2000);
-
+                    break;
+                case "ROUND_CLEAR":
+                    console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
+                    findItViewModel.setRoundClearEffect(true);
+                    setTimeout(() => {
+                        findItViewModel.setRoundClearEffect(false);
+                        this.sendNextRoundEvent();
+                    }, 2000);
                     break;
                 case "GAME_OVER":
                     // ✅ 웹소켓 종료
                     this.disconnect();
-                    findItViewModel.stopTimer();
-                    // ✅ 게임 종료 시 상태 초기화
-                    this.gameStarted = false;
-                    this.roomID = null;
-                    this.imageID = null;
-                    this.round = null;
-
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
                         navigation.navigate('FindItGameOver');
@@ -200,10 +229,10 @@ class FindItWebSocketService {
     };
 
     async handleGameStart(data: any) {
-        const navigation = webSocketService.getNavigation();
         this.roomID = data.gameInfo.roomID;
         this.imageID = data.gameInfo.imageInfo.id;
         this.round = data.gameInfo.round;
+        this.gameStarted = true;
 
         findItViewModel.updateGameState(
             data.gameInfo.life, data.gameInfo.itemHintCount, data.gameInfo.itemTimerCount, data.gameInfo.round, data.gameInfo.timer
@@ -213,8 +242,8 @@ class FindItWebSocketService {
             data.gameInfo.imageInfo.normalImageUrl,
             data.gameInfo.imageInfo.abnormalImageUrl
         );
+        findItViewModel.initClicks();
 
-        navigation?.navigate('FindIt');
     }
     sendNextRoundEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round, imageID: this.imageID });

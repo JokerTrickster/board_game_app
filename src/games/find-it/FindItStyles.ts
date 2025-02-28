@@ -149,5 +149,20 @@ export const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
     },
-
+    failEffectContainer: {
+        position: 'absolute',
+        top: '40%',
+        left: '50%',
+        transform: [{ translateX: -100 }, { translateY: -50 }],
+        backgroundColor: 'rgba(0, 255, 0, 0.8)',
+        padding: 20,
+        borderRadius: 10,
+        zIndex: 10,
+    },
+    failEffectText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
 });
