@@ -11,6 +11,7 @@ class GameViewModel {
     gameOver = false; // 게임 종료 여부
     correctClicks: { x: number; y: number; userID:number}[] = []; // 맞춘 위치 저장
     wrongClicks: { x: number; y: number; userID: number }[] = []; // 틀린 위치 저장
+    missedPositions: { x: number; y: number }[] = []; // ✅ 못 맞춘 좌표 상태 추가
     isClickable = true; // 연속 클릭 방지
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerStopped = false; // ✅ 타이머 멈춤 상태
@@ -40,8 +41,17 @@ class GameViewModel {
             updateGameState: action,  // ✅ 액션 선언
             setRoundFailEffect: action,
             setTimer: action,
+            setMissedPositions: action,
         });
     }
+
+    setMissedPositions(positions: { x: number; y: number }[]) {
+        this.missedPositions = positions;
+    }
+    clearMissedPositions() {
+        this.missedPositions = [];
+    }
+
     /** ✅ 타이머 값을 안전하게 설정하는 함수 */
     setTimer(value: number) {
         this.timer = value;

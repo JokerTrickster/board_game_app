@@ -199,7 +199,10 @@ const FindItScreen: React.FC = observer(() => {
                             <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
                         </View>
                     ))}
-
+                    {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
+                    {findItViewModel.missedPositions.map((pos, index) => (
+                        <View key={`missed-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                    ))}
                     {/* ✅ 힌트 표시 */}
                     {hintVisible && findItViewModel.hintPosition && (
                         <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
@@ -222,6 +225,7 @@ const FindItScreen: React.FC = observer(() => {
                     <Text style={styles.infoButtonText}>⏳ {findItViewModel.item_timer_stop}</Text>
                 </TouchableOpacity>
             </View>
+
             {findItViewModel.roundClearEffect && (
                 <View style={styles.clearEffectContainer}>
                     <Text style={styles.clearEffectText}>🎉 ROUND CLEAR! 🎉</Text>

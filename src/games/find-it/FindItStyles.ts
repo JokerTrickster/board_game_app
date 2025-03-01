@@ -165,4 +165,14 @@ export const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
     },
+    missedCircle: {
+        position: 'absolute',
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: 'rgba(255, 0, 0, 0.5)', // 🔴 반투명 빨간색으로 강조 표시
+        borderWidth: 2,
+        borderColor: 'red',
+    },
+
 });

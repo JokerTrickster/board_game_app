@@ -195,10 +195,16 @@ class FindItWebSocketService {
                     break;
                 case "ROUND_FAIL":
                     findItViewModel.setRoundFailEffect(true);
+                    console.log("❌ 못 맞춘 좌표:", data.gameInfo.failedPositions);
+                    if (Array.isArray(data.gameInfo.failedPositions) && data.gameInfo.failedPositions.length > 0) {
+                        findItViewModel.setMissedPositions(data.gameInfo.failedPositions);
+                    }
                     setTimeout(() => {
+                        // ✅ 못 맞춘 좌표를 ViewModel에 저장
                         findItViewModel.setRoundFailEffect(false);
+                        findItViewModel.clearMissedPositions(); // 못 맞춘 좌표 초기화
                         this.sendNextRoundEvent();
-                    }, 2000);
+                    }, 4000);
                     break;
                 case "ROUND_CLEAR":
                     console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
