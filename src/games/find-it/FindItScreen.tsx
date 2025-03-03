@@ -197,7 +197,7 @@ const FindItScreen: React.FC = observer(() => {
         setAbnormalImage(findItViewModel.abnormalImage);
     }, [findItViewModel.normalImage, findItViewModel.abnormalImage]);
 
-    // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작
+    // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
     useEffect(() => {
         if (!findItViewModel.roundClearEffect) {
             startTimerAnimation(findItViewModel.timer);
@@ -209,6 +209,10 @@ const FindItScreen: React.FC = observer(() => {
             timerWidth.setValue(100); // 처음에는 100%
             findItViewModel.startTimer();
         }
+        // 라운드 변경 시 이미지 transform 초기화
+        scale.value = withTiming(1, { duration: 200 });
+        offsetX.value = withTiming(0, { duration: 200 });
+        offsetY.value = withTiming(0, { duration: 200 });
     }, [findItViewModel.round]);
 
     
