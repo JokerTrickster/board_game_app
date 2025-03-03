@@ -13,11 +13,8 @@ import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDer
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 
-const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
-const IMAGE_FRAME_HEIGHT = 255;
-// ✅ 확대/축소 관련 값
-const MAX_SCALE = 2; // 최대 확대 비율
-const MIN_SCALE = 1; // 최소 축소 비율
+
+
 
 const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -31,7 +28,11 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ MobX 상태 변경 감지를 위한 useState 선언
     const [normalImage, setNormalImage] = useState<string | null>(findItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(findItViewModel.abnormalImage);
-
+    const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
+    const IMAGE_FRAME_HEIGHT = 255;
+    // ✅ 확대/축소 관련 값
+    const MAX_SCALE = 2; // 최대 확대 비율
+    const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값
     const scale = useSharedValue(1);
@@ -60,21 +61,18 @@ const FindItScreen: React.FC = observer(() => {
     };
 
 
-    // ✅ 이동 시 프레임 내부에서만 유지하도록 보정
     const adjustOffset = () => {
         'worklet';
         const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
         const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
 
-        const minOffsetX = Math.min(0, (IMAGE_FRAME_WIDTH - scaledWidth) / 2);
-        const maxOffsetX = -minOffsetX;
-        const minOffsetY = Math.min(0, (IMAGE_FRAME_HEIGHT - scaledHeight) / 2);
-        const maxOffsetY = -minOffsetY;
+        // 허용 가능한 최대 offset (양쪽 각각)
+        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-        offsetX.value = withTiming(Math.max(minOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
-        offsetY.value = withTiming(Math.max(minOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+        offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
+        offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
     };
-
 
     // ✅ 핀치 줌 제스처 정의
     const pinchGesture = Gesture.Pinch()
@@ -83,32 +81,27 @@ const FindItScreen: React.FC = observer(() => {
         });
 
 
+const panGesture = Gesture.Pan()
+    .onStart(() => {
+        lastOffsetX.value = offsetX.value;
+        lastOffsetY.value = offsetY.value;
+    })
+    .onUpdate((event) => {
+        'worklet';
+        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-    // ✅ 팬 제스처 (두 이미지 동기화하여 이동)
-    const panGesture = Gesture.Pan()
-        .onStart(() => {
-            lastOffsetX.value = offsetX.value;
-            lastOffsetY.value = offsetY.value;
-        })
-        .onUpdate((event) => {
-            'worklet';
-            if (scale.value > 1) {
-                const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
-                const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+        const newOffsetX = lastOffsetX.value + event.translationX;
+        const newOffsetY = lastOffsetY.value + event.translationY;
 
-                const minOffsetX = Math.min(0, (IMAGE_FRAME_WIDTH - scaledWidth) / 2);
-                const maxOffsetX = -minOffsetX;
-                const minOffsetY = Math.min(0, (IMAGE_FRAME_HEIGHT - scaledHeight) / 2);
-                const maxOffsetY = -minOffsetY;
-
-                offsetX.value = Math.max(minOffsetX, Math.min(lastOffsetX.value + event.translationX, maxOffsetX));
-                offsetY.value = Math.max(minOffsetY, Math.min(lastOffsetY.value + event.translationY, maxOffsetY));
-            }
-        })
-        .onEnd(() => {
-            adjustOffset();
-        });
-    
+        offsetX.value = Math.max(-maxOffsetX, Math.min(newOffsetX, maxOffsetX));
+        offsetY.value = Math.max(-maxOffsetY, Math.min(newOffsetY, maxOffsetY));
+    })
+    .onEnd(() => {
+        adjustOffset();
+    });
 
     // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
     const animatedStyle = useAnimatedStyle(() => ({
@@ -116,9 +109,9 @@ const FindItScreen: React.FC = observer(() => {
         height: IMAGE_FRAME_HEIGHT,
         overflow: 'hidden',
         transform: [
-            { scale: derivedScale.value },  // ✅ `useDerivedValue` 적용
-            { translateX: derivedOffsetX.value },  // ✅ `useDerivedValue` 적용
-            { translateY: derivedOffsetY.value },  // ✅ `useDerivedValue` 적용
+            { translateX: derivedOffsetX.value },
+            { translateY: derivedOffsetY.value },
+            { scale: derivedScale.value },
         ],
     }));
 
