@@ -51,12 +51,25 @@ const HomeScreen: React.FC = () => {
         }
         navigation.navigate('GameDetail', { game });
     };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const storedUser = await gameService.getUserInfo();
+            if (storedUser) {
+                setUserData(storedUser);
+            }
+        };
+        fetchUserData();
+    }, []);
 
+    // ✅ GameDetailScreen에서 Header 설정 (navigation.setOptions 사용)
+    useEffect(() => {
+        navigation.setOptions({
+            header: () => <Header userData={userData} />,
+        });
+    }, [userData]);
 
     return (
         <View style={styles.container}>
-            <Header userData={userData} />
-
             <ScrollView contentContainerStyle={styles.gameContainer}>
                 {gameList.map((game, index) => (
                     <GameCard

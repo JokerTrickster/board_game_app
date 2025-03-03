@@ -6,13 +6,16 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { findItWebSocketService } from '../services/FindItWebSocketService';
 import { gameService } from '../services/GameService';
+
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
     const { game } = route.params; // ✅ HomeScreen에서 전달한 Header 가져오기
+
     const [userData, setUserData] = useState<any>(null);
     const [isMatching, setIsMatching] = useState(false); // ✅ 매칭 중 상태 추가
     const [matchMessage, setMatchMessage] = useState("매칭하기 또는 함께하기\n선택해 주세요!"); // ✅ 메시지 상태 추가
+
     useEffect(() => {
         const fetchUserData = async () => {
             const storedUser = await gameService.getUserInfo();
@@ -20,7 +23,6 @@ const GameDetailScreen: React.FC = () => {
                 setUserData(storedUser);
             }
         };
-
         fetchUserData();
     }, []);
 
@@ -30,6 +32,7 @@ const GameDetailScreen: React.FC = () => {
             header: () => <Header userData={userData} />,
         });
     }, [userData]);
+
     const handleMatching = () => {
         switch (game.title) {
             case '틀린그림찾기':
@@ -45,7 +48,6 @@ const GameDetailScreen: React.FC = () => {
                 Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
                 return;
         }
-
         // ✅ 매칭 시작 UI 업데이트
         setIsMatching(true);
         setMatchMessage("매칭 중입니다...");
@@ -66,64 +68,73 @@ const GameDetailScreen: React.FC = () => {
 
     return (
         <View style={styles.container}>
-            <Header />
-            {/* 뒤로가기 버튼 추가 */}
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="angle-left" size={30} color="#000" />
-            </TouchableOpacity>
+            {/* 뒤로가기 버튼 */}
+            <View style={styles.titleRow}>
+                <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Icon name="angle-left" size={50} color="#000" />
+                </TouchableOpacity>
+            </View>
 
-            <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
             <ScrollView contentContainerStyle={styles.detailContainer}>
-                <Image source={{ uri: game.image }} style={styles.gameImage} />
+                {/* 
+                  1) 이미지 왼쪽, 2) 튜토리얼 / 영상 보기 오른쪽 
+                */}
+                <View style={styles.topRow}>
+                    <Image source={{ uri: game.image }} style={styles.gameImage} />
 
-                <View style={styles.infoContainer}>
-                    <TouchableOpacity style={styles.infoCard}>
-                        <Text style={styles.infoText}>{game.description}</Text>
-                    </TouchableOpacity>
-
-                    {/* 유튜브 링크 */}
-                    {game.youtubeUrl && (
-                        <TouchableOpacity
-                            style={styles.infoCard}
-                            onPress={() => Linking.openURL(game.youtubeUrl)}>
-                            <Text style={styles.infoText}>🎥 튜토리얼 영상 보기</Text>
+                    <View style={styles.rightColumn}>
+                        {/* 게임 설명 */}
+                        <TouchableOpacity style={styles.infoCard}>
+                            <Text style={styles.infoText}>{game.description}</Text>
                         </TouchableOpacity>
-                    )}
+
+                        {/* 유튜브 링크 */}
+                        {game.youtubeUrl && (
+                            <TouchableOpacity
+                                style={styles.infoCard}
+                                onPress={() => Linking.openURL(game.youtubeUrl)}>
+                                <Text style={styles.infoText}>🎥 튜토리얼 영상 보기</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
                 </View>
 
-                {/* ✅ 매칭 상태에 따라 메시지 변경 */}
+                {/* 안내 메시지 (가이드) */}
                 <View style={styles.actionCard}>
                     <Text style={styles.actionText}>{matchMessage}</Text>
                 </View>
 
+                {/* 매칭/함께하기 버튼 */}
                 <View style={styles.buttonContainer}>
-                    {/* ✅ 매칭 상태에 따라 버튼 변경 */}
                     {isMatching ? (
                         <TouchableOpacity
-                            style={[styles.matchButton, { backgroundColor: '#FF5C5C' }]} // 빨간색(매칭 취소)
-                            onPress={handleCancelMatching}>
+                            style={[styles.matchButton, { backgroundColor: '#FF5C5C' }]}
+                            onPress={handleCancelMatching}
+                        >
                             <Text style={styles.buttonText}>매칭 취소</Text>
                         </TouchableOpacity>
                     ) : (
                         <TouchableOpacity
                             style={styles.matchButton}
-                            onPress={handleMatching}>
+                            onPress={handleMatching}
+                        >
                             <Text style={styles.buttonText}>매칭하기</Text>
                         </TouchableOpacity>
                     )}
 
-                    {/* ✅ 매칭 중이면 함께하기 버튼 비활성화 */}
                     <TouchableOpacity
                         style={[
                             styles.togetherButton,
-                            isMatching && { backgroundColor: '#ccc' } // 비활성화 스타일
+                            isMatching && { backgroundColor: '#ccc' }
                         ]}
                         onPress={() => {
                             if (!isMatching) {
                                 Alert.alert('함께하기', '준비 중입니다.');
                             }
                         }}
-                        disabled={isMatching}>
+                        disabled={isMatching}
+                    >
                         <Text style={styles.buttonText}>함께하기</Text>
                     </TouchableOpacity>
                 </View>
