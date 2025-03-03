@@ -9,14 +9,14 @@ import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
 import { findItWebSocketService } from '../../services/FindItWebSocketService';
-import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
+import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 
 const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
 const IMAGE_FRAME_HEIGHT = 255;
 // ✅ 확대/축소 관련 값
-const MAX_SCALE = 2.5; // 최대 확대 비율
+const MAX_SCALE = 2; // 최대 확대 비율
 const MIN_SCALE = 1; // 최소 축소 비율
 
 const FindItScreen: React.FC = observer(() => {
@@ -31,7 +31,8 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ MobX 상태 변경 감지를 위한 useState 선언
     const [normalImage, setNormalImage] = useState<string | null>(findItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(findItViewModel.abnormalImage);
-    
+
+
     // ✅ 확대 및 이동 관련 상태값
     const scale = useSharedValue(1);
     const offsetX = useSharedValue(0);
@@ -40,17 +41,22 @@ const FindItScreen: React.FC = observer(() => {
     const lastOffsetY = useSharedValue(0);
     const isZoomed = useSharedValue(false); // ✅ 확대 여부 저장
 
+    const derivedScale = useDerivedValue(() => scale.value);
+    const derivedOffsetX = useDerivedValue(() => offsetX.value);
+    const derivedOffsetY = useDerivedValue(() => offsetY.value);
+
+
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
         scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
         isZoomed.value = scale.value > 1;
-        runOnJS(adjustOffset)();
+        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
     };
 
     const handleZoomOut = () => {
         scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
         isZoomed.value = scale.value > 1;
-        runOnJS(adjustOffset)();
+        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
     };
 
 
@@ -110,9 +116,9 @@ const FindItScreen: React.FC = observer(() => {
         height: IMAGE_FRAME_HEIGHT,
         overflow: 'hidden',
         transform: [
-            { scale: scale.value },
-            { translateX: offsetX.value },
-            { translateY: offsetY.value },
+            { scale: derivedScale.value },  // ✅ `useDerivedValue` 적용
+            { translateX: derivedOffsetX.value },  // ✅ `useDerivedValue` 적용
+            { translateY: derivedOffsetY.value },  // ✅ `useDerivedValue` 적용
         ],
     }));
 
@@ -136,31 +142,24 @@ const FindItScreen: React.FC = observer(() => {
     }, [findItViewModel.timer]);
     
     // ✅ 클릭 좌표 계산 (확대/이동 고려)
+
     const handleImageClick = useCallback((event: any) => {
-        const { pageX, pageY } = event.nativeEvent;
+        'worklet';
+        // transform 보정 없이 원본 좌표 사용
+        const { locationX, locationY } = event.nativeEvent;
+        const finalX = parseFloat(locationX.toFixed(2));
+        const finalY = parseFloat(locationY.toFixed(2));
 
-        // ✅ 1. 현재 이미지 컨테이너의 실제 위치
-        const imageFrameX = imagePosition.x;
-        const imageFrameY = imagePosition.y;
+        runOnJS(sendClickToServer)(finalX, finalY);
+        console.log(`📌 [클릭 좌표] (${finalX}, ${finalY})`);
 
-        // ✅ 2. 터치 좌표를 이미지 컨테이너 기준으로 변환
-        let touchX = pageX - imageFrameX;
-        let touchY = pageY - imageFrameY;
-
-        // ✅ 3. 확대 및 이동 반영하여 원본 이미지 좌표 변환 (좌측 상단 기준)
-        const originalX = (touchX - offsetX.value) / scale.value;
-        const originalY = (touchY - offsetY.value) / scale.value;
-
-        // ✅ 4. 좌표 보정 (프레임 기준으로 원본 크기에 맞게 변환)
-        const finalX = parseFloat(originalX.toFixed(2));
-        const finalY = parseFloat(originalY.toFixed(2));
-
-        console.log(`📌 클릭한 좌표: (${finalX}, ${finalY})`);
-
-        // ✅ 5. 이미 클릭된 좌표인지 확인 후 서버로 전송
         if (findItViewModel.isAlreadyClicked(finalX, finalY)) return;
         findItWebSocketService.sendSubmitPosition(finalX, finalY);
-    }, [imagePosition, scale.value, offsetX.value, offsetY.value]);
+    }, []);
+
+    const sendClickToServer = (x: number, y: number) => {
+        console.log(`📌 클릭한 좌표: (${x}, ${y})`);
+    };
 
     // ✅ 힌트 아이템 사용
     const handleHint = () => {
