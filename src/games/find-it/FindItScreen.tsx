@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { View, Text, Image, Button, TouchableWithoutFeedback, Animated, TouchableOpacity, Easing } from 'react-native';
+import { Animated as RNAnimated, View, Text, Image, Button, TouchableWithoutFeedback,  TouchableOpacity, Easing } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
@@ -9,25 +9,118 @@ import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
 import { findItWebSocketService } from '../../services/FindItWebSocketService';
+import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+
+const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
+const IMAGE_FRAME_HEIGHT = 255;
+// ✅ 확대/축소 관련 값
+const MAX_SCALE = 2.5; // 최대 확대 비율
+const MIN_SCALE = 1; // 최소 축소 비율
 
 const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const timerWidth = useRef(new Animated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
-    const timerAnimation = useRef<Animated.CompositeAnimation | null>(null);
+    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
+    const timerAnimation = useRef<RNAnimated.CompositeAnimation | null>(null);
     const remainingTime = useRef(findItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
     const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
     // ✅ MobX 상태 변경 감지를 위한 useState 선언
     const [normalImage, setNormalImage] = useState<string | null>(findItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(findItViewModel.abnormalImage);
+    
+    // ✅ 확대 및 이동 관련 상태값
+    const scale = useSharedValue(1);
+    const offsetX = useSharedValue(0);
+    const offsetY = useSharedValue(0);
+    const lastOffsetX = useSharedValue(0);
+    const lastOffsetY = useSharedValue(0);
+    const isZoomed = useSharedValue(false); // ✅ 확대 여부 저장
+
+    // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
+    const handleZoomIn = () => {
+        scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
+        isZoomed.value = scale.value > 1;
+        runOnJS(adjustOffset)();
+    };
+
+    const handleZoomOut = () => {
+        scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
+        isZoomed.value = scale.value > 1;
+        runOnJS(adjustOffset)();
+    };
+
+
+    // ✅ 이동 시 프레임 내부에서만 유지하도록 보정
+    const adjustOffset = () => {
+        'worklet';
+        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+
+        const minOffsetX = Math.min(0, (IMAGE_FRAME_WIDTH - scaledWidth) / 2);
+        const maxOffsetX = -minOffsetX;
+        const minOffsetY = Math.min(0, (IMAGE_FRAME_HEIGHT - scaledHeight) / 2);
+        const maxOffsetY = -minOffsetY;
+
+        offsetX.value = withTiming(Math.max(minOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
+        offsetY.value = withTiming(Math.max(minOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+    };
+
+
+    // ✅ 핀치 줌 제스처 정의
+    const pinchGesture = Gesture.Pinch()
+        .onUpdate((event) => {
+            scale.value = Math.min(Math.max(event.scale, MIN_SCALE), MAX_SCALE);
+        });
+
+
+
+    // ✅ 팬 제스처 (두 이미지 동기화하여 이동)
+    const panGesture = Gesture.Pan()
+        .onStart(() => {
+            lastOffsetX.value = offsetX.value;
+            lastOffsetY.value = offsetY.value;
+        })
+        .onUpdate((event) => {
+            'worklet';
+            if (scale.value > 1) {
+                const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+                const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+
+                const minOffsetX = Math.min(0, (IMAGE_FRAME_WIDTH - scaledWidth) / 2);
+                const maxOffsetX = -minOffsetX;
+                const minOffsetY = Math.min(0, (IMAGE_FRAME_HEIGHT - scaledHeight) / 2);
+                const maxOffsetY = -minOffsetY;
+
+                offsetX.value = Math.max(minOffsetX, Math.min(lastOffsetX.value + event.translationX, maxOffsetX));
+                offsetY.value = Math.max(minOffsetY, Math.min(lastOffsetY.value + event.translationY, maxOffsetY));
+            }
+        })
+        .onEnd(() => {
+            adjustOffset();
+        });
+    
+
+    // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
+    const animatedStyle = useAnimatedStyle(() => ({
+        width: IMAGE_FRAME_WIDTH,
+        height: IMAGE_FRAME_HEIGHT,
+        overflow: 'hidden',
+        transform: [
+            { scale: scale.value },
+            { translateX: offsetX.value },
+            { translateY: offsetY.value },
+        ],
+    }));
 
     const startTimerAnimation = useCallback((duration: number) => {
         if (timerAnimation.current) {
             timerAnimation.current.stop();
         }
-        timerAnimation.current = Animated.timing(timerWidth, {
+        timerAnimation.current = RNAnimated.timing(timerWidth, {
             toValue: 0,
             duration: duration * 1000,
             easing: Easing.linear,
@@ -41,21 +134,34 @@ const FindItScreen: React.FC = observer(() => {
             startTimerAnimation(findItViewModel.timer);
         }
     }, [findItViewModel.timer]);
-    // ✅ 클릭 핸들러를 `useCallback`으로 최적화
+    
+    // ✅ 클릭 좌표 계산 (확대/이동 고려)
     const handleImageClick = useCallback((event: any) => {
         const { pageX, pageY } = event.nativeEvent;
-        let relativeX = pageX - imagePosition.x;
-        let relativeY = pageY - imagePosition.y;
 
-        relativeX = parseFloat(relativeX.toFixed(2));
-        relativeY = parseFloat(relativeY.toFixed(2));
+        // ✅ 1. 현재 이미지 컨테이너의 실제 위치
+        const imageFrameX = imagePosition.x;
+        const imageFrameY = imagePosition.y;
 
-        if (findItViewModel.isAlreadyClicked(relativeX, relativeY)) return;
-        findItWebSocketService.sendSubmitPosition(
-            relativeX,
-            relativeY
-        );
-    }, [imagePosition]);
+        // ✅ 2. 터치 좌표를 이미지 컨테이너 기준으로 변환
+        let touchX = pageX - imageFrameX;
+        let touchY = pageY - imageFrameY;
+
+        // ✅ 3. 확대 및 이동 반영하여 원본 이미지 좌표 변환 (좌측 상단 기준)
+        const originalX = (touchX - offsetX.value) / scale.value;
+        const originalY = (touchY - offsetY.value) / scale.value;
+
+        // ✅ 4. 좌표 보정 (프레임 기준으로 원본 크기에 맞게 변환)
+        const finalX = parseFloat(originalX.toFixed(2));
+        const finalY = parseFloat(originalY.toFixed(2));
+
+        console.log(`📌 클릭한 좌표: (${finalX}, ${finalY})`);
+
+        // ✅ 5. 이미 클릭된 좌표인지 확인 후 서버로 전송
+        if (findItViewModel.isAlreadyClicked(finalX, finalY)) return;
+        findItWebSocketService.sendSubmitPosition(finalX, finalY);
+    }, [imagePosition, scale.value, offsetX.value, offsetY.value]);
+
     // ✅ 힌트 아이템 사용
     const handleHint = () => {
         if (findItViewModel.hints > 0) {
@@ -152,7 +258,9 @@ const FindItScreen: React.FC = observer(() => {
             </View>
 
             {/* ✅ 정상 이미지 (정답 표시 추가) */}
-            <View style={styles.imageContainer}>
+            <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                <Animated.View style={[animatedStyle]}>
+
                 {normalImage ? (
                     <>
                         <Image source={{ uri: normalImage }} style={styles.image} />
@@ -166,49 +274,68 @@ const FindItScreen: React.FC = observer(() => {
                 ) : (
                     <Text>이미지를 불러오는 중...</Text>
                 )}
+                </Animated.View>
             </View>
+
+
             {/* ✅ 타이머 바 추가 */}
             <View style={styles.timerBarContainer}>
-                <Animated.View style={[styles.timerBar, {
+                <RNAnimated.View style={[styles.timerBar, {
                     width: timerWidth.interpolate({
                         inputRange: [0, 100],
                         outputRange: ['0%', '100%'],
                     }),
                     backgroundColor: findItViewModel.timerStopped ? 'red' : 'green'
                 }]} />
-            </View>
-            {/* ✅ 틀린 그림 */}
-            <TouchableWithoutFeedback onPress={handleImageClick}>
-                <View ref={imageRef} style={styles.imageContainer}>
-                    {abnormalImage ? (
-                        <Image source={{ uri: abnormalImage }} style={styles.image} />
-                    ) : (
-                        <Text>이미지를 불러오는 중...</Text>
-                    )}
+                    </View>
+            <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
+                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                    <Animated.View style={[animatedStyle]}>
+                        {/* ✅ 틀린 그림 */}
+                        <TouchableWithoutFeedback onPress={handleImageClick}>
+                            <View ref={imageRef} style={styles.imageContainer}>
+                                {abnormalImage ? (
+                                    <Image source={{ uri: abnormalImage }} style={styles.image} />
+                                ) : (
+                                    <Text>이미지를 불러오는 중...</Text>
+                                )}
 
-                    {/* ✅ 정답 표시 */}
-       
-                    {findItViewModel.correctClicks.map((pos, index) => (
-                        <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
-                    ))}
+                                {/* ✅ 정답 표시 */}
+                
+                                {findItViewModel.correctClicks.map((pos, index) => (
+                                    <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
+                                ))}
 
-                    {/* ✅ 오답 표시 */}
-                    {findItViewModel.wrongClicks.map((pos, index) => (
-                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
-                            <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                            <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                        </View>
-                    ))}
-                    {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
-                    {findItViewModel.missedPositions.map((pos, index) => (
-                        <View key={`missed-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
-                    ))}
-                    {/* ✅ 힌트 표시 */}
-                    {hintVisible && findItViewModel.hintPosition && (
-                        <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
-                    )}
+                                {/* ✅ 오답 표시 */}
+                                {findItViewModel.wrongClicks.map((pos, index) => (
+                                    <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                    </View>
+                                ))}
+                                {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
+                                {findItViewModel.missedPositions.map((pos, index) => (
+                                    <View key={`missed-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                                ))}
+                                {/* ✅ 힌트 표시 */}
+                                {hintVisible && findItViewModel.hintPosition && (
+                                    <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
+                                )}
+                                </View>
+                        
+                        </TouchableWithoutFeedback>
+                    </Animated.View>
                 </View>
-            </TouchableWithoutFeedback>
+            </GestureDetector>
+            {/* 확대/축소 버튼 */}
+            <View style={styles.controlPanel}>
+                <TouchableOpacity onPress={handleZoomIn} style={styles.controlButton}>
+                    <Text style={styles.controlButtonText}>+</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleZoomOut} style={styles.controlButton}>
+                    <Text style={styles.controlButtonText}>-</Text>
+                </TouchableOpacity>
+            </View>
 
             {/* ✅ 게임 정보 한 줄로 정리 */}
             <View style={styles.infoRow}>

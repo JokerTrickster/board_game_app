@@ -174,5 +174,50 @@ export const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'red',
     },
+    /** 🔹 확대 및 이동 버튼 스타일 */
+    controlPanel: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    controlButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#007BFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 5,
+    },
+    controlButtonText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
 
+    /** 🔹 이동 버튼 스타일 */
+    movePanel: {
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    moveRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    moveButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#28A745',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 5,
+    },
+    moveButtonText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
 });
