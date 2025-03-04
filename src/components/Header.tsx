@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert,ImageBackground } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert, ImageBackground, Linking } from 'react-native';
 import styles from '../styles/HomeStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { gameService } from '../services/GameService';
@@ -55,7 +55,7 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
         navigation.dispatch(StackActions.replace('Login'));
 
     };
-
+    
     return (
         <View style={styles.header}>
                 <View style={styles.profileContainer}>
@@ -65,14 +65,14 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                     style={styles.profileBorder}
                     imageStyle={styles.profileBorderImg} // ← 추가: 내부 이미지 스타일
                 >
-                        {/* 프로필 이미지가 있을 때만 표시 */}
-                        {profileImage && (
-                            <Image source={{ uri: profileImage }} style={styles.profileImage} />
-                        )}
+                            <Image
+                                source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
+                                style={styles.profileImage}
+                            />
 
                         <View style={styles.profileInfo}>
-                            <Text style={styles.nickname}>{user?.name || 'Guest'}</Text>
-                            <Text style={styles.level}>Lv. 2</Text>
+                            <Text style={styles.nickname}>{user?.name || '보린이'}</Text>
+                            <Text style={styles.title}>보드게임 매니아</Text>
                         </View>
                     </ImageBackground>
                 </View>
@@ -83,7 +83,7 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                     source={require('../assets/icons/home/heart.png')}
                     style={styles.heartIcon}
                 />
-                <Text style={styles.heartCount}>{user?.coin}/30</Text>
+                <Text style={styles.heartCount}>{user?.coin ?? 30}/30</Text>
             </View>
 
 
@@ -134,16 +134,19 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                             />
                         </View>
 
-                        {/* 회원 탈퇴 */}
-                        <TouchableOpacity style={styles.modalButtonDelete} onPress={handleDeleteAccount}>
-                            <Text>🚨 회원 탈퇴</Text>
+                        {/* 약관보기 */}
+                        <TouchableOpacity style={styles.modalButton} onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                            <Text>📜 약관보기</Text>
                         </TouchableOpacity>
 
                         {/* 로그아웃 */}
-                        <TouchableOpacity style={styles.modalButtonLogout} onPress={handleLogout}>
+                        <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
                             <Text>🚪 로그아웃</Text>
                         </TouchableOpacity>
-
+                        {/* 회원 탈퇴 */}
+                        <TouchableOpacity style={styles.modalButton} onPress={handleDeleteAccount}>
+                            <Text>🚨 회원 탈퇴</Text>
+                        </TouchableOpacity>
                         {/* 닫기 버튼 */}
                         <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
                             <Text>닫기</Text>

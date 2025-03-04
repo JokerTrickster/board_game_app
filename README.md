@@ -1,4 +1,9 @@
 # 틀린 그림 찾기 게임 기획
+## 게임 스크린샷
+| 게임 화면1 | 게임 화면2 | 게임 화면3 | 게임 화면4 |
+|-----------|----------------|----------------|-----------|
+| <img src="https://github.com/user-attachments/assets/ef0a6d5d-3a26-43f1-a84a-d572513ae236" alt="게임 화면1" width="150"/> | <img src="https://github.com/user-attachments/assets/4b1242ef-4746-4d17-a1dd-e0aef1a7ee8d" alt="게임 화면2" width="150"/> | <img src="https://github.com/user-attachments/assets/1dc30cb6-687b-445d-90f6-3bdd614eecd6" alt="게임 화면3" width="150"/> | <img src="https://github.com/user-attachments/assets/c6d90ec8-7a7a-4d79-bb8d-390f4ae001df" alt="게임 화면4" width="150"/> |
+
 ## 1. 게임 개요 (Game Overview)
 - 게임 제목: 멀티플레이 틀린 그림 찾기
 - 장르: 캐주얼 / 퍼즐 / 멀티플레이

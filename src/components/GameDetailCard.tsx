@@ -10,6 +10,7 @@ const GameDetailScreen: React.FC = () => {
     const { game } = route.params;
 
     return (
+        
         <View style={styles.container}>
             <Header />
 

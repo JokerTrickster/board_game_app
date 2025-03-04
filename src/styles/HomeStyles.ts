@@ -44,10 +44,10 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         paddingBottom:10,
     },
-    level: {
+    title: {
         fontSize: 16,
-        color: '#555',
-        marginBottom:10,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
 
     // 하트(코인) 영역
@@ -153,22 +153,15 @@ export default StyleSheet.create({
         width: '80%',
     },
     
-    modalButtonDelete: {
+    modalButton: {
         padding: 10,
         width: '100%',
         alignItems: 'center',
-        backgroundColor: 'red',
+        backgroundColor: '#FFF6EB',
         borderRadius: 10,
         marginVertical: 5,
     },
-    modalButtonLogout: {
-        padding: 10,
-        width: '100%',
-        alignItems: 'center',
-        backgroundColor: '#555',
-        borderRadius: 10,
-        marginVertical: 5,
-    },
+ 
     closeButton: {
         marginTop: 10,
         padding: 10,

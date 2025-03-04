@@ -4,7 +4,6 @@ export default StyleSheet.create({
 
     container: {
         flex: 1,
-        backgroundColor: '#FBF4E7',
         paddingHorizontal: 16,
     },
     backButton: {
@@ -110,7 +109,9 @@ export default StyleSheet.create({
         flex: 1,
         paddingVertical: 14,
         backgroundColor: '#FFB6C1',
-        borderRadius: 20,
+        borderRadius: 30,
+        borderWidth: 1,
+        borderColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
         marginHorizontal: 4,
@@ -119,8 +120,10 @@ export default StyleSheet.create({
         flex: 1,
         paddingVertical: 14,
         backgroundColor: '#FFDDC1',
-        borderRadius: 20,
+        borderRadius: 30,
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#000',
         alignItems: 'center',
         marginHorizontal: 4,
     },
@@ -152,5 +155,51 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginVertical: 8,
+    },
+    background: {
+        flex: 1,
+        resizeMode: 'cover', // 이미지 크기를 화면에 맞게 조정
+    },
+    infoImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        width: '90%',
+        height: '70%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+    },
+    modalDescriptionText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    modalCloseButton: {
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#ddd',
+        borderRadius: 5,
+        alignSelf: 'center',
+    },
+    modalCloseButtonText: {
+        fontSize: 16,
+        color: '#000',
+    },
+    youtubeWebView: {
+        width: '100%',
+    },
+    gameTitleImage: {
+        width: 320,
+        height: 60,
+        resizeMode: 'contain',
+        alignSelf: 'center',
     },
 });
