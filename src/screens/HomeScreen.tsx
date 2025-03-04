@@ -70,6 +70,7 @@ const HomeScreen: React.FC = () => {
 
     return (
         <View style={styles.container}>
+            <Header userData={userData} />
             <ScrollView contentContainerStyle={styles.gameContainer}>
                 {gameList.map((game, index) => (
                     <GameCard

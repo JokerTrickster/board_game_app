@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ImageBackground,Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/navigationTypes';
@@ -48,36 +48,54 @@ const LoginScreen: React.FC = () => {
 
 
     return (
+        <ImageBackground
+            source={require('../assets/images/background.png')}
+            style={styles.background}  // 아래에서 background 스타일을 추가합니다.
+        >
         <View style={styles.container}>
-            <Text style={styles.title}>로그인</Text>
-
-            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
-                <Icon name="google" size={20} color="#DB4437" />
-                <Text style={styles.googleButtonText}>구글로 로그인</Text>
-            </TouchableOpacity>
+                {/* 구글 로그인 버튼 */}
+                <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+                    <Image
+                        source={require('../assets/icons/login_google.png')}
+                        style={styles.buttonIcon}
+                    />
+                    <Text style={styles.googleButtonText}>구글 로그인</Text>
+                </TouchableOpacity>
 
             <View style={styles.orContainer}>
                 <View style={styles.orLine} />
                 <Text style={styles.orText}>or</Text>
                 <View style={styles.orLine} />
             </View>
+      
+                <View style={styles.inputWrapper}>
+                    <Image
+                        source={require('../assets/icons/login_email.png')}
+                        style={styles.inputIcon}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="이메일 입력"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                </View>
 
-            <TextInput
-                style={styles.input}
-                placeholder="이메일"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="비밀번호"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
+                <View style={styles.inputWrapper}>
+                    <Image
+                        source={require('../assets/icons/login_password.png')}
+                        style={styles.inputIcon}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="비밀번호 입력"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                </View>
 
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.loginButtonText}>로그인</Text>
@@ -94,7 +112,8 @@ const LoginScreen: React.FC = () => {
                     <Text style={styles.forgotPasswordText}>비밀번호 찾기</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+            </View>
+        </ImageBackground>
     );
 };
 

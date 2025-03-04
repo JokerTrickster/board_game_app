@@ -68,6 +68,7 @@ const GameDetailScreen: React.FC = () => {
 
     return (
         <View style={styles.container}>
+            <Header userData={userData} />
             {/* 뒤로가기 버튼 */}
             <View style={styles.titleRow}>
                 <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
