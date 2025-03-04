@@ -49,14 +49,14 @@ const LoginScreen: React.FC = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/images/background.png')}
+            source={require('../assets/images/login/background.png')}
             style={styles.background}  // 아래에서 background 스타일을 추가합니다.
         >
         <View style={styles.container}>
                 {/* 구글 로그인 버튼 */}
                 <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
                     <Image
-                        source={require('../assets/icons/login_google.png')}
+                        source={require('../assets/icons/login/login_google.png')}
                         style={styles.buttonIcon}
                     />
                     <Text style={styles.googleButtonText}>구글 로그인</Text>
@@ -70,7 +70,7 @@ const LoginScreen: React.FC = () => {
       
                 <View style={styles.inputWrapper}>
                     <Image
-                        source={require('../assets/icons/login_email.png')}
+                        source={require('../assets/icons/login/login_email.png')}
                         style={styles.inputIcon}
                     />
                     <TextInput
@@ -85,7 +85,7 @@ const LoginScreen: React.FC = () => {
 
                 <View style={styles.inputWrapper}>
                     <Image
-                        source={require('../assets/icons/login_password.png')}
+                        source={require('../assets/icons/login/login_password.png')}
                         style={styles.inputIcon}
                     />
                     <TextInput

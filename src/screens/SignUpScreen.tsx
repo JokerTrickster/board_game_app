@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ScrollView, Linking } from 'react-native';
+import { View, Text, TextInput,Image, ImageBackground, TouchableOpacity, Alert, ScrollView, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -156,188 +156,245 @@ const SignUpScreen: React.FC = () => {
     const handleAgreePrivacy = (value: boolean) => setAgreePrivacy(value);
     const handleAgreeMarketing = (value: boolean) => setAgreeMarketing(value);
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="angle-left" size={30} color="black" />
-            </TouchableOpacity>
+        <ImageBackground
+            source={require('../assets/images/signup/background.png')}
+            style={styles.background}
+        >
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Icon name="angle-left" size={50} color="black" />
+                    </TouchableOpacity>
+                    <Text style={styles.title}>회원가입</Text>
+                </View>
 
-            <Text style={styles.title}>회원가입</Text>
+                {/* 이메일 입력 (아이콘 포함) */}
+                <View style={styles.inputRow}>
+                    <View style={[styles.inputWrapper, { flex: 1 }]}>
+                        <Image
+                            source={require('../assets/icons/signup/email.png')}
+                            style={styles.inputIcon}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="이메일"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
+                    <TouchableOpacity
+                        style={[
+                            styles.smallButton,
+                            (!canRequestCode || isEmailVerified) && { backgroundColor: '#ccc' },
+                        ]}
+                        onPress={handleEmailVerificationRequest}
+                        disabled={!canRequestCode || isEmailVerified}
+                    >
+                        <Text style={styles.smallButtonText}>
+                            {isEmailVerified
+                                ? '인증 완료'
+                                : canRequestCode
+                                    ? '인증 요청'
+                                    : `요청 대기 (${Math.floor(requestCooldown / 60)}:${(requestCooldown % 60)
+                                        .toString()
+                                        .padStart(2, '0')})`}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                {emailError ? <Text style={{ color: 'red', fontSize: 12 }}>{emailError}</Text> : null}
 
-            <View style={styles.inputRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="이메일"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
+                {/* 인증 코드 입력 (아이콘 포함) */}
+                <View style={styles.inputRow}>
+                    <View style={[styles.inputWrapper, { flex: 1 }]}>
+                        <Image
+                            source={require('../assets/icons/signup/authcode.png')}
+                            style={styles.inputIcon}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="인증 코드"
+                            value={verificationCode}
+                            onChangeText={setVerificationCode}
+                        />
+                    </View>
+                    {!isEmailVerified && (
+                        <Text style={{ marginHorizontal: 10, fontSize: 14 }}>
+                            {Math.floor(timer / 60)
+                                .toString()
+                                .padStart(2, '0')}
+                            :
+                            {(timer % 60).toString().padStart(2, '0')}
+                        </Text>
+                    )}
+                    <TouchableOpacity
+                        style={[
+                            styles.smallButton,
+                            isEmailVerified && { backgroundColor: '#ccc' },
+                        ]}
+                        onPress={handleEmailCodeValidation}
+                        disabled={isEmailVerified}
+                    >
+                        <Text style={styles.smallButtonText}>
+                            {isEmailVerified ? '인증 완료' : '인증 확인'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                {codeError ? <Text style={{ color: 'red', fontSize: 12 }}>{codeError}</Text> : null}
+
+                {/* 닉네임 입력 (아이콘 포함) */}
+                <View style={styles.inputRow}>
+                    <View style={[styles.inputWrapper, { flex: 1 }]}>
+                        <Image
+                            source={require('../assets/icons/signup/name.png')}
+                            style={styles.inputIcon}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="닉네임"
+                            value={nickname}
+                            onChangeText={setNickname}
+                        />
+                    </View>
+                    <TouchableOpacity style={styles.smallButton} onPress={handleNicknameCheck}>
+                        <Text style={styles.smallButtonText}>중복 확인</Text>
+                    </TouchableOpacity>
+                </View>
+                {nicknameMessage ? (
+                    <Text style={{ color: nicknameMessageColor, fontSize: 12 }}>
+                        {nicknameMessage}
+                    </Text>
+                ) : null}
+
+                {/* 비밀번호 입력 (아이콘 + 오른쪽 토글 버튼) */}
+                <View style={styles.inputRow}>
+                    <View style={[styles.inputWrapper, { flex: 1 }]}>
+                        <Image
+                            source={require('../assets/icons/signup/password.png')}
+                            style={styles.inputIcon}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="비밀번호"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry={!isPasswordVisible}
+                        />
+                    </View>
+                    <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)} style={styles.eyeButton}>
+                        <Icon
+                            name={isPasswordVisible ? 'eye' : 'eye-slash'}
+                            size={20}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                </View>
+
+                {/* 비밀번호 재확인 입력 (아이콘 + 오른쪽 토글 버튼) */}
+                <View style={styles.inputRow}>
+                    <View style={[styles.inputWrapper, { flex: 1 }]}>
+                        <Image
+                            source={require('../assets/icons/signup/password.png')}
+                            style={styles.inputIcon}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="비밀번호 재확인"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry={!isConfirmPasswordVisible}
+                        />
+                    </View>
+                    <TouchableOpacity onPress={() => setConfirmPasswordVisible(!isConfirmPasswordVisible)} style={styles.eyeButton}>
+                        <Icon
+                            name={isConfirmPasswordVisible ? 'eye' : 'eye-slash'}
+                            size={20}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                </View>
+                {passwordError ? (
+                    <Text style = {styles.passwordError}>{passwordError}</Text>
+                ) : null}
+
+                {/* 약관 동의 및 기타 항목들 */}
+                <View style={styles.checkboxRow}>
+                    <TouchableOpacity onPress={() => toggleAgreeAll(!agreeAll)} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 ,marginTop:40}}>
+                        <Icon
+                            name={agreeAll ? 'check-square' : 'square-o'}
+                            size={24}
+                            color={agreeAll ? '#5C9EFF' : '#aaa'}
+                        />
+                        <Text style={styles.checkboxText}>약관에 모두 동의</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.checkboxRow}>
+                    <TouchableOpacity onPress={() => handleAgreeAge(!agreeAge)} style={{ flexDirection: 'row', alignItems: 'center', marginLeft:10 }}>
+                        <Icon
+                            name={agreeAge ? 'check-square' : 'square-o'}
+                            size={24}
+                            color={agreeAge ? '#5C9EFF' : '#aaa'}
+                        />
+                        <Text style={styles.checkboxText}>만 14세 이상입니다 (필수)</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.checkboxRow}>
+                    <TouchableOpacity onPress={() => handleAgreeTerms(!agreeTerms)} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+                        <Icon
+                            name={agreeTerms ? 'check-square' : 'square-o'}
+                            size={24}
+                            color={agreeTerms ? '#5C9EFF' : '#aaa'}
+                        />
+                        <Text style={styles.checkboxText}>서비스 이용약관 동의 (필수)</Text>
+                        <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                            <Text style={styles.linkText}>보기</Text>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.checkboxRow}>
+                    <TouchableOpacity onPress={() => handleAgreePrivacy(!agreePrivacy)} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+                        <Icon
+                            name={agreePrivacy ? 'check-square' : 'square-o'}
+                            size={24}
+                            color={agreePrivacy ? '#5C9EFF' : '#aaa'}
+                        />
+                        <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의 (필수)</Text>
+                        <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                            <Text style={styles.linkText}>보기</Text>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.checkboxRow}>
+                    <TouchableOpacity onPress={() => handleAgreeMarketing(!agreeMarketing)} style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+                        <Icon
+                            name={agreeMarketing ? 'check-square' : 'square-o'}
+                            size={24}
+                            color={agreeMarketing ? '#5C9EFF' : '#aaa'}
+                        />
+                        <Text style={styles.checkboxText}>마케팅 수신 동의 (선택)</Text>
+                        <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
+                            <Text style={styles.linkText}>보기</Text>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity
                     style={[
-                        styles.smallButton,
-                        (!canRequestCode || isEmailVerified) && { backgroundColor: '#ccc' }
+                        styles.signupButton,
+                        { backgroundColor: isFormValid ? '#FAC0BE' : '#ccc' },
                     ]}
-                    onPress={handleEmailVerificationRequest}
-                    disabled={!canRequestCode || isEmailVerified}>
-                    <Text style={styles.smallButtonText}>
-                        {isEmailVerified
-                            ? '인증 완료'
-                            : canRequestCode
-                                ? '인증 코드 요청'
-                                : `요청 대기 (${Math.floor(requestCooldown / 60)}:${(requestCooldown % 60).toString().padStart(2, '0')})`}
-                    </Text>
+                    onPress={handleSignUp}
+                    disabled={!isFormValid}
+                >
+                    <Text style={styles.signupButtonText}>가입 완료</Text>
                 </TouchableOpacity>
-            </View>
-            {emailError ? <Text style={{ color: 'red', fontSize: 12 }}>{emailError}</Text> : null}
-
-            <View style={styles.inputRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="인증 코드"
-                    value={verificationCode}
-                    onChangeText={setVerificationCode}
-                />
-
-                {!isEmailVerified && (
-                    <Text style={{ marginHorizontal: 10, fontSize: 14 }}>
-                        {Math.floor(timer / 60)
-                            .toString()
-                            .padStart(2, '0')}
-                        :
-                        {(timer % 60).toString().padStart(2, '0')}
-                    </Text>
-                )}
-
-                <TouchableOpacity
-                    style={[styles.smallButton, isEmailVerified && { backgroundColor: '#ccc' }]}
-                    onPress={handleEmailCodeValidation}
-                    disabled={isEmailVerified}>
-                    <Text style={styles.smallButtonText}>
-                        {isEmailVerified ? '인증 완료' : '인증 확인'}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-            {codeError ? <Text style={{ color: 'red', fontSize: 12 }}>{codeError}</Text> : null}
-
-            <View style={styles.inputRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="닉네임"
-                    value={nickname}
-                    onChangeText={setNickname}
-                />
-                <TouchableOpacity style={styles.smallButton} onPress={handleNicknameCheck}>
-                    <Text style={styles.smallButtonText}>중복 확인</Text>
-                </TouchableOpacity>
-            </View>
-            {nicknameMessage ? <Text style={{ color: nicknameMessageColor, fontSize: 12 }}>{nicknameMessage}</Text> : null}
-
-            <View style={styles.inputRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="비밀번호"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible}
-                />
-                <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
-                    <Icon name={isPasswordVisible ? 'eye' : 'eye-slash'} size={20} style={styles.icon} />
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.inputRow}>
-                <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="비밀번호 재확인"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry={!isConfirmPasswordVisible}
-                />
-                <TouchableOpacity onPress={() => setConfirmPasswordVisible(!isConfirmPasswordVisible)}>
-                    <Icon name={isConfirmPasswordVisible ? 'eye' : 'eye-slash'} size={20} style={styles.icon} />
-                </TouchableOpacity>
-            </View>
-            {passwordError ? (
-                <Text style={{ color: 'red', fontSize: 12 }}>
-                    {passwordError}
-                </Text>
-            ) : null}
-
-            <View style={styles.checkboxRow}>
-                <TouchableOpacity onPress={() => toggleAgreeAll(!agreeAll)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon
-                        name={agreeAll ? 'check-square' : 'square-o'}
-                        size={24}
-                        color={agreeAll ? '#5C9EFF' : '#aaa'}
-                    />
-                    <Text style={styles.checkboxText}>약관에 모두 동의</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <TouchableOpacity onPress={() => handleAgreeAge(!agreeAge)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon
-                        name={agreeAge ? 'check-square' : 'square-o'}
-                        size={24}
-                        color={agreeAge ? '#5C9EFF' : '#aaa'}
-                    />
-                    <Text style={styles.checkboxText}>만 14세 이상입니다 (필수)</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <TouchableOpacity onPress={() => handleAgreeTerms(!agreeTerms)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon
-                        name={agreeTerms ? 'check-square' : 'square-o'}
-                        size={24}
-                        color={agreeTerms ? '#5C9EFF' : '#aaa'}
-                    />
-                    <Text style={styles.checkboxText}>서비스 이용약관 동의 (필수)</Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                        <Text style={styles.linkText}>보기</Text>
-                    </TouchableOpacity>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <TouchableOpacity onPress={() => handleAgreePrivacy(!agreePrivacy)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon
-                        name={agreePrivacy ? 'check-square' : 'square-o'}
-                        size={24}
-                        color={agreePrivacy ? '#5C9EFF' : '#aaa'}
-                    />
-                    <Text style={styles.checkboxText}>개인정보 수집 및 이용 동의 (필수)</Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                        <Text style={styles.linkText}>보기</Text>
-                    </TouchableOpacity>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.checkboxRow}>
-                <TouchableOpacity onPress={() => handleAgreeMarketing(!agreeMarketing)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon
-                        name={agreeMarketing ? 'check-square' : 'square-o'}
-                        size={24}
-                        color={agreeMarketing ? '#5C9EFF' : '#aaa'}
-                    />
-                    <Text style={styles.checkboxText}>마케팅 수신 동의 (선택)</Text>
-                    <TouchableOpacity onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                        <Text style={styles.linkText}>보기</Text>
-                    </TouchableOpacity>
-                </TouchableOpacity>
-            </View>
-
-
-            <TouchableOpacity
-                style={[
-                    styles.signupButton,
-                    { backgroundColor: isFormValid ? '#AFDCEC' : '#ccc' }
-                ]}
-                onPress={handleSignUp}
-                disabled={!isFormValid}
-            >
-                <Text style={styles.signupButtonText}>가입 완료</Text>
-            </TouchableOpacity>
-        </ScrollView>
+            </ScrollView>
+        </ImageBackground>
     );
 };
 
