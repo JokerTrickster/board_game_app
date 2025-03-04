@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert,ImageBackground } from 'react-native';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
 import styles from '../styles/HomeStyles';
@@ -69,6 +69,10 @@ const HomeScreen: React.FC = () => {
     }, [userData]);
 
     return (
+        <ImageBackground
+            source={require('../assets/images/home/background.png')}
+            style={styles.background}
+        >
         <View style={styles.container}>
             <Header userData={userData} />
             <ScrollView contentContainerStyle={styles.gameContainer}>
@@ -84,6 +88,7 @@ const HomeScreen: React.FC = () => {
                 ))}
             </ScrollView>
         </View>
+        </ImageBackground>
     );
 };
 

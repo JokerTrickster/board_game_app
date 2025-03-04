@@ -3,52 +3,118 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fef6e4',
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 15,
-        backgroundColor: '#fff',
-        elevation: 3,
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    // 프로필
+    profileContainer: {
+        // 프로필 전체 영역 감싸는 컨테이너
+        marginTop:20,
+    },
+    profileBorder: {
+        width: 200,
+        height: 80,
+        flexDirection: 'row', // 내부에서 프로필 이미지와 텍스트를 가로로 배치
+        alignItems: 'center',
+        // 필요한 경우 paddingHorizontal, margin 조정
+    },
+    // ← 추가: ImageBackground 내부 실제 이미지 스타일
+    profileBorderImg: {
+        resizeMode: 'contain',
+        // 'contain'은 비율을 유지하며 전체가 보이도록 함
+        // 'cover'나 'stretch'로 바꿀 수도 있음 (원하는 표시 방식에 따라 조정)
+    },
+    profileImage: {
+        // 실제 사용자 프로필 이미지
+        width: 65,
+        height: 65,
+        marginLeft: 5,
+        marginRight: 15,
+    },
+    profileInfo: {
+        // 닉네임, 레벨 영역
+        justifyContent: 'center',
+    },
+    nickname: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        paddingBottom:10,
+    },
+    level: {
+        fontSize: 16,
+        color: '#555',
+        marginBottom:10,
+    },
+
+    // 하트(코인) 영역
+    hearts: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        // 필요하면 marginLeft나 marginRight로 간격 조절
+        marginLeft:-10,
+    },
+    heartIcon: {
+        width: 110,
+        height: 100,
+        marginRight: 5,
+        resizeMode: 'contain',
+    },
+    heartCount: {
+        fontSize: 16,
+        color: '#000',
+        fontWeight: 'bold',
+        marginLeft:-60,
     },
     profile: { flexDirection: 'row', alignItems: 'center' },
-    profileImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: 10,
-    },
-    profileInfo: { marginLeft: 8 },
-    nickname: { fontWeight: 'bold', fontSize: 16 },
-    level: { fontSize: 14, color: 'gray' },
-    hearts: { flexDirection: 'row', alignItems: 'center' },
-    heartCount: { marginLeft: 5, fontSize: 16 },
     settingsIcon: { padding: 10 },
     gameContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around', marginTop: 10 },
     gameCard: {
         width: '45%',
-        height: 335,
+        height: 300,
         backgroundColor: '#fff',
-        marginVertical: 8,
+        marginVertical: 10,
         borderRadius: 10,
-        padding: 4,
+        padding: 5,
         elevation: 6,
         alignItems: 'center',
         borderWidth: 1,
         borderColor: '#000',
     },
-    gameImage: { width: '100%', height: 255, borderRadius: 8 },
+    gameImage: { width: '90%', height: 225, borderRadius: 8, marginBottom:-10 },
     gameTitle: { marginTop: 10, fontWeight: 'bold', fontSize: 20},
-    hashtagContainer: { flexDirection: 'row', marginTop: 5 },
-    hashtag: { marginHorizontal: 3, fontSize: 12, backgroundColor: '#eee', padding: 2, borderRadius: 5 },
+    hashtagContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 5,
+    },
+    hashtag: { marginHorizontal: 3, fontSize: 12, backgroundColor: '#eee', padding: 2, borderRadius: 5},
     matchButton: {
         backgroundColor: '#6f96ff',
         padding: 15,
         alignItems: 'center',
         borderRadius: 20,
         margin: 20,
+    },
+    categoryBorder: {
+        height: 20,
+        width:'40%',
+        borderWidth: 1,
+        borderColor: '#666', // 원하는 색상으로 변경
+        borderRadius: 5,
+        alignItems: 'center',
+        marginRight:7,
+    },
+    hashtagBorder: {
+        height: 20,
+        width: '40%',
+        borderWidth: 1,
+        borderColor: '#666', // 원하는 색상으로 변경
+        borderRadius: 5,
+        alignItems: 'center',
     },
     imagePlaceholder: {
         width: 100,
@@ -86,6 +152,7 @@ export default StyleSheet.create({
     slider: {
         width: '80%',
     },
+    
     modalButtonDelete: {
         padding: 10,
         width: '100%',
@@ -117,8 +184,7 @@ export default StyleSheet.create({
     },
     categoryText: {
         fontSize: 12,
-        fontWeight: 'bold',
-        color: '#4A90E2',
+        color: '#000',
     },
     separator: {
         fontSize: 12,
@@ -127,6 +193,10 @@ export default StyleSheet.create({
     },
     hashtagText: {
         fontSize: 12,
-        color: '#666',
+        color: '#000',
+    },
+    background: {
+        flex: 1,
+        resizeMode: 'cover', // 이미지 크기를 화면에 맞게 조정
     },
 });

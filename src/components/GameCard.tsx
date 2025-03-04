@@ -16,9 +16,12 @@ const GameCard: React.FC<GameCardProps> = ({ title, category,hashtag, image, onP
             <Image source={{ uri: image }} style={styles.gameImage} />
             <Text style={styles.gameTitle}>{title}</Text>
             <View style={styles.hashtagContainer}>
-                <Text style={styles.categoryText}>{category}</Text>
-                <Text style={styles.separator}>|</Text>
-                <Text style={styles.hashtagText}>#{hashtag}</Text>
+                <View style={styles.categoryBorder}>
+                    <Text style={styles.categoryText}>{category}</Text>
+                </View>
+                <View style={styles.hashtagBorder}>
+                    <Text style={styles.hashtagText}>#{hashtag}</Text>
+                </View>
             </View>
         </TouchableOpacity>
     );

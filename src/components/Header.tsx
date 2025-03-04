@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert,ImageBackground } from 'react-native';
 import styles from '../styles/HomeStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { gameService } from '../services/GameService';
@@ -58,20 +58,34 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
 
     return (
         <View style={styles.header}>
-            <View style={styles.profile}>
-                {profileImage && (
-                    <Image source={{ uri: profileImage }} style={styles.profileImage} />
-                )}
-                <View style={styles.profileInfo}>
-                    <Text style={styles.nickname}>{user?.name || 'Guest'}</Text>
-                    <Text style={styles.level}>Lv. 2</Text>
+                <View style={styles.profileContainer}>
+                    {/* 프로필 테두리 이미지를 배경처럼 사용 (ImageBackground) */}
+                <ImageBackground
+                    source={require('../assets/icons/home/profile.png')}
+                    style={styles.profileBorder}
+                    imageStyle={styles.profileBorderImg} // ← 추가: 내부 이미지 스타일
+                >
+                        {/* 프로필 이미지가 있을 때만 표시 */}
+                        {profileImage && (
+                            <Image source={{ uri: profileImage }} style={styles.profileImage} />
+                        )}
+
+                        <View style={styles.profileInfo}>
+                            <Text style={styles.nickname}>{user?.name || 'Guest'}</Text>
+                            <Text style={styles.level}>Lv. 2</Text>
+                        </View>
+                    </ImageBackground>
                 </View>
-            </View>
 
             <View style={styles.hearts}>
-                <Icon name="heart" size={24} color="red" />
+                {/* 하트 이미지 */}
+                <Image
+                    source={require('../assets/icons/home/heart.png')}
+                    style={styles.heartIcon}
+                />
                 <Text style={styles.heartCount}>{user?.coin}/30</Text>
             </View>
+
 
             {/* 설정 아이콘 */}
             <TouchableOpacity style={styles.settingsIcon} onPress={toggleModal}>

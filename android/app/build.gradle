@@ -85,8 +85,8 @@ android {
         applicationId "com.board_game_app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName "1.5"
+        versionCode 16
+        versionName "1.6"
     }
     signingConfigs {
         debug {
@@ -96,7 +96,7 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('release.keystore')
+            storeFile file("$rootDir/release.keystore")
             storePassword 'thvmxm12!@'
             keyAlias 'board_game_key'
             keyPassword 'thvmxm12!@'
