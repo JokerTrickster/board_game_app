@@ -6,7 +6,7 @@ import { RootStackParamList } from '../navigation/navigationTypes';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 import { LoginService } from '../services/LoginService';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import styles from '../styles/LoginStyles';
+import styles from '../styles/ReactLoginStyles';
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC = () => {
