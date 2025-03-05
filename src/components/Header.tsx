@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert, ImageBackground, Linking } from 'react-native';
-import styles from '../styles/HomeStyles';
+import styles from '../styles/ReactHomeStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { gameService } from '../services/GameService';
 import { AuthService } from '../services/AuthService';

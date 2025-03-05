@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, Alert, Linking, ImageBackground, Modal } from 'react-native';
 import Header from '../components/Header';
-import styles from '../styles/GameDetailStyles';
+import styles from '../styles/ReactGameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { findItWebSocketService } from '../services/FindItWebSocketService';

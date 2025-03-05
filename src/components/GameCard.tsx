@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import styles from '../styles/HomeStyles';
+import styles from '../styles/ReactHomeStyles';
 
 type GameCardProps = {
     title: string;

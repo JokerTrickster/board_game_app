@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
 import Header from '../components/Header';
-import styles from '../styles/GameDetailStyles';
+import styles from '../styles/ReactGameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const GameDetailScreen: React.FC = () => {

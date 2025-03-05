@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, ScrollView, Alert,ImageBackground } from 'react-native';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
-import styles from '../styles/HomeStyles';
+import styles from '../styles/ReactHomeStyles';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LoginService } from '../services/LoginService';
 import { gameService } from '../services/GameService';

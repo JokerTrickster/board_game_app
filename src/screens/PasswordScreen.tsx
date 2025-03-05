@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { PasswordService } from '../services/PasswordService';
-import styles from '../styles/SignUpStyles';
+import styles from '../styles/ReactSignUpStyles';
 import { RootStackParamList } from '../navigation/navigationTypes';
 
 type PasswordScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Password'>;
