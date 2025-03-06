@@ -49,7 +49,7 @@ const LoginScreen: React.FC = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/images/login/background.png')}
+            source={require('../assets/images/common/background_couple.png')}
             style={styles.background}  // 아래에서 background 스타일을 추가합니다.
         >
         <View style={styles.container}>

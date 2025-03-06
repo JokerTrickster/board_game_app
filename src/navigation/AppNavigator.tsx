@@ -7,6 +7,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import FindItScreen from '../games/find-it/FindItScreen';
 import FindItGameOverScreen from '../games/find-it/FindItGameOverScreen';
 import GameDetailScreen from '../screens/GameDetailScreen';
+import LoadingScreen from '../screens/LoadingScreen';
 import PasswordScreen from '../screens/PasswordScreen';
 import { RootStackParamList } from './navigationTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -47,6 +48,7 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
                     <Stack.Screen name="Password" component={PasswordScreen} />
                     <Stack.Screen name="GameDetail" component={GameDetailScreen} />
+                    <Stack.Screen name="Loading" component={LoadingScreen} />
                 </Stack.Navigator>
             </NavigationContainer>
 

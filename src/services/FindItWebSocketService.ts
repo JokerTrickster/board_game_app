@@ -119,7 +119,7 @@ class FindItWebSocketService {
                     break;
                 case "START":
                     if (navigation) {
-                        navigation.navigate('FindIt');
+                        navigation.navigate('Loading', { nextScreen: 'FindIt' });
                     }
                     this.handleGameStart(data);
                     // ✅ 게임 정보 저장

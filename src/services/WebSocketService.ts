@@ -47,6 +47,7 @@ class WebSocketService {
         };
 
         this.socket.onclose = (event) => {
+            //큐 초기화
             console.log(`🔌 웹소켓 연결 종료 (코드: ${event.code}, 이유: ${event.reason})`);
             this.isConnected = false; // ✅ 연결 종료 시 상태 업데이트
         };

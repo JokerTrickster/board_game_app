@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/navigationTypes';
-import { styles } from './FindItGameOverStyles';
+import { styles } from './ReactFindItGameOverStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const API_BASE_URL = 'http://10.0.2.2:8080/find-it/v0.1/game'; // ✅ API_BASE_URL 수정
@@ -60,7 +60,7 @@ const FindItGameOverScreen: React.FC = observer(() => {
 
                         <TouchableOpacity
                             style={styles.mainButton}
-                            onPress={() => navigation.navigate('Home')}>
+                                onPress={() => navigation.navigate('Loading', { nextScreen: 'Home' })}>
                             <Text style={styles.mainButtonText}>메인 화면으로</Text>
                         </TouchableOpacity>
                     </>

@@ -4,16 +4,13 @@ import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
 import findItViewModel from './FindItViewModel'; // ✅ 올바른 경로로 변경
-import { styles } from './FindItStyles';
+import { styles } from './ReactFindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
 import { findItWebSocketService } from '../../services/FindItWebSocketService';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-
-
-
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -31,7 +28,7 @@ const FindItScreen: React.FC = observer(() => {
     const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 255;
     // ✅ 확대/축소 관련 값
-    const MAX_SCALE = 2; // 최대 확대 비율
+    const MAX_SCALE = 2.5; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값
@@ -253,25 +250,42 @@ const panGesture = Gesture.Pan()
                 <Text style={styles.roundText}>Round {findItViewModel.round}</Text>
             </View>
 
-            {/* ✅ 정상 이미지 (정답 표시 추가) */}
-            <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
-                <Animated.View style={[animatedStyle]}>
-
-                {normalImage ? (
-                    <>
-                        <Image source={{ uri: normalImage }} style={styles.image} />
-
-                        {/* ✅ 정답 위치 (⭕) - 정상 이미지에도 표시 */}
-            
-                        {findItViewModel.correctClicks.map((pos, index) => (
-                            <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
-                        ))}
-                    </>
-                ) : (
-                    <Text>이미지를 불러오는 중...</Text>
-                )}
-                </Animated.View>
-            </View>
+            {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
+            <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
+                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                    <Animated.View style={[animatedStyle]}>
+                        {normalImage ? (
+                            <TouchableWithoutFeedback onPress={handleImageClick}>
+                                {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
+                                <View ref={imageRef} style={styles.imageContainer}>
+                                    {normalImage ? (
+                                        <Image source={{ uri: normalImage }} style={styles.image} />
+                                    ) : (
+                                        <Text>이미지를 불러오는 중...</Text>
+                                    )}
+                                    {findItViewModel.correctClicks.map((pos, index) => (
+                                        <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
+                                    ))}
+                                    {findItViewModel.wrongClicks.map((pos, index) => (
+                                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
+                                            <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                            <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                        </View>
+                                    ))}
+                                    {findItViewModel.missedPositions.map((pos, index) => (
+                                        <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                                    ))}
+                                    {hintVisible && findItViewModel.hintPosition && (
+                                        <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
+                                    )}
+                                </View>
+                            </TouchableWithoutFeedback>
+                        ) : (
+                            <Text>이미지를 불러오는 중...</Text>
+                        )}
+                    </Animated.View>
+                </View>
+            </GestureDetector>
 
 
             {/* ✅ 타이머 바 추가 */}

@@ -34,17 +34,20 @@ export const styles = StyleSheet.create({
         color: 'black',
         textAlign: 'right'
     },
+    // 기존 imageContainer 수정:
     imageContainer: {
         width: scale(400),
-        height: verticalScale(255),
+        aspectRatio: 400 / 255, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: verticalScale(8),
     },
+
+    // image 스타일 수정:
     image: {
-        width: scale(400),
-        height: verticalScale(255),
-        resizeMode: 'contain',
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain', // 원본 비율 유지, 컨테이너에 맞춰 전체가 보임
         borderWidth: scale(1),
         borderColor: '#ddd',
     },

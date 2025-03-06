@@ -70,7 +70,7 @@ const HomeScreen: React.FC = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/images/home/background.png')}
+            source={require('../assets/images/common/background_basic.png')}
             style={styles.background}
         >
         <View style={styles.container}>

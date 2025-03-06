@@ -72,7 +72,7 @@ const GameDetailScreen: React.FC = () => {
 
     return (
         <ImageBackground
-            source={require('../assets/images/game_detail/background.png')}
+            source={require('../assets/images/common/background_basic.png')}
             style={styles.background}
         >
         <View style={styles.container}>

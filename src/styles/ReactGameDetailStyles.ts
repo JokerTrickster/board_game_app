@@ -53,12 +53,13 @@ export default StyleSheet.create({
     },
     // --- infoCard: 부모(topRow)의 남은 높이를 절반씩 사용 (대략 48%) ---
     infoCard: {
-        height: '48%',
+        height: '44%',
         backgroundColor: '#FFF',
         borderRadius: scale(15),
         justifyContent: 'center',
         borderWidth: scale(1.5),
         marginTop: verticalScale(10),
+        marginBottom: verticalScale(5),
         overflow: 'hidden', // 추가: 컨테이너 범위 내에 이미지가 표시되도록
     },
     infoImage: {
