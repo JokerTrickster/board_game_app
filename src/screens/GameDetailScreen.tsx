@@ -97,7 +97,14 @@ const GameDetailScreen: React.FC = () => {
                   1) 이미지 왼쪽, 2) 튜토리얼 / 영상 보기 오른쪽 
                 */}
                 <View style={styles.topRow}>
-                    <Image source={{ uri: game.image }} style={styles.gameImage} />
+                        <Image
+                            source={
+                                game.title === '틀린그림찾기'
+                                    ? require('../assets/images/common/find-it.png')
+                                    : require('../assets/images/common/default.png')
+                            }
+                            style={styles.gameImage}
+                        />
 
                     <View style={styles.rightColumn}>
                         {/* 게임 설명 */}

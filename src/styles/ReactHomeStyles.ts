@@ -83,7 +83,7 @@ export default StyleSheet.create({
     },
     gameCard: {
         width: '45%',
-        height: verticalScale(235),
+        height: verticalScale(255),
         backgroundColor: '#fff',
         marginVertical: verticalScale(10),
         borderRadius: scale(10),
@@ -95,8 +95,9 @@ export default StyleSheet.create({
     },
     gameImage: {
         width: '90%',
-        height: verticalScale(176),
-        borderRadius: scale(8),
+        height: verticalScale(190),
+        borderRadius: scale(10),
+        borderWidth: scale(1),
         resizeMode: 'contain', // 이미지 전체가 보이도록 설정
         marginBottom: verticalScale(-10), // 음수 값을 제거 또는 양수로 조정
     },

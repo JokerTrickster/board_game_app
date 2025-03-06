@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
-import styles from '../styles/ReactHomeStyles';
+import styles from '../styles/ReactGameCardStyles';
 
 type GameCardProps = {
     title: string;
@@ -10,10 +10,22 @@ type GameCardProps = {
     onPress: () => void;
 };
 
-const GameCard: React.FC<GameCardProps> = ({ title, category,hashtag, image, onPress }) => {
+const GameCard: React.FC<GameCardProps> = ({ title, category, hashtag, image, onPress }) => {
+    const cardImage = title === '틀린그림찾기'
+        ? require('../assets/images/common/find-it.png')
+        : require('../assets/images/common/default.png');
+    
     return (
         <TouchableOpacity style={styles.gameCard} onPress={onPress}>
-            <Image source={{ uri: image }} style={styles.gameImage} />
+            <View style={styles.imageWrapper}>
+                <Image source={cardImage} style={styles.gameImage} />
+                {/* default.png일 때 오버레이 텍스트 표시 */}
+                {title !== '틀린그림찾기' && (
+                    <View style={styles.overlay}>
+                        <Text style={styles.overlayText}>출시 준비 중</Text>
+                    </View>
+                )}
+            </View>
             <Text style={styles.gameTitle}>{title}</Text>
             <View style={styles.hashtagContainer}>
                 <View style={styles.categoryBorder}>

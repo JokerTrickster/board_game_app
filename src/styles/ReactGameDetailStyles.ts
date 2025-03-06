@@ -34,7 +34,7 @@ export default StyleSheet.create({
     topRow: {
         flexDirection: 'row',
         width: '100%',
-        height: verticalScale(255), // 이미지 높이에 맞춰 부모 높이 설정
+        height: verticalScale(240), // 이미지 높이에 맞춰 부모 높이 설정
         marginBottom: verticalScale(10),
     },
     // --- 이미지 ---
@@ -44,6 +44,7 @@ export default StyleSheet.create({
         resizeMode: 'contain',
         borderRadius: scale(10),
         backgroundColor: '#FBF4E7',
+        borderWidth: scale(1.5),
     },
     // --- 오른쪽 영역 ---
     rightColumn: {
@@ -53,18 +54,17 @@ export default StyleSheet.create({
     },
     // --- infoCard: 부모(topRow)의 남은 높이를 절반씩 사용 (대략 48%) ---
     infoCard: {
-        height: '44%',
+        height: '48%',
         backgroundColor: '#FFF',
         borderRadius: scale(15),
         justifyContent: 'center',
+        alignItems: 'center',
         borderWidth: scale(1.5),
-        marginTop: verticalScale(10),
-        marginBottom: verticalScale(5),
         overflow: 'hidden', // 추가: 컨테이너 범위 내에 이미지가 표시되도록
     },
     infoImage: {
         width: '100%',
-        height: '100%',
+        height: '105%',
         resizeMode: 'cover', // 전체 영역 채우기
     },
     infoText: {
