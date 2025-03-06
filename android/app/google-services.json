@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "486518371116-0g5k9poee2uh0ovogssrttfrdgnle5nb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.board_game_app",
+            "certificate_hash": "696b37bab9a631b47a9bd8f7d00e4225d9f8a836"
+          }
+        },
+        {
+          "client_id": "486518371116-0ud4fq6fndlamk9d8el5tofu6dvtqmp8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.board_game_app",
+            "certificate_hash": "89dbfea878b962dd6afbb0f1a5fc8ad6d32446de"
+          }
+        },
+        {
           "client_id": "486518371116-50i1cbjks2pulik35d3r2aadiq6i3dih.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -30,11 +46,27 @@
           }
         },
         {
+          "client_id": "486518371116-6ra13lo21hgp17nujpmupgnr15hcro8s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.board_game_app",
+            "certificate_hash": "0dc19453b2cbebbe18331c346435ece84f9a3363"
+          }
+        },
+        {
           "client_id": "486518371116-bcgvkgvkko8432i0al1rob3vkq459chd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.board_game_app",
             "certificate_hash": "01f324d4ca930f1ddf039629539aeb9a66665434"
+          }
+        },
+        {
+          "client_id": "486518371116-v26mltqlab5879jjb7luvsgfnaj9nlee.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.board_game_app",
+            "certificate_hash": "686740087d06c77b2dad7642d07f4444a9047b49"
           }
         },
         {
