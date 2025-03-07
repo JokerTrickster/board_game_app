@@ -3,11 +3,36 @@ import { View, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-na
 import Header from '../components/Header';
 import styles from '../styles/ReactGameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import ActionCard from './ActionCard';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute<any>();
     const { game } = route.params;
+    const podiumData = [
+        {
+            rank: 2,
+            profileImage: require('../assets/images/home/default_profile.png'),
+            nickname: '라이언',
+            title: '보드게임 초보자',
+            score: 75,
+        },
+        {
+            rank: 1,
+            profileImage: require('../assets/images/home/default_profile.png'),
+            nickname: '조커',
+            title: '보드게임 매니아',
+            score: 95,
+        },
+        {
+            rank: 3,
+            profileImage: require('../assets/images/home/default_profile.png'),
+            nickname: '혜봉',
+            title: '보드게임 중급자',
+            score: 65,
+        },
+    ];
+
 
     return (
         
@@ -31,15 +56,14 @@ const GameDetailScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
 
+
                 <View style={styles.actionCard}>
-                    <Text style={styles.actionText}>
-                        매칭하기 또는 함께하기{'\n'}선택해 주세요!
-                    </Text>
+                    <ActionCard podiumData={podiumData} />
                 </View>
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        style={styles.matchButton}
+                        style={styles.aloneButton}
                         onPress={() => Alert.alert('함께하기', '준비 중입니다.')}>
                         <Text style={styles.buttonText}>매칭하기</Text>
                     </TouchableOpacity>
