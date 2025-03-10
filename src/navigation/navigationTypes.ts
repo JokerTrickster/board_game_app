@@ -3,6 +3,7 @@ import { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 export type RootStackParamList = {
     Home: undefined;
     FindIt: undefined;
+    SoloFindIt: { gameInfoList: any[] };
     Login: undefined;
     SignUp: undefined;
     FindItGameOver: undefined;

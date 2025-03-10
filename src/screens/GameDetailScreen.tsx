@@ -8,6 +8,7 @@ import { findItWebSocketService } from '../services/FindItWebSocketService';
 import { WebView } from 'react-native-webview';
 import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
+import { findItService } from '../services/FindItService';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -88,6 +89,14 @@ const GameDetailScreen: React.FC = () => {
 
         Alert.alert('매칭 시작', `${game.title} 게임 매칭을 시작합니다.`);
     };
+    const handleSoloPlay = async () => {
+        try {
+            const gameInfoList = await findItService.fetchSoloPlayGameInfo(10);
+            (navigation as any).navigate("SoloFindIt", { gameInfoList });
+        } catch (error: any) {
+            Alert.alert("Error", error.message);
+        }
+    };
 
     const handleCancelMatching = () => {
         // ✅ 매칭 취소 이벤트 전송
@@ -164,7 +173,7 @@ const GameDetailScreen: React.FC = () => {
                 {/* 혼자하기 버튼 (이미지 + 텍스트) */}
                 <TouchableOpacity
                     style={styles.aloneButton}
-                    onPress={() => Alert.alert('준비중입니다.')}
+                    onPress={handleSoloPlay}
                 >
                     <ImageBackground
                         source={require('../assets/images/game_detail/alone_button.png')}
@@ -256,7 +265,7 @@ const GameDetailScreen: React.FC = () => {
                                     <TouchableOpacity
                                         style={styles.modalButton}
                                         onPress={() => {
-                                            Alert.alert('랜덤 매칭 준비중입니다.');
+                                            handleMatching();
                                             setTogetherModalVisible(false);
                                         }}
                                     >
