@@ -30,7 +30,46 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: 8, // ✅ 두 이미지 간격 최소화
     },
-    
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        padding: scale(12),
+        borderRadius: scale(15),
+        width: '100%',
+        alignSelf: 'center',
+        marginBottom: verticalScale(10),
+    },
+    infoText: {
+        fontSize: scale(15),
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'center',
+        flex: 1,
+    },
+    infoButton: {
+        backgroundColor: '#FFD700',
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(16),
+        borderRadius: scale(10),
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        maxWidth: scale(100),
+        marginHorizontal: scale(5),
+        elevation: scale(3),
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: verticalScale(2) },
+        shadowOpacity: 0.2,
+        shadowRadius: scale(4),
+    },
+    infoButtonText: {
+        fontSize: scale(14),
+        fontWeight: 'bold',
+        color: 'black',
+        textAlign: 'center',
+    },
     image: {
         width: 400, // ✅ 고정된 너비 유지
         height: 255, // ✅ 고정된 높이 유지

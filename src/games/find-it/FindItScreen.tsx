@@ -58,6 +58,8 @@ const FindItScreen: React.FC = observer(() => {
     };
 
 
+
+
     const adjustOffset = () => {
         'worklet';
         const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
@@ -77,28 +79,28 @@ const FindItScreen: React.FC = observer(() => {
             scale.value = Math.min(Math.max(event.scale, MIN_SCALE), MAX_SCALE);
         });
 
+    const panGesture = Gesture.Pan()
+        .onStart(() => {
+            lastOffsetX.value = offsetX.value;
+            lastOffsetY.value = offsetY.value;
+        })
+        .onUpdate((event) => {
+            'worklet';
+            const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+            const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+            const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+            const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-const panGesture = Gesture.Pan()
-    .onStart(() => {
-        lastOffsetX.value = offsetX.value;
-        lastOffsetY.value = offsetY.value;
-    })
-    .onUpdate((event) => {
-        'worklet';
-        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
-        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
-        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
-        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
+            const newOffsetX = lastOffsetX.value + event.translationX;
+            const newOffsetY = lastOffsetY.value + event.translationY;
 
-        const newOffsetX = lastOffsetX.value + event.translationX;
-        const newOffsetY = lastOffsetY.value + event.translationY;
-
-        offsetX.value = Math.max(-maxOffsetX, Math.min(newOffsetX, maxOffsetX));
-        offsetY.value = Math.max(-maxOffsetY, Math.min(newOffsetY, maxOffsetY));
-    })
-    .onEnd(() => {
-        adjustOffset();
-    });
+            offsetX.value = Math.max(-maxOffsetX, Math.min(newOffsetX, maxOffsetX));
+            offsetY.value = Math.max(-maxOffsetY, Math.min(newOffsetY, maxOffsetY));
+        })
+        .onEnd(() => {
+            'worklet';
+            adjustOffset();
+        });
 
     // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
     const animatedStyle = useAnimatedStyle(() => ({
@@ -132,7 +134,6 @@ const panGesture = Gesture.Pan()
     }, [findItViewModel.timer]);
     
     // ✅ 클릭 좌표 계산 (확대/이동 고려)
-
     const handleImageClick = useCallback((event: any) => {
         'worklet';
         // transform 보정 없이 원본 좌표 사용

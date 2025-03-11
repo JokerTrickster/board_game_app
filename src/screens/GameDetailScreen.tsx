@@ -9,6 +9,7 @@ import { WebView } from 'react-native-webview';
 import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
 import { findItService } from '../services/FindItService';
+import soloGameViewModel from '../games/find-it/SoloFindItViewModel';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -91,6 +92,7 @@ const GameDetailScreen: React.FC = () => {
     };
     const handleSoloPlay = async () => {
         try {
+            soloGameViewModel.resetGameState();
             const gameInfoList = await findItService.fetchSoloPlayGameInfo(10);
             (navigation as any).navigate("SoloFindIt", { gameInfoList });
         } catch (error: any) {

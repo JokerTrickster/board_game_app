@@ -1,81 +1,84 @@
-// SoloFindItScreen.tsx
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import {
-    View,
-    Text,
-    Image,
-    TouchableWithoutFeedback,
-    StyleSheet,
-    Dimensions,
-    Alert,
-    TouchableOpacity,
-} from 'react-native';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { Animated as RNAnimated, View, Text, Image, Button, TouchableWithoutFeedback, TouchableOpacity, Easing } from 'react-native';
+import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Header from '../../components/Header';
-import { styles } from './ReactSoloFindItStyles';
+import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
+import soloFindItViewModel from './SoloFindItViewModel'; // ✅ 올바른 경로로 변경
+import { styles } from './ReactFindItStyles';
+import { RootStackParamList } from '../../navigation/navigationTypes';
+import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
-import { RootStackParamList } from '../../navigation/navigationTypes';
-interface Marker {
-    id: string;
-    x: number;
-    y: number;
-}
+import { runInAction } from 'mobx';
 
-const SoloFindItScreen: React.FC = () => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
-const route = useRoute<any>();
-    const { gameInfoList } = route.params; // 서버에서 받아온 10개의 라운드 이미지 정보 배열
+const SoloFindItScreen: React.FC = observer(() => {
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
     const imageRef = useRef<View>(null);
-
+    const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
+    const timerAnimation = useRef<RNAnimated.CompositeAnimation | null>(null);
+    const remainingTime = useRef(soloFindItViewModel.timer); // ✅ 남은 시간 저장
+    const isPaused = useRef(false); // ✅ 타이머 정지 여부
+    const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
     // 현재 라운드 (0 ~ 9)
     const [currentRound, setCurrentRound] = useState<number>(0);
-    // 정답(동그라미) 마커는 그대로 유지, 오답(엑스) 마커는 3초 후 제거
-    const [correctMarkers, setCorrectMarkers] = useState<Marker[]>([]);
-    const [wrongMarkers, setWrongMarkers] = useState<Marker[]>([]);
-    // 목숨, 아이템 초기값
-    const [life, setLife] = useState<number>(3);
-    const [timerItems, setTimerItems] = useState<number>(2);
-    const [hintItems, setHintItems] = useState<number>(2);
+    // ✅ MobX 상태 변경 감지를 위한 useState 선언
+    const [normalImage, setNormalImage] = useState<string | null>(soloFindItViewModel.normalImage);
+    const [abnormalImage, setAbnormalImage] = useState<string | null>(soloFindItViewModel.abnormalImage);
 
-    // 한 라운드에 필요한 정답 클릭 개수 (예제에서는 5개)
-    const TARGET_CORRECT_COUNT = 5;
-    // 터치 좌표와 정답 좌표 사이의 허용 오차 (픽셀 단위)
-    const THRESHOLD = 30;
-
-    // 타이머바 애니메이션 (전체 진행률: 1 → 0)
-    const timerProgress = useSharedValue(1);
-    const { width } = Dimensions.get('window');
-    // 타이머바 컨테이너의 너비: 화면 너비의 90%
-    const TIMER_BAR_WIDTH = width * 0.9;
-
-    const animatedTimerStyle = useAnimatedStyle(() => ({
-        width: TIMER_BAR_WIDTH * timerProgress.value,
-    }));
     const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 255;
+    // ✅ 확대/축소 관련 값
+    const MAX_SCALE = 2.5; // 최대 확대 비율
+    const MIN_SCALE = 1; // 최소 축소 비율
 
-    // ----------------- 확대/축소 관련 (핀치, 팬, 버튼) -----------------
-    const MAX_SCALE = 2.5;
-    const MIN_SCALE = 1;
+    // ✅ 확대 및 이동 관련 상태값
     const scale = useSharedValue(1);
     const offsetX = useSharedValue(0);
     const offsetY = useSharedValue(0);
     const lastOffsetX = useSharedValue(0);
     const lastOffsetY = useSharedValue(0);
-    const lastScale = useSharedValue(1);
+    const isZoomed = useSharedValue(false); // ✅ 확대 여부 저장
+
     const derivedScale = useDerivedValue(() => scale.value);
     const derivedOffsetX = useDerivedValue(() => offsetX.value);
     const derivedOffsetY = useDerivedValue(() => offsetY.value);
+   
+    const route = useRoute<any>();
+    const { gameInfoList } = route.params; 
 
-    
-    // 핀치 제스처: 시작 시 현재 스케일을 저장하고 업데이트
+    // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
+    const handleZoomIn = () => {
+        scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
+        isZoomed.value = scale.value > 1;
+        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
+    };
+
+    const handleZoomOut = () => {
+        scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
+        isZoomed.value = scale.value > 1;
+        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
+    };
+
+
+    const adjustOffset = () => {
+        'worklet';
+        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+
+        // 허용 가능한 최대 offset (양쪽 각각)
+        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
+
+        offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
+        offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+    };
+
+    // ✅ 핀치 줌 제스처 정의
     const pinchGesture = Gesture.Pinch()
         .onUpdate((event) => {
             scale.value = Math.min(Math.max(event.scale, MIN_SCALE), MAX_SCALE);
         });
-
 
     const panGesture = Gesture.Pan()
         .onStart(() => {
@@ -96,211 +99,11 @@ const route = useRoute<any>();
             offsetY.value = Math.max(-maxOffsetY, Math.min(newOffsetY, maxOffsetY));
         })
         .onEnd(() => {
+            'worklet';
             adjustOffset();
         });
 
-    const adjustOffset = () => {
-        'worklet';
-        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
-        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
-
-        // 허용 가능한 최대 offset (양쪽 각각)
-        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
-        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
-
-        offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
-        offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
-    };
-
-    const animatedImageStyle = useAnimatedStyle(() => ({
-        transform: [
-            { translateX: offsetX.value },
-            { translateY: offsetY.value },
-            { scale: scale.value },
-        ],
-    }));
-    
-    // 타이머 종료 시 호출되는 함수
-    const handleTimerFinish = useCallback(() => {
-        // 아직 정답 횟수를 달성하지 못한 경우 타임 아웃 처리
-        if (correctMarkers.length < TARGET_CORRECT_COUNT) {
-            Alert.alert("시간 종료", "타임 아웃되었습니다.");
-            // 목숨 차감
-            setLife((prev) => {
-                const newLife = prev - 1;
-                if (newLife <= 0) {
-                    // 추가: 게임 종료 화면으로 이동하는 로직 작성 가능
-                    navigation.navigate('Home');
-
-                }
-                return newLife;
-            });
-        }
-        // 라운드 전환 (현재 라운드가 마지막이 아니라면)
-        if (currentRound < gameInfoList.length - 1) {
-            setCurrentRound((prev) => prev + 1);
-            // 다음 라운드를 위해 마커 초기화
-            setCorrectMarkers([]);
-            setWrongMarkers([]);
-            // 확대/축소 초기화
-            scale.value = withTiming(1, { duration: 200 });
-            offsetX.value = withTiming(0, { duration: 200 });
-            offsetY.value = withTiming(0, { duration: 200 });
-        } else {
-            // 추가: 결과 화면으로 이동하는 로직 작성 가능
-            navigation.navigate('Home');
-
-        }
-    }, [correctMarkers.length, currentRound, gameInfoList.length, scale, offsetX, offsetY]);
-
-    // 매 라운드 시작 시 60초 타이머바 애니메이션 실행
-    useEffect(() => {
-        timerProgress.value = 1; // 초기화
-        timerProgress.value = withTiming(0, { duration: 60000 }, (finished) => {
-            if (finished) {
-                runOnJS(handleTimerFinish)();
-            }
-        });
-    }, [currentRound, handleTimerFinish, timerProgress]);
-
-    // 오답 마커 제거 함수 (3초 후)
-    const scheduleWrongMarkerRemoval = useCallback((id: string) => {
-        setTimeout(() => {
-            setWrongMarkers((prev) => prev.filter((marker) => marker.id !== id));
-        }, 3000);
-    }, []);
-
-    // 이미지 터치 핸들러
-    const handleImagePress = (event: any) => {
-        // 터치 좌표 (이미지 내 상대 좌표)
-        const { locationX, locationY } = event.nativeEvent;
-        const currentGameInfo = gameInfoList[currentRound];
-        const correctPositions: Marker[] = currentGameInfo.correctPositions; // 예: [{ x: number, y: number }, ...]
-
-        // 이미 해당 좌표에 대해 정답 마커가 등록되었으면 중복처리 방지
-        const alreadyHit = correctMarkers.some((marker) => {
-            const dx = marker.x - locationX;
-            const dy = marker.y - locationY;
-            return Math.sqrt(dx * dx + dy * dy) < THRESHOLD;
-        });
-        if (alreadyHit) return;
-
-        // 올바른 위치에 클릭했는지 체크
-        let isCorrect = false;
-        for (let pos of correctPositions) {
-            const dx = pos.x - locationX;
-            const dy = pos.y - locationY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < THRESHOLD) {
-                isCorrect = true;
-                break;
-            }
-        }
-
-        // 마커 객체 생성 (고유 id 부여)
-        const markerId = Date.now().toString() + Math.random().toString();
-        const newMarker: Marker = { id: markerId, x: locationX, y: locationY };
-
-        if (isCorrect) {
-            // 정답이면 동그라미(⭕) 표시 (영구적으로 유지)
-            setCorrectMarkers((prev) => [...prev, newMarker]);
-            // 정답 5개 달성 시 다음 라운드 진행
-            if (correctMarkers.length + 1 >= TARGET_CORRECT_COUNT) {
-                setTimeout(() => {
-                    if (currentRound < gameInfoList.length - 1) {
-                        setCurrentRound((prev) => prev + 1);
-                        // 다음 라운드를 위해 마커 초기화
-                        setCorrectMarkers([]);
-                        setWrongMarkers([]);
-                        // 확대/축소 초기화
-                        scale.value = withTiming(1, { duration: 200 });
-                        offsetX.value = withTiming(0, { duration: 200 });
-                        offsetY.value = withTiming(0, { duration: 200 });
-                    } else {
-                        Alert.alert("게임 종료", "모든 라운드를 완료했습니다!");
-                        // 추가: 결과 화면으로 이동하거나 게임 종료 처리
-                        navigation.navigate('Home');
-
-                    }
-                }, 1000);
-            }
-        } else {
-            // 오답이면 엑스(❌) 표시 (3초 후 제거)
-            setWrongMarkers((prev) => [...prev, newMarker]);
-            scheduleWrongMarkerRemoval(markerId);
-            // 목숨 차감
-            setLife((prev) => {
-                const newLife = prev - 1;
-                if (newLife <= 0) {
-                    Alert.alert("게임 종료", "목숨을 모두 잃었습니다!");
-                    navigation.navigate('Home');
-                }
-                return newLife;
-            });
-        }
-    };
-
-    const handleImageClick = useCallback((event: any) => {
-        'worklet';
-        // transform 보정 없이 원본 좌표 사용
-        const { locationX, locationY } = event.nativeEvent;
-        const finalX = parseFloat(locationX.toFixed(2));
-        const finalY = parseFloat(locationY.toFixed(2));
-
-        runOnJS(sendClickToServer)(finalX, finalY);
-        console.log(`📌 [클릭 좌표] (${finalX}, ${finalY})`);
-
-    }, []);
-
-    const sendClickToServer = (x: number, y: number) => {
-        console.log(`📌 클릭한 좌표: (${x}, ${y})`);
-    };
-    // 이미지를 렌더링할 때 정답/오답 마커 오버레이 컴포넌트 사용
-    // (각 이미지 컨테이너에 확대/축소 제스처와 애니메이션 스타일을 적용)
-    const renderImageWithMarkers = (uri: string) => {
-        return (
-            <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <Animated.View style={[styles.imageContainer, animatedImageStyle]}>
-                    <TouchableWithoutFeedback onPress={handleImagePress}>
-                        <Image source={{ uri }} style={styles.image} />
-                    </TouchableWithoutFeedback>
-                    {correctMarkers.map((marker) => (
-                        <View
-                            key={marker.id}
-                            style={[
-                                styles.marker,
-                                styles.correctMarker,
-                                { left: marker.x - 15, top: marker.y - 15 },
-                            ]}
-                        >
-                            <Text style={styles.markerText}>⭕</Text>
-                        </View>
-                    ))}
-                    {wrongMarkers.map((marker) => (
-                        <View
-                            key={marker.id}
-                            style={[
-                                styles.marker,
-                                styles.wrongMarker,
-                                { left: marker.x - 15, top: marker.y - 15 },
-                            ]}
-                        >
-                            <Text style={styles.markerText}>❌</Text>
-                        </View>
-                    ))}
-                </Animated.View>
-            </GestureDetector>
-        );
-    };
-
-    // 확대/축소 버튼 핸들러 (버튼 클릭 시 스케일 조정)
-    const handleZoomIn = () => {
-        scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
-    };
-
-    const handleZoomOut = () => {
-        scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
-    };
+    // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
     const animatedStyle = useAnimatedStyle(() => ({
         width: IMAGE_FRAME_WIDTH,
         height: IMAGE_FRAME_HEIGHT,
@@ -312,46 +115,279 @@ const route = useRoute<any>();
         ],
     }));
 
+    const startTimerAnimation = useCallback((duration: number) => {
+        if (timerAnimation.current) {
+            timerAnimation.current.stop();
+        }
+        timerAnimation.current = RNAnimated.timing(timerWidth, {
+            toValue: 0,
+            duration: duration * 1000,
+            easing: Easing.linear,
+            useNativeDriver: false,
+        });
+
+        timerAnimation.current.start();
+    }, []);
+    useEffect(() => {
+        if (soloFindItViewModel.timer > 0 && !soloFindItViewModel.timerStopped) {
+            startTimerAnimation(soloFindItViewModel.timer);
+        }
+    }, [soloFindItViewModel.timer]);
+    useEffect(() => {
+        if (soloFindItViewModel.correctClicks.length === 5) {
+            setCurrentRound(soloFindItViewModel.round);
+            soloFindItViewModel.nextRound();
+        }
+    }), [soloFindItViewModel.correctClicks]
+    
+    // 정답 클릭 시 좌표를 추가하는 함수
+    const addCorrectClick = (x: number, y: number) => {
+        runInAction(() => {
+            soloFindItViewModel.correctClicks.push({
+                x, y,
+                userID: 0
+            });
+        });
+    };
+
+    // 오답 클릭 시 좌표를 추가하는 함수
+    const addWrongClick = (x: number, y: number) => {
+        runInAction(() => {
+            soloFindItViewModel.wrongClicks.push({
+                x, y,
+                userID: 0
+            });
+        });
+        // 4초 후 해당 오답 좌표를 제거합니다.
+        setTimeout(() => {
+            runInAction(() => {
+                const index = soloFindItViewModel.wrongClicks.findIndex(item => item.x === x && item.y === y);
+                if (index > -1) {
+                    soloFindItViewModel.wrongClicks.splice(index, 1);
+                }
+            });
+        }, 2500);
+    };
+    const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
+
+    const handleImageClick = useCallback((event: any) => {
+        'worklet';
+        const { locationX, locationY } = event.nativeEvent;
+        const finalX = parseFloat(locationX.toFixed(2));
+        const finalY = parseFloat(locationY.toFixed(2));
+
+        // 현재 라운드에 해당하는 게임 정보 가져오기
+        const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
+        let isCorrect = false;
+        let matchedPos = null;
+        // correctPositions 배열을 순회하며 클릭 위치와의 거리를 계산하고, 
+        // 사용자가 클릭한 좌표에 해당하는 정답 좌표(gameInfo에 있는 좌표)를 찾음
+        for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
+            const pos = currentGameInfo.correctPositions[i];
+            const dx = finalX - pos.x;
+            const dy = finalY - pos.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // 허용 오차 이내면 해당 정답 좌표를 저장
+            if (distance <= TOLERANCE) {
+                matchedPos = pos;
+                isCorrect = true;
+                break;
+            }
+        }
+
+        if (isCorrect) {
+            // JS 스레드에서 상태 업데이트 실행
+            runOnJS(addCorrectClick)(matchedPos.x, matchedPos.y);
+        } else {
+            // 필요에 따라 오답 처리 로직 추가 가능 (예: wrongClicks 배열에 추가)
+            soloFindItViewModel.life -= 1;
+            runOnJS(addWrongClick)(finalX, finalY);
+        }
+    }, [gameInfoList]);
+
+
+    // ✅ 힌트 아이템 사용
+    const handleHint = () => {
+        if (soloFindItViewModel.hints > 0) {
+            // ✅ 서버에 아이템 사용 이벤트 전송
+            const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
+            soloFindItViewModel.useHintItem(currentGameInfo.correctPositions);
+            soloFindItViewModel.hints -= 1;
+        }
+
+    };
+    // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
+    const handleTimerStop = () => {
+        if (soloFindItViewModel.item_timer_stop > 0 && !soloFindItViewModel.timerStopped) {
+            soloFindItViewModel.useTimerStopItem();
+
+            if (timerAnimation.current) {
+                timerAnimation.current.stop(); // ✅ 타이머 바 애니메이션 정지
+            }
+
+            remainingTime.current = soloFindItViewModel.timer; // ✅ 현재 남은 시간 저장
+            isPaused.current = true;
+
+            setTimeout(() => {
+                console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
+                isPaused.current = false;
+                startTimerAnimation(remainingTime.current); // ✅ 남은 시간만큼 다시 진행
+            }, 5000);
+            // ✅ 서버에 아이템 사용 이벤트 전송
+            soloFindItViewModel.useTimerStopItem();
+        }
+    };
+
+    // ✅ MobX 상태 변경 감지하여 UI 업데이트
+    useEffect(() => {
+        setNormalImage(soloFindItViewModel.normalImage);
+        setAbnormalImage(soloFindItViewModel.abnormalImage);
+    }, [soloFindItViewModel.normalImage, soloFindItViewModel.abnormalImage]);
+
+    // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
+    useEffect(() => {
+        if (!soloFindItViewModel.roundClearEffect) {
+            startTimerAnimation(soloFindItViewModel.timer);
+            timerWidth.setValue(100); // 처음에는 100%
+            soloFindItViewModel.startTimer();
+        }
+        if (!soloFindItViewModel.roundFailEffect) {
+            startTimerAnimation(soloFindItViewModel.timer);
+            timerWidth.setValue(100); // 처음에는 100%
+            soloFindItViewModel.startTimer();
+        }
+        // 라운드 변경 시 이미지 transform 초기화
+        scale.value = withTiming(1, { duration: 200 });
+        offsetX.value = withTiming(0, { duration: 200 });
+        offsetY.value = withTiming(0, { duration: 200 });
+    }, [soloFindItViewModel.round]);
+
+
+    // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
+    useEffect(() => {
+        if (soloFindItViewModel.hintPosition) {
+            setHintVisible(true);
+            setTimeout(() => setHintVisible(false), 4000);
+        }
+    }, [soloFindItViewModel.hintPosition]);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (imageRef.current) {
+                imageRef.current.measure((fx, fy, width, height, px, py) => {
+                    setImagePosition({ x: px, y: py });
+                });
+            }
+        }, 500);
+    }, []);
+
+    useEffect(() => {
+        console.log(`🔄 게임 상태 변경됨! (목숨: ${soloFindItViewModel.life}, 힌트: ${soloFindItViewModel.hints}, 타이머 정지: ${soloFindItViewModel.item_timer_stop}, 라운드: ${soloFindItViewModel.round})`);
+
+        // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
+    }, [soloFindItViewModel.life, soloFindItViewModel.hints, soloFindItViewModel.item_timer_stop, soloFindItViewModel.round]);
+
+
+    // ✅ 게임 종료 시 타이머 바 정지
+    useEffect(() => {
+        if (soloFindItViewModel.gameOver) {
+            soloFindItViewModel.timerStopped = true;
+            if (timerAnimation.current) {
+                timerAnimation.current.stop();
+            }
+            navigation.navigate('Home');
+        }
+    }, [soloFindItViewModel.gameOver]);
 
     return (
         <View style={styles.container}>
-            {/* 상단 헤더 */}
-            <Header />
-            <Text style={styles.roundText}>
-                Round {currentRound + 1} / {gameInfoList.length}
-            </Text>
+            {/* 상단 UI */}
+            <View style={styles.topBar}>
+                <Text style={styles.roundText}>Round {soloFindItViewModel.round}</Text>
+            </View>
+
+            {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
                 <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
-
-                    {/* 게임 화면 영역 */}
                             <TouchableWithoutFeedback onPress={handleImageClick}>
+                                {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
                                 <View ref={imageRef} style={styles.imageContainer}>
-
-                                {renderImageWithMarkers(gameInfoList[currentRound].normalUrl)}
+                                    {gameInfoList[currentRound].normalUrl ? (
+                                        <Image source={{ uri: gameInfoList[currentRound].normalUrl }} style={styles.image} />
+                                    ) : (
+                                        <Text>이미지를 불러오는 중...</Text>
+                                    )}
+                                    {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                        <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
+                                    ))}
+                                    {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
+                                            <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                            <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                        </View>
+                                    ))}
+                                    {soloFindItViewModel.missedPositions.map((pos, index) => (
+                                        <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                                    ))}
+                                    {hintVisible && soloFindItViewModel.hintPosition && (
+                                        <View style={[styles.hintCircle, { left: soloFindItViewModel.hintPosition.x - 15, top: soloFindItViewModel.hintPosition.y - 15 }]} />
+                                    )}
                                 </View>
                             </TouchableWithoutFeedback>
-                    </Animated.View >
-                </View >
-            </GestureDetector >
-            {/* 타이머 바 */}
+                    </Animated.View>
+                </View>
+            </GestureDetector>
+
+
+            {/* ✅ 타이머 바 추가 */}
             <View style={styles.timerBarContainer}>
-                <Animated.View style={[styles.timerBar, animatedTimerStyle]} />
+                <RNAnimated.View style={[styles.timerBar, {
+                    width: timerWidth.interpolate({
+                        inputRange: [0, 100],
+                        outputRange: ['0%', '100%'],
+                    }),
+                    backgroundColor: soloFindItViewModel.timerStopped ? 'red' : 'green'
+                }]} />
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
                 <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
+                        {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
                             <View ref={imageRef} style={styles.imageContainer}>
-                            {/* 비정상 이미지 (서버 응답에 abnormalUrl이 있을 경우) */}
-                            {gameInfoList[currentRound].abnormalUrl &&
-                                    renderImageWithMarkers(gameInfoList[currentRound].abnormalUrl)}
+                                {gameInfoList[currentRound].abnormalUrl ? (
+                                    <Image source={{ uri: gameInfoList[currentRound].abnormalUrl }} style={styles.image} />
+                                ) : (
+                                    <Text>이미지를 불러오는 중...</Text>
+                                )}
+                                {/* ✅ 정답 표시 */}
+                                {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                    <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
+                                ))}
+
+                                {/* ✅ 오답 표시 */}
+                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                    <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                    </View>
+                                ))}
+                                {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
+                                {soloFindItViewModel.missedPositions.map((pos, index) => (
+                                    <View key={`missed-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
+                                ))}
+                                {/* ✅ 힌트 표시 */}
+                                {hintVisible && soloFindItViewModel.hintPosition && (
+                                    <View style={[styles.hintCircle, { left: soloFindItViewModel.hintPosition.x - 15, top: soloFindItViewModel.hintPosition.y - 15 }]} />
+                                )}
                             </View>
+
                         </TouchableWithoutFeedback>
-            </Animated.View >
-        </View >
-            </GestureDetector >
-            {/* 확대/축소 버튼 (필요에 따라 UI 위치 및 스타일 조정) */}
+                    </Animated.View>
+                </View>
+            </GestureDetector>
             {/* 확대/축소 버튼 */}
             <View style={styles.controlPanel}>
                 <TouchableOpacity onPress={handleZoomIn} style={styles.controlButton}>
@@ -362,23 +398,34 @@ const route = useRoute<any>();
                 </TouchableOpacity>
             </View>
 
-            {/* 아이템 및 상태 영역 */}
-            <View style={styles.itemContainer}>
-                <View style={styles.item}>
-                    <Text style={styles.itemLabel}>목숨</Text>
-                    <Text style={styles.itemCount}>{life}</Text>
-                </View>
-                <View style={styles.item}>
-                    <Text style={styles.itemLabel}>타이머</Text>
-                    <Text style={styles.itemCount}>{timerItems}</Text>
-                </View>
-                <View style={styles.item}>
-                    <Text style={styles.itemLabel}>힌트</Text>
-                    <Text style={styles.itemCount}>{hintItems}</Text>
-                </View>
+            {/* ✅ 게임 정보 한 줄로 정리 */}
+            <View style={styles.infoRow}>
+                <Text style={styles.infoText}>남은 개수: {5 - soloFindItViewModel.correctClicks.length}</Text>
+                <Text style={styles.infoText}>❤️ {soloFindItViewModel.life}</Text>
+
+                {/* 힌트 버튼 */}
+                <TouchableOpacity style={styles.infoButton} onPress={handleHint}>
+                    <Text style={styles.infoButtonText}>💡 {soloFindItViewModel.hints}</Text>
+                </TouchableOpacity>
+
+                {/* 타이머 정지 버튼 */}
+                <TouchableOpacity style={styles.infoButton} onPress={handleTimerStop}>
+                    <Text style={styles.infoButtonText}>⏳ {soloFindItViewModel.item_timer_stop}</Text>
+                </TouchableOpacity>
             </View>
+
+            {soloFindItViewModel.roundClearEffect && (
+                <View style={styles.clearEffectContainer}>
+                    <Text style={styles.clearEffectText}>🎉 ROUND CLEAR! 🎉</Text>
+                </View>
+            )}
+            {soloFindItViewModel.roundFailEffect && (
+                <View style={styles.failEffectContainer}>
+                    <Text style={styles.failEffectText}>🎉 TIME OUT! 🎉</Text>
+                </View>
+            )}
         </View>
     );
-};
+});
 
 export default SoloFindItScreen;
