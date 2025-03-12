@@ -108,15 +108,24 @@ class SoloGameViewModel {
                 this.updateTimer(this.timer - 1);
                 this.remainingTime = this.timer;
             } else {
+                console.log("타임아웃");
                 this.stopTimer();
-                this.life -= (5-this.correctClicks.length);
+                runInAction(() => {
+                    this.life -= (5 - this.correctClicks.length);
+                });
+                console.log("남은 생명력 : ", this.life);
                 //타임아웃 이벤트 처리
                 if (this.life <= 0) {
                     runInAction(() => {
+                        this.roundFailEffect = true;
                         this.gameOver = true;
                     });
+                } else {
+                    runInAction(() => {
+                        this.roundClearEffect = true;
+                        this.nextRound();
+                    });
                 }
-                this.round += 1;
             }
         }, 1000);
     }
@@ -185,13 +194,11 @@ class SoloGameViewModel {
     
     useHintItem(correctPositions: { x: number; y: number }[]) {
         // 정답으로 체크되지 않은 좌표만 필터링
-        console.log(correctPositions);
         //힌트 좌표를 넣을때 정답 좌표에 없는거를 넣어줘야 된다.
         if (this.correctClicks.length === 0) {
             this.setHintPosition(correctPositions[0].x, correctPositions[0].y);
             return;
         }
-        console.log(this.correctClicks);
         for (let i = 0; i < correctPositions.length; i++) {
             // correctClicks에 없는 좌표를 찾아서 hintPosition에 설정
             if (!this.correctClicks.some(click => click.x === correctPositions[i].x && click.y === correctPositions[i].y)) {
@@ -207,7 +214,9 @@ class SoloGameViewModel {
     setHintPosition(x: number, y: number) {
         this.hintPosition = { x, y };
         setTimeout(() => {
-            this.hintPosition = null;
+            runInAction(() => {
+                this.hintPosition = null;
+            });
         }, 1500);
     }
 

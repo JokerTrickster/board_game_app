@@ -137,7 +137,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     useEffect(() => {
         if (soloFindItViewModel.correctClicks.length === 5) {
-            setCurrentRound(soloFindItViewModel.round);
             soloFindItViewModel.nextRound();
         }
     }), [soloFindItViewModel.correctClicks]
@@ -182,8 +181,6 @@ const SoloFindItScreen: React.FC = observer(() => {
         const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
         let isCorrect = false;
         let matchedPos = null;
-        console.log(currentGameInfo.round);
-        console.log(currentGameInfo);
         // correctPositions 배열을 순회하며 클릭 위치와의 거리를 계산하고, 
         // 사용자가 클릭한 좌표에 해당하는 정답 좌표(gameInfo에 있는 좌표)를 찾음
         for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
@@ -217,7 +214,9 @@ const SoloFindItScreen: React.FC = observer(() => {
             // ✅ 서버에 아이템 사용 이벤트 전송
             const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
             soloFindItViewModel.useHintItem(currentGameInfo.correctPositions);
-            soloFindItViewModel.hints -= 1;
+            runInAction(() => {
+                soloFindItViewModel.hints -= 1;
+            });
         }
 
     };
@@ -246,7 +245,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
     useEffect(() => {
-        console.log('라운드 변경:', soloFindItViewModel.round);
         if (!soloFindItViewModel.roundClearEffect) {
             startTimerAnimation(soloFindItViewModel.timer);
             timerWidth.setValue(100); // 처음에는 100%
@@ -298,7 +296,9 @@ const SoloFindItScreen: React.FC = observer(() => {
     // ✅ 게임 종료 시 타이머 바 정지
     useEffect(() => {
         if (soloFindItViewModel.gameOver) {
-            soloFindItViewModel.timerStopped = true;
+            runInAction(() => {
+                soloFindItViewModel.timerStopped = true;
+            });
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
