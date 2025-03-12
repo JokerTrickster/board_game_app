@@ -116,6 +116,7 @@ class SoloGameViewModel {
                         this.gameOver = true;
                     });
                 }
+                this.round += 1;
             }
         }, 1000);
     }

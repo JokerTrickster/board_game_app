@@ -10,6 +10,7 @@ import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runInAction } from 'mobx';
+import Header from '../../components/Header';
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -21,7 +22,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
     const [hintVisible, setHintVisible] = useState(false); // ✅ 힌트 표시 여부
     // 현재 라운드 (0 ~ 9)
-    const [currentRound, setCurrentRound] = useState<number>(0);
+    const [currentRound, setCurrentRound] = useState<number>(1);
     // ✅ MobX 상태 변경 감지를 위한 useState 선언
     const [normalImage, setNormalImage] = useState<string | null>(soloFindItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(soloFindItViewModel.abnormalImage);
@@ -133,6 +134,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             startTimerAnimation(soloFindItViewModel.timer);
         }
     }, [soloFindItViewModel.timer]);
+
     useEffect(() => {
         if (soloFindItViewModel.correctClicks.length === 5) {
             setCurrentRound(soloFindItViewModel.round);
@@ -180,6 +182,8 @@ const SoloFindItScreen: React.FC = observer(() => {
         const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
         let isCorrect = false;
         let matchedPos = null;
+        console.log(currentGameInfo.round);
+        console.log(currentGameInfo);
         // correctPositions 배열을 순회하며 클릭 위치와의 거리를 계산하고, 
         // 사용자가 클릭한 좌표에 해당하는 정답 좌표(gameInfo에 있는 좌표)를 찾음
         for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
@@ -239,14 +243,10 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
     };
 
-    // ✅ MobX 상태 변경 감지하여 UI 업데이트
-    useEffect(() => {
-        setNormalImage(soloFindItViewModel.normalImage);
-        setAbnormalImage(soloFindItViewModel.abnormalImage);
-    }, [soloFindItViewModel.normalImage, soloFindItViewModel.abnormalImage]);
 
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
     useEffect(() => {
+        console.log('라운드 변경:', soloFindItViewModel.round);
         if (!soloFindItViewModel.roundClearEffect) {
             startTimerAnimation(soloFindItViewModel.timer);
             timerWidth.setValue(100); // 처음에는 100%
@@ -261,6 +261,10 @@ const SoloFindItScreen: React.FC = observer(() => {
         scale.value = withTiming(1, { duration: 200 });
         offsetX.value = withTiming(0, { duration: 200 });
         offsetY.value = withTiming(0, { duration: 200 });
+        // 라운드 이미지
+        setNormalImage(gameInfoList[soloFindItViewModel.round - 1].normalUrl);
+        setAbnormalImage(gameInfoList[soloFindItViewModel.round - 1].abnormalUrl);
+        setCurrentRound(soloFindItViewModel.round);
     }, [soloFindItViewModel.round]);
 
 
@@ -283,10 +287,12 @@ const SoloFindItScreen: React.FC = observer(() => {
     }, []);
 
     useEffect(() => {
-        console.log(`🔄 게임 상태 변경됨! (목숨: ${soloFindItViewModel.life}, 힌트: ${soloFindItViewModel.hints}, 타이머 정지: ${soloFindItViewModel.item_timer_stop}, 라운드: ${soloFindItViewModel.round})`);
-
-        // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
-    }, [soloFindItViewModel.life, soloFindItViewModel.hints, soloFindItViewModel.item_timer_stop, soloFindItViewModel.round]);
+        if (soloFindItViewModel.life <= 0) {
+            runInAction(() => {
+                soloFindItViewModel.gameOver = true;
+            });
+        }
+    }, [soloFindItViewModel.life]);
 
 
     // ✅ 게임 종료 시 타이머 바 정지
@@ -302,6 +308,7 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     return (
         <View style={styles.container}>
+            <Header/>
             {/* 상단 UI */}
             <View style={styles.topBar}>
                 <Text style={styles.roundText}>Round {soloFindItViewModel.round}</Text>
@@ -314,8 +321,8 @@ const SoloFindItScreen: React.FC = observer(() => {
                             <TouchableWithoutFeedback onPress={handleImageClick}>
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
                                 <View ref={imageRef} style={styles.imageContainer}>
-                                    {gameInfoList[currentRound].normalUrl ? (
-                                        <Image source={{ uri: gameInfoList[currentRound].normalUrl }} style={styles.image} />
+                                    {gameInfoList[currentRound-1].normalUrl ? (
+                                    <Image source={{ uri: gameInfoList[currentRound - 1].normalUrl }} style={styles.image} />
                                     ) : (
                                         <Text>이미지를 불러오는 중...</Text>
                                     )}
@@ -357,8 +364,8 @@ const SoloFindItScreen: React.FC = observer(() => {
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
                             <View ref={imageRef} style={styles.imageContainer}>
-                                {gameInfoList[currentRound].abnormalUrl ? (
-                                    <Image source={{ uri: gameInfoList[currentRound].abnormalUrl }} style={styles.image} />
+                                {gameInfoList[currentRound - 1].abnormalUrl ? (
+                                    <Image source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }} style={styles.image} />
                                 ) : (
                                     <Text>이미지를 불러오는 중...</Text>
                                 )}
