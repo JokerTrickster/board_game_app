@@ -11,16 +11,14 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         backgroundColor: '#f4f4f4',
-        paddingTop: 0
     },
     topBar: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
-        position: 'absolute',
-        top: scale(10)
+        marginTop: verticalScale(-30),
     },
     roundText: {
         fontSize: scale(20),

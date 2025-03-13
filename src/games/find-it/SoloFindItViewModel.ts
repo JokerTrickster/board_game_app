@@ -4,7 +4,7 @@ class SoloGameViewModel {
     life = 3; // 목숨 개수
     hints = 2; // 힌트 개수
     item_timer_stop = 3; // ✅ 타이머 멈춤 아이템 개수
-    timer = 60; // 초 단위 타이머
+    timer = 6000; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
     correctClicks: { x: number; y: number; userID: number }[] = []; // 맞춘 위치 저장
@@ -15,7 +15,7 @@ class SoloGameViewModel {
     timerStopped = false; // ✅ 타이머 멈춤 상태
     timerColor = 'black'; // ✅ 타이머 색상
     currentImageID = 0; // 현재 이미지 인덱스
-    remainingTime = 60; // ✅ 현재 남은 타이머 시간 저장
+    remainingTime = 6000; // ✅ 현재 남은 타이머 시간 저장
     hintPosition: { x: number; y: number } | null = null; // ✅ 힌트 좌표 저장
     // ✅ 서버에서 받은 이미지 URL 저장
     normalImage: string | null = null;

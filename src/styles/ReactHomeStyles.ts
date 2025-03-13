@@ -17,6 +17,14 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         padding: scale(10),
     },
+    soloHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '90%',
+        height: '20%',
+        paddingBottom: verticalScale(50),
+    },
     // 프로필
     profileContainer: {
         marginTop: verticalScale(20),

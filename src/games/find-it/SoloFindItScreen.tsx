@@ -4,13 +4,14 @@ import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
 import soloFindItViewModel from './SoloFindItViewModel'; // ✅ 올바른 경로로 변경
-import { styles } from './ReactFindItStyles';
+import { styles } from './ReactSoloFindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runInAction } from 'mobx';
-import Header from '../../components/Header';
+import SoloHeader from '../../components/SoloHeader';
+import ItemBar from '../../components/ItemBar';
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -231,7 +232,9 @@ const SoloFindItScreen: React.FC = observer(() => {
 
             remainingTime.current = soloFindItViewModel.timer; // ✅ 현재 남은 시간 저장
             isPaused.current = true;
-
+            runInAction(() => {
+                soloFindItViewModel.item_timer_stop -= 1;
+            });
             setTimeout(() => {
                 console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
                 isPaused.current = false;
@@ -308,7 +311,7 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     return (
         <View style={styles.container}>
-            <Header/>
+            <SoloHeader />
             {/* 상단 UI */}
             <View style={styles.topBar}>
                 <Text style={styles.roundText}>Round {soloFindItViewModel.round}</Text>
@@ -395,31 +398,15 @@ const SoloFindItScreen: React.FC = observer(() => {
                     </Animated.View>
                 </View>
             </GestureDetector>
-            {/* 확대/축소 버튼 */}
-            <View style={styles.controlPanel}>
-                <TouchableOpacity onPress={handleZoomIn} style={styles.controlButton}>
-                    <Text style={styles.controlButtonText}>+</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleZoomOut} style={styles.controlButton}>
-                    <Text style={styles.controlButtonText}>-</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* ✅ 게임 정보 한 줄로 정리 */}
-            <View style={styles.infoRow}>
-                <Text style={styles.infoText}>남은 개수: {5 - soloFindItViewModel.correctClicks.length}</Text>
-                <Text style={styles.infoText}>❤️ {soloFindItViewModel.life}</Text>
-
-                {/* 힌트 버튼 */}
-                <TouchableOpacity style={styles.infoButton} onPress={handleHint}>
-                    <Text style={styles.infoButtonText}>💡 {soloFindItViewModel.hints}</Text>
-                </TouchableOpacity>
-
-                {/* 타이머 정지 버튼 */}
-                <TouchableOpacity style={styles.infoButton} onPress={handleTimerStop}>
-                    <Text style={styles.infoButtonText}>⏳ {soloFindItViewModel.item_timer_stop}</Text>
-                </TouchableOpacity>
-            </View>
+            <ItemBar
+                life={soloFindItViewModel.life}
+                timerStopCount={soloFindItViewModel.item_timer_stop}
+                hintCount={soloFindItViewModel.hints}
+                onTimerStopPress={handleTimerStop}
+                onHintPress={handleHint}
+                onZoomInPress={handleZoomIn}
+                onZoomOutPress={handleZoomOut}
+            />
 
             {soloFindItViewModel.roundClearEffect && (
                 <View style={styles.clearEffectContainer}>
