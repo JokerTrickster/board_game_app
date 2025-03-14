@@ -73,8 +73,10 @@ const HomeScreen: React.FC = () => {
             source={require('../assets/images/common/background_basic.png')}
             style={styles.background}
         >
+        <Header userData={userData} />
+
         <View style={styles.container}>
-            <Header userData={userData} />
+
             <ScrollView contentContainerStyle={styles.gameContainer}>
                 {gameList.map((game, index) => (
                     <GameCard

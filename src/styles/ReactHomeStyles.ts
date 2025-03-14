@@ -10,6 +10,8 @@ const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 export default StyleSheet.create({
     container: {
         flex: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     },
     header: {
         flexDirection: 'row',
@@ -59,22 +61,22 @@ export default StyleSheet.create({
         marginTop: verticalScale(-5),
     },
     // 하트(코인) 영역
-    hearts: {
+    coin: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: scale(-10),
     },
-    heartIcon: {
+    coinIcon: {
         width: scale(110),
-        height: verticalScale(100),
-        marginRight: scale(5),
+        height: verticalScale(80),
+        marginRight: scale(20),
         resizeMode: 'contain',
+        marginLeft: scale(-30),
     },
-    heartCount: {
+    coinCount: {
         fontSize: scale(16),
         color: '#000',
         fontWeight: 'bold',
-        marginLeft: scale(-60),
+        marginLeft: scale(-50),
     },
     profile: {
         flexDirection: 'row',

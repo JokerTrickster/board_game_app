@@ -77,13 +77,13 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                     </ImageBackground>
                 </View>
 
-            <View style={styles.hearts}>
-                {/* 하트 이미지 */}
+            <View style={styles.coin}>
+                {/* coin 이미지 */}
                 <Image
-                    source={require('../assets/icons/home/heart.png')}
-                    style={styles.heartIcon}
+                    source={require('../assets/icons/home/coin.png')}
+                    style={styles.coinIcon}
                 />
-                <Text style={styles.heartCount}>{user?.coin ?? 30}/30</Text>
+                <Text style={styles.coinCount}>{user?.coin ?? 100}</Text>
             </View>
 
 

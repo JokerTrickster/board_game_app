@@ -1,65 +1,73 @@
 import React from 'react';
-import { View, Text, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, Image, ImageBackground } from 'react-native';
 import styles from '../styles/ReactActionCardStyles';
-
 
 interface PodiumItem {
     rank: number;           // 1, 2, 3
-    profileImage: any;      // 예: require('../assets/images/user1.png') 또는 { uri: 'https://example.com/user1.png' }
+    profileImage: any;      // 예: require(...) 또는 { uri: 'https://...' }
     nickname: string;
     title: string;
     score: number;
 }
 
 interface ActionCardProps {
-    podiumData: PodiumItem[]; // 배열 순서는 [2등, 1등, 3등]로 전달 (왼쪽, 중앙, 오른쪽)
+    // 배열 순서는 [2등, 1등, 3등] 으로 들어올 수도 있지만
+    // rank를 찾아서 1등/2등/3등을 구분해서 사용
+    podiumData: PodiumItem[];
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({ podiumData }) => {
-    // 순위에 따른 이미지 소스 결정 함수
-    const getRankImageSource = (rank: number) => {
-        switch (rank) {
-            case 1:
-                return require('../assets/images/game_detail/gold.png'); // 1등 이미지
-            case 2:
-                return require('../assets/images/game_detail/silver.png'); // 2등 이미지
-            case 3:
-                return require('../assets/images/game_detail/bronze.png'); // 3등 이미지
-            default:
-                return null;
-        }
-    };
-    return (
-        <ImageBackground
-            source={require('../assets/images/game_detail/background.png')} // 배경 이미지 경로 수정
-            style={styles.actionCardBackground}
-        >
-            <View style={styles.podiumContainer}>
-                {podiumData.map((item, index) => (
-                    <View
-                        key={index}
-                        style={[
-                            styles.podiumItem,
-                            item.rank === 1 && styles.firstPlace, // 1등에 특별한 스타일 적용 (예: 더 크게)
-                        ]}
-                    >
-                        <View style={styles.profileImageContainer}>
-                            <Image
-                                source={item.profileImage}
-                                style={styles.profileImage}
-                            />
-                            <Image
-                                source={getRankImageSource(item.rank)}
-                                style={styles.rankBadge}
-                            />
-                        </View>
-                        <Text style={[styles.nickname,
-                            item.rank === 1 && styles.firstNickname]}>{item.nickname}</Text>
+    // rank 값으로 1,2,3을 찾아서 변수에 할당
+    const first = podiumData.find(item => item.rank === 1);
+    const second = podiumData.find(item => item.rank === 2);
+    const third = podiumData.find(item => item.rank === 3);
 
+    return (
+        <View style={styles.cardOuterContainer}>
+            {/* 전체 랭킹 배경 (이미 하나의 이미지로 통합) */}
+            <ImageBackground
+                source={require('../assets/images/game_detail/ranking_background.png')}
+                style={styles.actionCardBackground}
+                imageStyle={styles.actionCardBackgroundImage}
+            >
+                {/* 상단 Ranking 텍스트 */}
+                <Text style={styles.rankingText}>Ranking</Text>
+
+                {/* 1등: Gold 영역 */}
+                {first && (
+                    <View style={styles.goldContainer}>
+                        <Image
+                            source={first.profileImage}
+                            style={styles.goldProfileImage}
+                        />
+                        <Text style={styles.goldNickname}>{first.nickname}</Text>
                     </View>
-                ))}
-            </View>
-        </ImageBackground>
+                )}
+
+                {/* 2등: Silver 영역 */}
+                {second && (
+                    <View style={styles.silverContainer}>
+                        <Image
+                            source={second.profileImage}
+                            style={styles.silverProfileImage}
+                        />
+                        <Text style={styles.silverNickname}>{second.nickname}</Text>
+                    </View>
+                )}
+
+                {/* 3등: Bronze 영역 */}
+                {third && (
+                    <View style={styles.bronzeContainer}>
+                        <Image
+                            source={third.profileImage}
+                            style={styles.bronzeProfileImage}
+                        />
+                        <Text style={styles.bronzeNickname}>{third.nickname}</Text>
+                    </View>
+                )}
+            </ImageBackground>
+        </View>
     );
 };
+
 export default ActionCard;

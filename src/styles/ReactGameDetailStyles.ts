@@ -11,6 +11,8 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: scale(16),
+        justifyContent: 'flex-start',
+        marginTop: verticalScale(-20),
     },
     backButton: {
         position: 'absolute',
@@ -34,7 +36,7 @@ export default StyleSheet.create({
     topRow: {
         flexDirection: 'row',
         width: '100%',
-        height: verticalScale(240), // 이미지 높이에 맞춰 부모 높이 설정
+        height: verticalScale(200), // 이미지 높이에 맞춰 부모 높이 설정
         marginBottom: verticalScale(10),
     },
     // --- 이미지 ---
@@ -102,8 +104,8 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
-        marginVertical: verticalScale(-6),
-        height: verticalScale(80),
+        marginVertical: verticalScale(-30),
+        height: verticalScale(0),
         marginBottom: verticalScale(40),
     },
 
@@ -112,24 +114,7 @@ export default StyleSheet.create({
         fontWeight: '600',
         color: '#333',
     },
-    summaryCard: {
-        width: '90%',
-        height: verticalScale(180),
-        backgroundColor: '#FFF',
-        borderRadius: scale(15),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: verticalScale(8),
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: verticalScale(3) },
-        shadowOpacity: 0.1,
-        shadowRadius: scale(4),
-        elevation: scale(2),
-    },
-    summaryText: {
-        fontSize: scale(18),
-        color: '#555',
-    },
+   
     infoContainer: {
         width: '100%',
         flexDirection: 'row',

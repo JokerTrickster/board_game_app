@@ -4,77 +4,114 @@ const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;
 
+// 반응형 사이즈 헬퍼 함수
 const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
+    // 전체 랭킹 카드 바깥 컨테이너
+    cardOuterContainer: {
+        width: scale(380),
+        height: verticalScale(235),
+        overflow: 'hidden',
+        marginVertical: verticalScale(-5),
+        alignSelf: 'center',
+    },
+
+    // rank_background.png 를 깔아주는 배경
     actionCardBackground: {
-        width: '100%',
-        height: verticalScale(150),  // 반응형 배경 높이
-        resizeMode: 'cover',
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: scale(3),
-        overflow: 'visible',  // 자식 요소가 배경을 넘어도 보이도록
-    },
-    podiumContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        width: '100%',
-        height: '100%',
-        overflow: 'visible',
-    },
-    podiumItem: {
-        alignItems: 'center',
-        width: '30%',
         padding: scale(5),
-        borderRadius: scale(10),
-        height: verticalScale(120),  // 2등, 3등 기본 높이
-        overflow: 'visible',
-        marginTop: verticalScale(15),
     },
-    firstPlace: {
-        height: verticalScale(120),  // 1등은 기본보다 더 높게
-        transform: [{ scale: 1.1 }],
-        zIndex: 1,
-        marginTop: verticalScale(0),
+    actionCardBackgroundImage: {
+        // 이미지를 좌우로 늘리지 않고,
+        // 세로/가로 비율을 유지하면서 컨테이너에 맞춤
+        resizeMode: 'cover',
     },
-    profileImage: {
-        width: scale(60),
-        height: verticalScale(50),
-        borderRadius: scale(10),
-        borderWidth: scale(2.5),
-        marginTop: verticalScale(30),
-    },
-    nickname: {
-        fontSize: scale(14),
-        fontWeight: '600',
-        marginTop: verticalScale(25),
-        zIndex: 2,
-    },
-    firstNickname: {
-        fontSize: scale(14),
-        fontWeight: '600',
-        marginTop: verticalScale(33),
-        zIndex: 2,
-    },
-    rankImage: {
-        width: scale(40),
-        height: verticalScale(40),
-        resizeMode: 'contain',
-        marginBottom: scale(5),
-    },
-    profileImageContainer: {
-        position: 'relative',
-        zIndex: 1,
-    },
-    rankBadge: {
+    // 1등 (골드) 컨테이너
+    goldContainer: {
         position: 'absolute',
-        top: scale(10),   // 프로필 이미지의 왼쪽 상단에 겹치도록 조정
-        left: scale(-20),
-        width: scale(40),
-        height: verticalScale(40),
-        resizeMode: 'contain',
-        zIndex: 3,  // 텍스트보다 위에 표시
+        // ranking_background.png 에서 1등 영역의 위치로 조정
+        top: verticalScale(60),
+        left: scale(160),
+        width: scale(55),
+        height: verticalScale(50),
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    goldProfileImage: {
+        width: '100%',
+        height: '100%',  // 컨테이너 대비 이미지 높이
+        borderRadius: scale(10),
+        borderColor: '#000',
+        borderWidth: scale(2.5),
+        resizeMode: 'cover',
+    },
+    goldNickname: {
+        marginTop: verticalScale(2),
+        fontSize: scale(12),
+        fontWeight: '600',
+        color: '#000',
+    },
+    rankingText: {
+        position: 'absolute',
+        top: verticalScale(11),
+        alignSelf: 'center',
+        fontSize: scale(20),
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    // 2등 (실버) 컨테이너
+    silverContainer: {
+        position: 'absolute',
+        // ranking_background.png 에서 2등 영역의 위치로 조정
+        top: verticalScale(70),
+        left: scale(40),
+        width: scale(55),
+        height: verticalScale(50),
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    silverProfileImage: {
+        width: '100%',
+        height: '100%',  // 컨테이너 대비 이미지 높이
+        borderRadius: scale(10),
+        borderColor: '#000',
+        borderWidth: scale(2.5),
+        resizeMode: 'cover',
+    },
+    silverNickname: {
+        marginTop: verticalScale(2),
+        fontSize: scale(11),
+        fontWeight: '600',
+        color: '#000',
+    },
+
+    // 3등 (브론즈) 컨테이너
+    bronzeContainer: {
+        position: 'absolute',
+        // ranking_background.png 에서 3등 영역의 위치로 조정
+        top: verticalScale(70),
+        right: scale(45),
+        width: scale(55),
+        height: verticalScale(50),
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    bronzeProfileImage: {
+        width: '100%',
+        height: '100%',  // 컨테이너 대비 이미지 높이
+        borderRadius: scale(10),
+        borderColor: '#000',
+        borderWidth: scale(2.5),
+        resizeMode: 'cover',
+    },
+    bronzeNickname: {
+        marginTop: verticalScale(2),
+        fontSize: scale(11),
+        fontWeight: '600',
+        color: '#000',
     },
 });

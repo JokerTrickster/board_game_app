@@ -116,8 +116,9 @@ const GameDetailScreen: React.FC = () => {
             source={require('../assets/images/common/background_basic.png')}
             style={styles.background}
         >
+            <Header userData={userData} />
+
             <View style={styles.container}>
-                <Header userData={userData} />
 
                 {/* 뒤로가기 및 제목 영역 */}
                 <View style={styles.titleRow}>
