@@ -240,7 +240,6 @@ const FindItScreen: React.FC = observer(() => {
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
-            navigation.navigate('FindItGameOver');
         }
     }, [findItViewModel.gameOver]);
     

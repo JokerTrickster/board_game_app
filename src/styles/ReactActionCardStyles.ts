@@ -23,7 +23,6 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: scale(5),
     },
     actionCardBackgroundImage: {
         // 이미지를 좌우로 늘리지 않고,

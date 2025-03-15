@@ -7,6 +7,8 @@ import SignUpScreen from '../screens/SignUpScreen';
 import FindItScreen from '../games/find-it/FindItScreen';
 import FindItGameOverScreen from '../games/find-it/FindItGameOverScreen';
 import SoloFindItScreen from '../games/find-it/SoloFindItScreen';
+import SoloFindItResultScreen from '../games/find-it/SoloFindItResultScreen';
+import MultiFindItResultScreen from '../games/find-it/MultiFindItResultScreen';
 import GameDetailScreen from '../screens/GameDetailScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import PasswordScreen from '../screens/PasswordScreen';
@@ -51,7 +53,10 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="Password" component={PasswordScreen} />
                     <Stack.Screen name="GameDetail" component={GameDetailScreen} />
                     <Stack.Screen name="Loading" component={LoadingScreen} />
-                </Stack.Navigator>
+                    <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
+                    <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
+
+            </Stack.Navigator>
             </NavigationContainer>
 
     );

@@ -10,6 +10,8 @@ export type RootStackParamList = {
     Password: undefined;
     GameDetail: { game: string };
     Loading: { nextScreen: keyof RootStackParamList }; // 추가: 로딩 페이지
+    SoloFindItResult: undefined;
+    MultiFindItResult: undefined;  
 };
 
 // ✅ 네비게이션 참조 타입 추가
