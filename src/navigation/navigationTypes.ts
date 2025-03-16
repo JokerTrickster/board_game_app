@@ -9,7 +9,7 @@ export type RootStackParamList = {
     FindItGameOver: undefined;
     Password: undefined;
     GameDetail: { game: string };
-    Loading: { nextScreen: keyof RootStackParamList }; // 추가: 로딩 페이지
+    Loading: { nextScreen: keyof RootStackParamList; params?: any }; // params를 선택적으로 추가
     SoloFindItResult: undefined;
     MultiFindItResult: undefined;  
 };

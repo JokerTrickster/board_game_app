@@ -10,7 +10,7 @@ type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Load
 const LoadingScreen: React.FC = () => {
     const navigation = useNavigation<LoadingScreenNavigationProp>();
     const route = useRoute();
-    const { nextScreen } = route.params as { nextScreen: keyof RootStackParamList };
+    const { nextScreen, params } = route.params as { nextScreen: keyof RootStackParamList; params?: any };
 
     // 메시지 결정: 게임 시작 시(예: FindIt)와 게임 종료 시(Home)
     const message =
@@ -28,7 +28,7 @@ const LoadingScreen: React.FC = () => {
             duration: 3000,
             useNativeDriver: false,
         }).start(() => {
-            navigation.dispatch(StackActions.replace(nextScreen));
+            navigation.dispatch(StackActions.replace(nextScreen, params));
         });
     }, [progress, navigation, nextScreen]);
 
