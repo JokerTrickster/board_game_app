@@ -110,15 +110,15 @@ const styles = StyleSheet.create({
     // 숫자(카운트)를 아이콘 위에 배치하는 배지 스타일
     countBadge: {
         position: 'absolute',
-        top: -4,
-        right: -4,
-        backgroundColor: 'red',
+        bottom: 2,
+        right:0,
         color: '#fff',
-        fontSize: 10,
+        fontSize: 14,
         paddingHorizontal: 4,
         paddingVertical: 1,
         borderRadius: 8,
         overflow: 'hidden',
+        fontWeight: 'bold',
     },
     // 아이콘 아래에 표시할 라벨 텍스트
     itemLabel: {

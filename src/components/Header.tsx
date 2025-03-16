@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert, ImageBackground, Linking } from 'react-native';
-import styles from '../styles/ReactHomeStyles';
+import styles from './styles/HomeHeaderStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { gameService } from '../services/GameService';
 import { AuthService } from '../services/AuthService';
@@ -65,8 +65,9 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                     style={styles.profileBorder}
                     imageStyle={styles.profileBorderImg} // ← 추가: 내부 이미지 스타일
                 >
-                            <Image
-                                source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
+                    <Image
+                                source={require('../assets/images/home/default_profile.png')}
+                                // source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
                                 style={styles.profileImage}
                             />
 

@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;
 
-const scale = (size:number) => (width / guidelineBaseWidth) * size;
+const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
@@ -19,7 +19,7 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         padding: scale(10),
     },
-    soloHeader: {
+    multiHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -27,7 +27,6 @@ export default StyleSheet.create({
         height: '20%',
         paddingBottom: verticalScale(50),
     },
-    // 프로필
     profileContainer: {
         marginTop: verticalScale(60),
     },
@@ -37,7 +36,6 @@ export default StyleSheet.create({
         flexDirection: 'row', // 내부에서 프로필 이미지와 텍스트를 가로로 배치
         alignItems: 'center',
     },
-    // ImageBackground 내부 이미지 스타일
     profileBorderImg: {
         resizeMode: 'contain',
     },
@@ -57,37 +55,22 @@ export default StyleSheet.create({
         fontSize: scale(16),
         fontWeight: 'bold',
         paddingBottom: verticalScale(15),
+        textAlign: 'center',
     },
-    title: {
-        fontSize: scale(16),
+    // 가운데 영역 스타일
+    centerContainer: {
+        flex: 1,
+        paddingLeft: scale(30),
+        paddingTop: verticalScale(20),
+    },
+    roundText: {
+        fontSize: scale(24),
         fontWeight: 'bold',
-        marginTop: verticalScale(-5),
-    },
-    // 하트(코인) 영역
-    coin: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    coinIcon: {
-        width: scale(110),
-        height: verticalScale(80),
-        marginRight: scale(20),
-        resizeMode: 'contain',
-        marginLeft: scale(-30),
-    },
-    coinCount: {
-        fontSize: scale(16),
         color: '#000',
-        fontWeight: 'bold',
-        marginLeft: scale(-50),
-    },
-    profile: {
-        flexDirection: 'row',
-        alignItems: 'center'
     },
     settingsIcon: {
         padding: scale(10),
-        paddingTop: verticalScale(20),
+        paddingTop: verticalScale(30),
     },
     gameContainer: {
         flexDirection: 'row',
@@ -232,16 +215,5 @@ export default StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
     },
-    // 추가: 가운데 영역 스타일
-    centerContainer: {
-        flex: 1,
-        paddingLeft: scale(30),
-        paddingTop: verticalScale(20),
-    },
-    // Round 텍스트 스타일 (필요에 따라 조정)
-    roundText: {
-        fontSize: scale(28),
-        fontWeight: 'bold',
-        color: '#000',
-    },
+    
 });

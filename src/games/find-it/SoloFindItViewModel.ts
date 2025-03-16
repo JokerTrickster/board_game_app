@@ -103,7 +103,6 @@ class SoloGameViewModel {
                 this.stopTimer();
                 return;
             }
-
             if (this.timer > 0) {
                 this.updateTimer(this.timer - 1);
                 this.remainingTime = this.timer;
@@ -239,8 +238,8 @@ class SoloGameViewModel {
         this.wrongClicks = [];
     }
     nextRound() {
-        this.timer = 60;
-        this.remainingTime = 60;
+        this.timer = 6000;
+        this.remainingTime = 6000;
         this.initClicks();
         this.wrongClicks = [];
         this.roundClearEffect = false;
@@ -265,7 +264,7 @@ class SoloGameViewModel {
         this.life = 3;
         this.hints = 2;
         this.item_timer_stop = 3;
-        this.timer = 60;
+        this.timer = 6000;
         this.round = 1;
 
     }

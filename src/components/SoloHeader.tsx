@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert, ImageBackground, Linking } from 'react-native';
-import styles from '../styles/ReactHomeStyles';
+import styles from './styles/SoloHeaderStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { gameService } from '../services/GameService';
 import { AuthService } from '../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
+import  SoloFindItViewModel  from '../games/find-it/SoloFindItViewModel';
 
 const SoloHeader: React.FC<{ userData?: any }> = ({ userData }) => {
     const [user, setUser] = useState(userData?.user);
@@ -60,23 +61,21 @@ const SoloHeader: React.FC<{ userData?: any }> = ({ userData }) => {
         <View style={styles.soloHeader}>
             <View style={styles.profileContainer}>
                 {/* 프로필 테두리 이미지를 배경처럼 사용 (ImageBackground) */}
-                <ImageBackground
-                    source={require('../assets/icons/home/profile.png')}
-                    style={styles.profileBorder}
-                    imageStyle={styles.profileBorderImg} // ← 추가: 내부 이미지 스타일
-                >
+            
                     <Image
                         source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
                         style={styles.profileImage}
                     />
-
                     <View style={styles.profileInfo}>
                         <Text style={styles.nickname}>{user?.name || '보린이'}</Text>
-                        <Text style={styles.title}>보드게임 매니아</Text>
                     </View>
-                </ImageBackground>
+
             </View>
 
+            {/* 가운데에 Round 값 표시 */}
+            <View style={styles.centerContainer}>
+                <Text style={styles.roundText}>ROUND {SoloFindItViewModel.round}</Text>
+            </View>
 
             {/* 설정 아이콘 */}
             <TouchableOpacity style={styles.settingsIcon} onPress={toggleModal}>

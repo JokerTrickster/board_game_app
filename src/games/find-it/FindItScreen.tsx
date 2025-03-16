@@ -11,6 +11,8 @@ import AnimatedCircle from './AnimatedCircle';
 import { findItWebSocketService } from '../../services/FindItWebSocketService';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import MultiHeader from '../../components/MultiHeader';
+import ItemBar from '../../components/ItemBar';
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -181,6 +183,27 @@ const FindItScreen: React.FC = observer(() => {
             findItWebSocketService.sendTimerItemEvent();
         }
     };
+    // 아래 추가: 체크박스 표시
+    // 5개의 체크박스 중 맞춘 개수만큼 앞에서부터 check_box.png로 변경
+    const renderCheckBoxes = () => {
+        const total = 5;
+        const correctCount = findItViewModel.correctClicks.length;
+        return (
+            <View style={styles.checkBoxContainer}>
+                {Array.from({ length: total }, (_, i) => (
+                    <Image
+                        key={i}
+                        source={
+                            i < correctCount
+                                ? require('../../assets/icons/find-it/check_box.png')
+                                : require('../../assets/icons/find-it/empty_check_box.png')
+                        }
+                        style={styles.checkBoxImage}
+                    />
+                ))}
+            </View>
+        );
+    };
 
     // ✅ MobX 상태 변경 감지하여 UI 업데이트
     useEffect(() => {
@@ -245,19 +268,19 @@ const FindItScreen: React.FC = observer(() => {
     
     return (
         <View style={styles.container}>
-            {/* 상단 UI */}
+            <MultiHeader />
             <View style={styles.topBar}>
-                <Text style={styles.roundText}>Round {findItViewModel.round}</Text>
             </View>
 
+            <View style={styles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                <View style={[styles.normalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
                         {normalImage ? (
                             <TouchableWithoutFeedback onPress={handleImageClick}>
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
-                                <View ref={imageRef} style={styles.imageContainer}>
+                                <View ref={imageRef} style={styles.normalImageContainer}>
                                     {normalImage ? (
                                         <Image source={{ uri: normalImage }} style={styles.image} />
                                     ) : (
@@ -287,23 +310,33 @@ const FindItScreen: React.FC = observer(() => {
                 </View>
             </GestureDetector>
 
-
             {/* ✅ 타이머 바 추가 */}
-            <View style={styles.timerBarContainer}>
-                <RNAnimated.View style={[styles.timerBar, {
-                    width: timerWidth.interpolate({
-                        inputRange: [0, 100],
-                        outputRange: ['0%', '100%'],
-                    }),
-                    backgroundColor: findItViewModel.timerStopped ? 'red' : 'green'
-                }]} />
-                    </View>
+            <View style={styles.timerContainer}>
+                {/* 타이머 이미지 */}
+                <Image
+                    source={require('../../assets/icons/find-it/timer_bar.png')}
+                    style={styles.timerImage}
+                />
+                {/* 타이머 바 */}
+                <RNAnimated.View
+                    style={[
+                        styles.timerBar,
+                        {
+                            width: timerWidth.interpolate({
+                                inputRange: [0, 100],
+                                outputRange: ['0%', '100%'],
+                            }),
+                            backgroundColor: findItViewModel.timerStopped ? 'red' : '#FC9D99',
+                        },
+                    ]}
+                />
+            </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                <View style={[styles.abnormalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
-                            <View ref={imageRef} style={styles.imageContainer}>
+                            <View ref={imageRef} style={styles.abnormalImageContainer}>
                                 {abnormalImage ? (
                                     <Image source={{ uri: abnormalImage }} style={styles.image} />
                                 ) : (
@@ -336,32 +369,19 @@ const FindItScreen: React.FC = observer(() => {
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
-            </GestureDetector>
-            {/* 확대/축소 버튼 */}
-            <View style={styles.controlPanel}>
-                <TouchableOpacity onPress={handleZoomIn} style={styles.controlButton}>
-                    <Text style={styles.controlButtonText}>+</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleZoomOut} style={styles.controlButton}>
-                    <Text style={styles.controlButtonText}>-</Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* ✅ 게임 정보 한 줄로 정리 */}
-            <View style={styles.infoRow}>
-                <Text style={styles.infoText}>남은 개수: {5 - findItViewModel.correctClicks.length}</Text>
-                <Text style={styles.infoText}>❤️ {findItViewModel.life}</Text>
-
-                {/* 힌트 버튼 */}
-                <TouchableOpacity style={styles.infoButton} onPress={handleHint}>
-                    <Text style={styles.infoButtonText}>💡 {findItViewModel.hints}</Text>
-                </TouchableOpacity>
-
-                {/* 타이머 정지 버튼 */}
-                <TouchableOpacity style={styles.infoButton} onPress={handleTimerStop}>
-                    <Text style={styles.infoButtonText}>⏳ {findItViewModel.item_timer_stop}</Text>
-                </TouchableOpacity>
-            </View>
+                </GestureDetector>
+                </View>
+            {renderCheckBoxes()}
+    
+            <ItemBar
+                life={findItViewModel.life}
+                timerStopCount={findItViewModel.item_timer_stop}
+                hintCount={findItViewModel.hints}
+                onTimerStopPress={handleTimerStop}
+                onHintPress={handleHint}
+                onZoomInPress={handleZoomIn}
+                onZoomOutPress={handleZoomOut}
+            />
 
             {findItViewModel.roundClearEffect && (
                 <View style={styles.clearEffectContainer}>

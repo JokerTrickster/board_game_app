@@ -274,6 +274,7 @@ const GameDetailScreen: React.FC = () => {
                                         // 랜덤 매칭 버튼: 배경 및 텍스트 타입 변경
                                         setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
                                         setModalType("random");
+                                        handleMatching();
                                     } }
                                 >
                                     <Text style={styles.modalButtonText}>랜덤 매칭</Text>

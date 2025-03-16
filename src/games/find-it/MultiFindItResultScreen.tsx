@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import styles from './MultiFindItResultStyles';
+import styles from './SoloFindItResultStyles';
 import SoloHeader from '../../components/SoloHeader';
 
-const MultiFindItResultScreen: React.FC = () => {
+const SoloFindItResultScreen: React.FC = () => {
     // 성공 여부 변수 (실제 로직에 따라 변경)
     const isSuccess = false;
     const navigation = useNavigation<any>();
@@ -27,8 +27,8 @@ const MultiFindItResultScreen: React.FC = () => {
                 <ImageBackground
                     source={
                         isSuccess
-                            ? require('../../assets/images/game/multi_result_clear.png')
-                            : require('../../assets/images/game/multi_result_fail.png')
+                            ? require('../../assets/images/game/solo_result_clear.png')
+                            : require('../../assets/images/game/solo_result_fail.png')
                     }
                     style={styles.centerCard}
                     imageStyle={styles.centerCardImage}
@@ -53,16 +53,6 @@ const MultiFindItResultScreen: React.FC = () => {
                             <Text style={styles.profileName}>프로필 명</Text>
                             <Text style={styles.plusScore}>+200</Text>
                         </View>
-
-                        {/* 두번째 프로필 */}
-                        <View style={styles.profileRow}>
-                            <Image
-                                source={require('../../assets/images/home/default_profile.png')}
-                                style={styles.profileImage}
-                            />
-                            <Text style={styles.profileName}>프로필 명 2</Text>
-                            <Text style={styles.plusScore}>+150</Text>
-                        </View>
                     </View>
                 </ImageBackground>
 
@@ -75,4 +65,4 @@ const MultiFindItResultScreen: React.FC = () => {
     );
 };
 
-export default MultiFindItResultScreen;
+export default SoloFindItResultScreen;

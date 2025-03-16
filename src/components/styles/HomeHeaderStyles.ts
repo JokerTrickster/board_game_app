@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;
 
-const scale = (size:number) => (width / guidelineBaseWidth) * size;
+const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
@@ -29,7 +29,7 @@ export default StyleSheet.create({
     },
     // 프로필
     profileContainer: {
-        marginTop: verticalScale(60),
+        marginTop: verticalScale(20),
     },
     profileBorder: {
         width: scale(200),
@@ -46,9 +46,6 @@ export default StyleSheet.create({
         height: verticalScale(52),
         marginLeft: scale(7),
         marginRight: scale(15),
-        borderWidth: scale(2.5),
-        marginTop: verticalScale(10),
-        borderRadius: scale(10),
     },
     profileInfo: {
         justifyContent: 'center',
@@ -86,8 +83,7 @@ export default StyleSheet.create({
         alignItems: 'center'
     },
     settingsIcon: {
-        padding: scale(10),
-        paddingTop: verticalScale(20),
+        padding: scale(10)
     },
     gameContainer: {
         flexDirection: 'row',
@@ -231,17 +227,5 @@ export default StyleSheet.create({
     background: {
         flex: 1,
         resizeMode: 'cover',
-    },
-    // 추가: 가운데 영역 스타일
-    centerContainer: {
-        flex: 1,
-        paddingLeft: scale(30),
-        paddingTop: verticalScale(20),
-    },
-    // Round 텍스트 스타일 (필요에 따라 조정)
-    roundText: {
-        fontSize: scale(28),
-        fontWeight: 'bold',
-        color: '#000',
     },
 });

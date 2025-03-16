@@ -4,7 +4,7 @@ const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;
 
-const scale = (size:number) => (width / guidelineBaseWidth) * size;
+const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
@@ -87,7 +87,7 @@ export default StyleSheet.create({
     },
     settingsIcon: {
         padding: scale(10),
-        paddingTop: verticalScale(20),
+        paddingTop: verticalScale(30),
     },
     gameContainer: {
         flexDirection: 'row',
@@ -240,7 +240,7 @@ export default StyleSheet.create({
     },
     // Round 텍스트 스타일 (필요에 따라 조정)
     roundText: {
-        fontSize: scale(28),
+        fontSize: scale(24),
         fontWeight: 'bold',
         color: '#000',
     },

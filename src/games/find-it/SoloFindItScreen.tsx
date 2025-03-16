@@ -245,6 +245,27 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
     };
 
+    // 아래 추가: 체크박스 표시
+    // 5개의 체크박스 중 맞춘 개수만큼 앞에서부터 check_box.png로 변경
+    const renderCheckBoxes = () => {
+        const total = 5;
+        const correctCount = soloFindItViewModel.correctClicks.length;
+        return (
+            <View style={styles.checkBoxContainer}>
+                {Array.from({ length: total }, (_, i) => (
+                    <Image
+                        key={i}
+                        source={
+                            i < correctCount
+                                ? require('../../assets/icons/find-it/check_box.png')
+                                : require('../../assets/icons/find-it/empty_check_box.png')
+                        }
+                        style={styles.checkBoxImage}
+                    />
+                ))}
+            </View>
+        );
+    };
 
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
     useEffect(() => {
@@ -314,16 +335,17 @@ const SoloFindItScreen: React.FC = observer(() => {
             <SoloHeader />
             {/* 상단 UI */}
             <View style={styles.topBar}>
-                <Text style={styles.roundText}>Round {soloFindItViewModel.round}</Text>
             </View>
 
+
+            <View style={styles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                <View style={[styles.normalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
                             <TouchableWithoutFeedback onPress={handleImageClick}>
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
-                                <View ref={imageRef} style={styles.imageContainer}>
+                                <View ref={imageRef} style={styles.normalImageContainer}>
                                     {gameInfoList[currentRound-1].normalUrl ? (
                                     <Image source={{ uri: gameInfoList[currentRound - 1].normalUrl }} style={styles.image} />
                                     ) : (
@@ -352,21 +374,32 @@ const SoloFindItScreen: React.FC = observer(() => {
 
 
             {/* ✅ 타이머 바 추가 */}
-            <View style={styles.timerBarContainer}>
-                <RNAnimated.View style={[styles.timerBar, {
-                    width: timerWidth.interpolate({
-                        inputRange: [0, 100],
-                        outputRange: ['0%', '100%'],
-                    }),
-                    backgroundColor: soloFindItViewModel.timerStopped ? 'red' : 'green'
-                }]} />
+            <View style={styles.timerContainer}>
+                {/* 타이머 이미지 */}
+                <Image
+                    source={require('../../assets/icons/find-it/timer_bar.png')}
+                    style={styles.timerImage}
+                />
+                {/* 타이머 바 */}
+                <RNAnimated.View
+                    style={[
+                        styles.timerBar,
+                        {
+                            width: timerWidth.interpolate({
+                                inputRange: [0, 100],
+                                outputRange: ['0%', '100%'],
+                            }),
+                            backgroundColor: soloFindItViewModel.timerStopped ? 'red' : '#FC9D99',
+                        },
+                    ]}
+                />
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.imageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
+                    <View style={[styles.abnormalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
                     <Animated.View style={[animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
-                            <View ref={imageRef} style={styles.imageContainer}>
+                                <View ref={imageRef} style={styles.abnormalImageContainer}>
                                 {gameInfoList[currentRound - 1].abnormalUrl ? (
                                     <Image source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }} style={styles.image} />
                                 ) : (
@@ -397,7 +430,10 @@ const SoloFindItScreen: React.FC = observer(() => {
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
-            </GestureDetector>
+                </GestureDetector>
+                </View>
+            {renderCheckBoxes()}
+
             <ItemBar
                 life={soloFindItViewModel.life}
                 timerStopCount={soloFindItViewModel.item_timer_stop}
