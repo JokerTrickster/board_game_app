@@ -6,11 +6,11 @@ import SoloHeader from '../../components/SoloHeader';
 
 const SoloFindItResultScreen: React.FC = () => {
     // 성공 여부 변수 (실제 로직에 따라 변경)
-    const isSuccess = false;
+    const isSuccess = true;
     const navigation = useNavigation<any>();
 
     const goToHome = () => {
-        navigation.navigate('Home');
+        (navigation as any).navigate("Loading", { nextScreen: 'Home' });
     };
 
     return (

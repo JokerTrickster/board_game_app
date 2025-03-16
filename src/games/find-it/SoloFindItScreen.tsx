@@ -326,7 +326,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
-            navigation.navigate('Home');
+            navigation.navigate('SoloFindItResult');
         }
     }, [soloFindItViewModel.gameOver]);
 
