@@ -49,7 +49,7 @@ const HomeScreen: React.FC = () => {
             Alert.alert('게임 준비 중', '해당 게임은 아직 준비 중입니다.!');
             return; // 🚨 게임이 비활성화되어 있으면 이동하지 않음
         }
-        navigation.navigate('SoloFindItResult', { game });
+        navigation.navigate('GameDetail', { game });
     };
     useEffect(() => {
         const fetchUserData = async () => {

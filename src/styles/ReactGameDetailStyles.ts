@@ -144,14 +144,14 @@ export default StyleSheet.create({
         color: '#333',
     },
     modalCloseButton: {
-        marginTop: verticalScale(10),
-        padding: scale(10),
-        backgroundColor: '#ddd',
+        padding: scale(15),
         borderRadius: scale(5),
         alignSelf: 'center',
+        marginTop: verticalScale(-35),
     },
     modalCloseButtonText: {
-        fontSize: scale(16),
+        fontSize: scale(20),
+        fontWeight:'bold',
         color: '#000',
     },
     youtubeWebView: {
@@ -214,31 +214,34 @@ export default StyleSheet.create({
     },
     // 함께하기 옵션 모달 스타일 추가
     togetherModalContent: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: scale(10),
-        padding: scale(20),
-        alignItems: 'center',
+        width: '90%',
+        height:'30%',
+        overflow: 'hidden',  // ensure children don't overflow the rounded corners
+        // removed padding so image fills entire container
+    },
+    togetherModalImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'cover',
     },
     modalTitle: {
         fontSize: scale(18),
         fontWeight: 'bold',
-        marginBottom: verticalScale(20),
         color: '#333',
+        textAlign: 'center',
     },
     modalButton: {
-        width: '100%',
-        paddingVertical: verticalScale(12),
-        backgroundColor: '#FFB6C1',
+        width: '65%',
         borderRadius: scale(30),
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: verticalScale(8),
+        marginLeft: scale(62),
+        marginBottom: verticalScale(28),
+        paddingBottom: verticalScale(20),
+        marginTop: verticalScale(15),
     },
     modalButtonText: {
-        fontSize: scale(16),
+        fontSize: scale(20),
         fontWeight: '600',
-        color: '#fff',
+        textAlign: 'center',
     },
     friendInput: {
         width: '100%',
@@ -278,5 +281,121 @@ export default StyleSheet.create({
     copyButtonText: {
         fontSize: scale(14),
         color: '#fff',
+    },
+    modalTitleStart: {
+        fontSize: scale(14),
+        color: '#333',
+        textAlign: 'center',
+        paddingTop:  verticalScale(20),
+    },
+    modalTitleRandom: {
+        fontSize: scale(20),
+        paddingTop: verticalScale(86),
+
+    },
+    modalTitleTogether: {
+        top: verticalScale(30),  // 친구와 함께 이미지에 맞는 위치
+        fontSize: scale(20),
+        color: '#fff',
+    },
+
+    modalSubtitleRandom: {
+        fontSize: scale(16),
+        color: '#000',
+        textAlign: 'center',
+        marginTop: verticalScale(25),
+    },
+    modalCancelButton: {
+        paddingVertical: verticalScale(12),
+        borderRadius: scale(8),
+    },
+    modalCancelButtonText: {
+        fontSize: scale(18),
+        fontWeight: 'bold',
+        color: '#000',
+        textAlign: 'center',
+    },
+
+    waitingText: {
+        fontSize: scale(16),
+        color: '#555',
+        textAlign: 'center',
+        marginBottom: verticalScale(10),
+    },
+    cancelButton: {
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(20),
+        backgroundColor: '#FF5722',
+        borderRadius: scale(8),
+        marginBottom: verticalScale(20),
+    },
+    cancelButtonText: {
+        fontSize: scale(16),
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    createRoomButton: {
+        marginTop: verticalScale(75),
+        paddingVertical: verticalScale(11),
+        paddingHorizontal: scale(90),
+        borderRadius: scale(10),
+        marginVertical: verticalScale(30),
+        marginRight: scale(10),
+    },
+    createRoomButtonText: {
+        fontSize: scale(24),
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+    inviteCodeText: {
+        fontSize: scale(18),
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+    },
+    joinPromptText: {
+        fontSize: scale(16),
+        color: '#555',
+        textAlign: 'center',
+        marginTop: verticalScale(-20),
+    },
+    joinSection: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+    },
+    codeInput: {
+        flex: 1,
+        height: 40,
+        borderRadius: scale(5),
+        marginLeft: scale(30),
+        marginTop:scale(10),
+    },
+    joinButton: {
+        paddingVertical: verticalScale(10),
+        paddingHorizontal: scale(50),
+        borderRadius: scale(8),
+        marginRight: scale(30),
+        paddingLeft: scale(15),
+    },
+    joinButtonText: {
+        fontSize: scale(16),
+        fontWeight: 'bold',
+        color: '#fff',
+        left: scale(18),
+    },
+    modalCloseIcon: {
+        position: 'absolute',
+        top: verticalScale(10),
+        right: scale(20),
+        width: scale(25),
+        height: scale(25),
+        zIndex: 10,
+    },
+    modalCloseIconImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
 });

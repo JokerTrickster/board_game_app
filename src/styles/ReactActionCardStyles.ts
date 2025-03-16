@@ -23,11 +23,13 @@ export default StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        
     },
     actionCardBackgroundImage: {
         // 이미지를 좌우로 늘리지 않고,
         // 세로/가로 비율을 유지하면서 컨테이너에 맞춤
-        resizeMode: 'cover',
+        resizeMode: 'contain',
+
     },
     // 1등 (골드) 컨테이너
     goldContainer: {
@@ -56,7 +58,7 @@ export default StyleSheet.create({
     },
     rankingText: {
         position: 'absolute',
-        top: verticalScale(11),
+        top: verticalScale(12),
         alignSelf: 'center',
         fontSize: scale(20),
         fontWeight: 'bold',
