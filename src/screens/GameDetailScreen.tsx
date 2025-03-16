@@ -141,9 +141,7 @@ const GameDetailScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
 
-                {/* 콘텐츠 영역: ScrollView로 스크롤 가능 */}
                 <View style={styles.content}>
-                    <ScrollView contentContainerStyle={styles.detailContainer}>
                         {/* 상단 영역: 게임 이미지와 오른쪽 카드 */}
                         <View style={styles.topRow}>
                             <Image
@@ -174,7 +172,6 @@ const GameDetailScreen: React.FC = () => {
 
                         {/* 안내 메시지 */}
                         <ActionCard podiumData={podiumData} />
-                    </ScrollView>
                 </View>
 
                 {/* 하단 버튼 영역: 항상 화면 하단에 고정 */}

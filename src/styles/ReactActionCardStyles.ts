@@ -21,15 +21,13 @@ export default StyleSheet.create({
     // rank_background.png 를 깔아주는 배경
     actionCardBackground: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        
     },
     actionCardBackgroundImage: {
         // 이미지를 좌우로 늘리지 않고,
         // 세로/가로 비율을 유지하면서 컨테이너에 맞춤
         resizeMode: 'contain',
-
+        height: '100%',
+        width: '100%',
     },
     // 1등 (골드) 컨테이너
     goldContainer: {
@@ -46,8 +44,7 @@ export default StyleSheet.create({
         width: '100%',
         height: '100%',  // 컨테이너 대비 이미지 높이
         borderRadius: scale(10),
-        borderColor: '#000',
-        borderWidth: scale(2.5),
+        borderWidth: scale(2),
         resizeMode: 'cover',
     },
     goldNickname: {

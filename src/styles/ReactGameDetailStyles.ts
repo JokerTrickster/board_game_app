@@ -35,18 +35,19 @@ export default StyleSheet.create({
     // --- 상단 영역(이미지+오른쪽 카드) ---
     topRow: {
         flexDirection: 'row',
-        width: '100%',
+        width: '97%',
         height: verticalScale(200), // 이미지 높이에 맞춰 부모 높이 설정
         marginBottom: verticalScale(10),
+        marginLeft: scale(4),
+        borderWidth: scale(1),
+        borderRadius: scale(13),
     },
     // --- 이미지 ---
     gameImage: {
-        width: scale(200),
-        height: '100%',
+        marginTop: verticalScale(5),
+        width: scale(175),
+        height: '95%',
         resizeMode: 'contain',
-        borderRadius: scale(10),
-        backgroundColor: '#FBF4E7',
-        borderWidth: scale(1.5),
     },
     // --- 오른쪽 영역 ---
     rightColumn: {
@@ -56,17 +57,13 @@ export default StyleSheet.create({
     },
     // --- infoCard: 부모(topRow)의 남은 높이를 절반씩 사용 (대략 48%) ---
     infoCard: {
-        height: '48%',
-        backgroundColor: '#FFF',
-        borderRadius: scale(15),
+        height: '50%',
         justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: scale(1.5),
         overflow: 'hidden', // 추가: 컨테이너 범위 내에 이미지가 표시되도록
     },
     infoImage: {
-        width: '100%',
-        height: '105%',
+        width: '95%',
+        height: '90%',
         resizeMode: 'cover', // 전체 영역 채우기
     },
     infoText: {
@@ -88,7 +85,7 @@ export default StyleSheet.create({
         alignItems: 'center',
         marginVertical: verticalScale(10),
         shadowColor: '#000',
-        borderWidth: scale(1),
+        borderWidth: scale(2),
         borderColor: '#000',
         shadowOffset: { width: 0, height: verticalScale(3) },
         shadowOpacity: 0.1,

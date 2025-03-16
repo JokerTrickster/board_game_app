@@ -65,7 +65,7 @@ const ActionCard: React.FC<ActionCardProps> = ({ podiumData }) => {
                         <Text style={styles.bronzeNickname}>{third.nickname}</Text>
                     </View>
                 )}
-            </ImageBackground>
+                </ImageBackground>
         </View>
     );
 };
