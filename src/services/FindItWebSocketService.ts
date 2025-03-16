@@ -176,7 +176,6 @@ class FindItWebSocketService {
                     }, 2000);
                     break;
                 case "TIME_OUT":
-                    console.log("여기 오니?");
                     break;
                 case "NEXT_ROUND":
                     findItViewModel.setTimer(data.gameInfo.timer);
@@ -219,7 +218,7 @@ class FindItWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('FindItGameOver');
+                        navigation.navigate('MultiFindItResult');
                     }
                     break;
                 case "MATCH_CANCEL":

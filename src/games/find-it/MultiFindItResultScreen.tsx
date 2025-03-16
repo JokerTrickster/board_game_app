@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import styles from './SoloFindItResultStyles';
-import SoloHeader from '../../components/SoloHeader';
+import styles from './MultiFindItResultStyles';
+import MultiHeader from '../../components/MultiHeader';
 
 const SoloFindItResultScreen: React.FC = () => {
     // 성공 여부 변수 (실제 로직에 따라 변경)
@@ -10,7 +10,7 @@ const SoloFindItResultScreen: React.FC = () => {
     const navigation = useNavigation<any>();
 
     const goToHome = () => {
-        navigation.navigate('Home');
+        navigation.navigate('Loading', { nextScreen: 'Home' });
     };
 
     return (
@@ -21,14 +21,15 @@ const SoloFindItResultScreen: React.FC = () => {
             imageStyle={styles.backgroundImage}
         >
             <View style={styles.container}>
-                <SoloHeader />
+                <MultiHeader />
 
+                {/* 가운데 카드 이미지 안에 내용 표시 */}
                 {/* 가운데 카드 이미지 안에 내용 표시 */}
                 <ImageBackground
                     source={
                         isSuccess
-                            ? require('../../assets/images/game/solo_result_clear.png')
-                            : require('../../assets/images/game/solo_result_fail.png')
+                            ? require('../../assets/images/game/multi_result_clear.png')
+                            : require('../../assets/images/game/multi_result_fail.png')
                     }
                     style={styles.centerCard}
                     imageStyle={styles.centerCardImage}
@@ -52,6 +53,16 @@ const SoloFindItResultScreen: React.FC = () => {
                             />
                             <Text style={styles.profileName}>프로필 명</Text>
                             <Text style={styles.plusScore}>+200</Text>
+                        </View>
+
+                        {/* 두번째 프로필 */}
+                        <View style={styles.profileRow}>
+                            <Image
+                                source={require('../../assets/images/home/default_profile.png')}
+                                style={styles.profileImage}
+                            />
+                            <Text style={styles.profileName}>프로필 명 2</Text>
+                            <Text style={styles.plusScore}>+150</Text>
                         </View>
                     </View>
                 </ImageBackground>
