@@ -27,8 +27,8 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ MobX 상태 변경 감지를 위한 useState 선언
     const [normalImage, setNormalImage] = useState<string | null>(findItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(findItViewModel.abnormalImage);
-    const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
-    const IMAGE_FRAME_HEIGHT = 255;
+    const IMAGE_FRAME_WIDTH = 350; // 이미지 프레임 크기 (고정)
+    const IMAGE_FRAME_HEIGHT = 242;
     // ✅ 확대/축소 관련 값
     const MAX_SCALE = 2.5; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율

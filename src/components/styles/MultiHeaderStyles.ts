@@ -28,7 +28,7 @@ export default StyleSheet.create({
         paddingBottom: verticalScale(50),
     },
     profileContainer: {
-        marginTop: verticalScale(60),
+        marginTop: verticalScale(50),
     },
     profileBorder: {
         width: scale(200),
@@ -54,7 +54,7 @@ export default StyleSheet.create({
     nickname: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        paddingBottom: verticalScale(15),
+        paddingBottom: verticalScale(5),
         textAlign: 'center',
     },
     // 가운데 영역 스타일

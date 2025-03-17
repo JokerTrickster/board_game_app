@@ -56,7 +56,7 @@ export default StyleSheet.create({
     nickname: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        paddingBottom: verticalScale(15),
+        paddingBottom: verticalScale(5),
     },
     title: {
         fontSize: scale(16),
