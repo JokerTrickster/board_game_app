@@ -55,7 +55,7 @@ export default StyleSheet.create({
         fontSize: scale(40),
         fontWeight: 'bold',
         color: '#222',
-        marginLeft: scale(10),
+        marginLeft: scale(20),
     },
     // 프로필 영역 컨테이너 (두 개 프로필 정보)
     profilesContainer: {

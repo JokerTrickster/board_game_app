@@ -35,7 +35,8 @@ const GameDetailScreen: React.FC = () => {
     const [modalContentText, setModalContentText] = useState("게임 매칭 방식을 선택해주세요.");
     // 추가: 모달 타입 state (기본: "start")
     const [modalType, setModalType] = useState("start");
-
+    const isCoinZero = userData && userData.coin <= 0;
+    
     const podiumData = [
         {
             rank: 2,
@@ -99,6 +100,9 @@ const GameDetailScreen: React.FC = () => {
     };
     const handleSoloPlay = async () => {
         try {
+            const deductResult = await findItService.deductCoin(-1);
+            console.log("코인 차감 결과:", deductResult);
+
             soloGameViewModel.resetGameState();
             const gameInfoList = await findItService.fetchSoloPlayGameInfo(10);
             (navigation as any).navigate("Loading", { nextScreen: 'SoloFindIt', params: { gameInfoList } });
@@ -179,8 +183,9 @@ const GameDetailScreen: React.FC = () => {
                 <View style={styles.buttonContainer}>
                     {/* 혼자하기 버튼 (이미지 + 텍스트) */}
                     <TouchableOpacity
-                        style={styles.aloneButton}
+                        style={[styles.aloneButton, { opacity: isCoinZero ? 0.5 : 1 }]}
                         onPress={handleSoloPlay}
+                        disabled={isCoinZero}
                     >
                         <ImageBackground
                             source={require('../assets/images/game_detail/alone_button.png')}
@@ -193,8 +198,9 @@ const GameDetailScreen: React.FC = () => {
 
                     {/* 함께하기 버튼 (이미지 + 텍스트) */}
                     <TouchableOpacity
-                        style={styles.togetherButton}
+                        style={[styles.togetherButton, { opacity: isCoinZero ? 0.5 : 1 }]}
                         onPress={() => setTogetherModalVisible(true)}
+                        disabled={isCoinZero}
                     >
                         <ImageBackground
                             source={require('../assets/images/game_detail/match_button.png')}

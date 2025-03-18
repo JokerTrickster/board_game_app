@@ -1,18 +1,22 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import styles from './SoloFindItResultStyles';
 import SoloHeader from '../../components/SoloHeader';
+import soloGameViewModel from './SoloFindItViewModel';
+import { RootStackParamList } from '../../navigation/navigationTypes';
+
+type SoloFindItResultRouteProp = RouteProp<RootStackParamList, 'SoloFindItResult'>;
 
 const SoloFindItResultScreen: React.FC = () => {
     // 성공 여부 변수 (실제 로직에 따라 변경)
-    const isSuccess = true;
     const navigation = useNavigation<any>();
-
+    const route = useRoute<SoloFindItResultRouteProp>();
     const goToHome = () => {
+        soloGameViewModel.resetGameState();
         (navigation as any).navigate("Loading", { nextScreen: 'Home' });
     };
-
+    const { isSuccess } = route.params || { isSuccess: false };
     return (
         // 전체 배경 이미지
         <ImageBackground
@@ -21,7 +25,7 @@ const SoloFindItResultScreen: React.FC = () => {
             imageStyle={styles.backgroundImage}
         >
             <View style={styles.container}>
-                <SoloHeader />
+                <SoloHeader showRound={false} />
 
                 {/* 가운데 카드 이미지 안에 내용 표시 */}
                 <ImageBackground
@@ -34,12 +38,14 @@ const SoloFindItResultScreen: React.FC = () => {
                     imageStyle={styles.centerCardImage}
                 >
                     {/* "클리어" 텍스트 */}
-                    <Text style={styles.clearText}>클리어</Text>
+                    <Text style={styles.clearText}>
+                        {isSuccess ? "클리어!" : "게임오버"}
+                    </Text>
 
                     {/* 최종 라운드 정보 */}
                     <View style={styles.roundInfo}>
                         <Text style={styles.roundTitle}>최종 라운드</Text>
-                        <Text style={styles.roundNumber}>30</Text>
+                        <Text style={styles.roundNumber}>{soloGameViewModel.round}</Text>
                     </View>
 
                     {/* 프로필 영역 (2개 정보 표시) */}

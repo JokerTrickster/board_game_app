@@ -4,6 +4,7 @@ import { gameService } from './GameService';
 import { webSocketService } from './WebSocketService';
 import { NavigationRefType } from '../navigation/navigationTypes';
 import findItViewModel from '../games/find-it/FindItViewModel';
+import {findItService} from './FindItService';
 import {WS_BASE_URL} from '../config';
 class FindItWebSocketService {
     private accessToken: string | null = null;
@@ -118,6 +119,7 @@ class FindItWebSocketService {
                     }
                     break;
                 case "START":
+                    findItService.deductCoin(-1);
                     if (navigation) {
                         navigation.navigate('Loading', { nextScreen: 'FindIt' });
                     }
@@ -213,12 +215,21 @@ class FindItWebSocketService {
                         this.sendNextRoundEvent();
                     }, 2000);
                     break;
+                case "GAME_CLEAR":
+                    // ✅ 웹소켓 종료
+                    this.disconnect();
+                    // ✅ 게임 결과 화면으로 이동
+                    if (navigation) {
+                        findItService.deductCoin(1);
+                        navigation.navigate('MultiFindItResult', { isSuccess: true });
+                    }
+                    break;
                 case "GAME_OVER":
                     // ✅ 웹소켓 종료
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('MultiFindItResult');
+                        navigation.navigate('MultiFindItResult', { isSuccess: false });
                     }
                     break;
                 case "MATCH_CANCEL":

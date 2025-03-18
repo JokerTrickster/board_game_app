@@ -14,18 +14,23 @@ const HomeScreen: React.FC = () => {
     const [gameList, setGameList] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
 
-    // ✅ 유저 데이터를 불러오는 함수
-    const fetchUserData = async () => {
+    // ✅ 유저 데이터를 서버에서 받아와 저장한 후, 최신 데이터를 state에 반영합니다.
+    const fetchAndSetUserData = async () => {
         const userID = await AuthService.getUserID();
         if (userID === null) {
             Alert.alert('오류', '로그인 정보가 없습니다.');
             return;
         }
-
         setRefreshing(true);
         const response = await LoginService.fetchUserData(userID);
         if (response.success) {
-            await gameService.setUserInfo(response); // ✅ 유저 정보 저장
+            // gameService에 최신 유저 정보 저장
+            await gameService.setUserInfo(response);
+            // 저장된 최신 유저 정보를 다시 불러와 state 업데이트
+            const storedUser = await gameService.getUserInfo();
+            if (storedUser) {
+                setUserData(storedUser);
+            }
         }
         setRefreshing(false);
     };
@@ -38,7 +43,7 @@ const HomeScreen: React.FC = () => {
 
     useFocusEffect(
         useCallback(() => {
-            fetchUserData();
+            fetchAndSetUserData();
             loadGameList();
         }, [])
     );

@@ -8,8 +8,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
 import  SoloFindItViewModel  from '../games/find-it/SoloFindItViewModel';
+interface SoloHeaderProps {
+    userData?: any;
+    showRound?: boolean; // 게임 화면에서는 true, 결과 화면에서는 false로 전달
+}
 
-const SoloHeader: React.FC<{ userData?: any }> = ({ userData }) => {
+const SoloHeader: React.FC<SoloHeaderProps> = ({ userData, showRound = true }) => {
     const [user, setUser] = useState(userData?.user);
     const [profileImage, setProfileImage] = useState(userData?.profileImage);
     const [isModalVisible, setModalVisible] = useState(false);
@@ -73,9 +77,12 @@ const SoloHeader: React.FC<{ userData?: any }> = ({ userData }) => {
             </View>
 
             {/* 가운데에 Round 값 표시 */}
-            <View style={styles.centerContainer}>
-                <Text style={styles.roundText}>ROUND {SoloFindItViewModel.round}</Text>
-            </View>
+            {showRound && (
+                <View style={styles.centerContainer}>
+                    <Text style={styles.roundText}>ROUND {SoloFindItViewModel.round}</Text>
+                </View>
+            )}
+
 
             {/* 설정 아이콘 */}
             <TouchableOpacity style={styles.settingsIcon} onPress={toggleModal}>

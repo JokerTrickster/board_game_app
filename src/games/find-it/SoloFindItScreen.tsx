@@ -12,6 +12,8 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { runInAction } from 'mobx';
 import SoloHeader from '../../components/SoloHeader';
 import ItemBar from '../../components/ItemBar';
+import {findItService} from '../../services/FindItService';
+import Sound from 'react-native-sound';
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -48,6 +50,10 @@ const SoloFindItScreen: React.FC = observer(() => {
    
     const route = useRoute<any>();
     const { gameInfoList } = route.params; 
+
+    // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
+    const clickSoundRef = useRef<Sound | null>(null);
+
 
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
@@ -130,6 +136,38 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         timerAnimation.current.start();
     }, []);
+
+    // 사용자 클릭 시 사운드 재생 함수
+    const playClickSound = () => {
+        if (clickSoundRef.current) {
+            clickSoundRef.current.stop(() => {
+                clickSoundRef.current?.play((success) => {
+                    if (!success) {
+                        console.log('Sound playback failed');
+                    }
+                });
+            });
+        }
+    };
+
+
+    // 컴포넌트 마운트 시 사운드 파일 로드
+    useEffect(() => {
+        clickSoundRef.current = new Sound('wrong_click.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('Failed to load the sound', error);
+                return;
+            }
+            // 사운드 로드 완료
+            console.log('Sound loaded successfully');
+        });
+
+        return () => {
+            // 컴포넌트 언마운트 시 사운드 해제
+            clickSoundRef.current?.release();
+        };
+    }, []);
+
     useEffect(() => {
         if (soloFindItViewModel.timer > 0 && !soloFindItViewModel.timerStopped) {
             startTimerAnimation(soloFindItViewModel.timer);
@@ -138,7 +176,12 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     useEffect(() => {
         if (soloFindItViewModel.correctClicks.length === 5) {
-            soloFindItViewModel.nextRound();
+            if (soloFindItViewModel.round == 10) {
+                findItService.deductCoin(1);
+                navigation.navigate('SoloFindItResult', { isSuccess: true });
+            } else {
+                soloFindItViewModel.nextRound();
+            }
         }
     }), [soloFindItViewModel.correctClicks]
     
@@ -174,6 +217,8 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     const handleImageClick = useCallback((event: any) => {
         'worklet';
+        runOnJS(playClickSound)();
+
         const { locationX, locationY } = event.nativeEvent;
         const finalX = parseFloat(locationX.toFixed(2));
         const finalY = parseFloat(locationY.toFixed(2));
@@ -326,7 +371,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
-            navigation.navigate('SoloFindItResult');
+            navigation.navigate('SoloFindItResult', { isSuccess: false });
         }
     }, [soloFindItViewModel.gameOver]);
 

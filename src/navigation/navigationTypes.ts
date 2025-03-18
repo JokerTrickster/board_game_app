@@ -10,8 +10,8 @@ export type RootStackParamList = {
     Password: undefined;
     GameDetail: { game: string };
     Loading: { nextScreen: keyof RootStackParamList; params?: any }; // params를 선택적으로 추가
-    SoloFindItResult: undefined;
-    MultiFindItResult: undefined;  
+    SoloFindItResult: { isSuccess: boolean }; 
+    MultiFindItResult: { isSuccess: boolean };  
 };
 
 // ✅ 네비게이션 참조 타입 추가
