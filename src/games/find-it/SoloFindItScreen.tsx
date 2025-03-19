@@ -222,7 +222,8 @@ const SoloFindItScreen: React.FC = observer(() => {
         const { locationX, locationY } = event.nativeEvent;
         const finalX = parseFloat(locationX.toFixed(2));
         const finalY = parseFloat(locationY.toFixed(2));
-
+        
+        if (soloFindItViewModel.isAlreadyClicked(finalX, finalY)) return;
         // 현재 라운드에 해당하는 게임 정보 가져오기
         const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
         let isCorrect = false;
