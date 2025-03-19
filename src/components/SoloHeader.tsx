@@ -7,7 +7,7 @@ import { AuthService } from '../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
-import  SoloFindItViewModel  from '../games/find-it/SoloFindItViewModel';
+import  SoloFindItViewModel  from '../games/find-it/services/SoloFindItViewModel';
 interface SoloHeaderProps {
     userData?: any;
     showRound?: boolean; // 게임 화면에서는 true, 결과 화면에서는 false로 전달

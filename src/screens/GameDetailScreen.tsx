@@ -9,7 +9,7 @@ import { WebView } from 'react-native-webview';
 import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
 import { findItService } from '../services/FindItService';
-import soloGameViewModel from '../games/find-it/SoloFindItViewModel';
+import soloGameViewModel from '../games/find-it/services/SoloFindItViewModel';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();

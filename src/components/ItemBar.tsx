@@ -1,5 +1,7 @@
+// ItemBar.tsx
 import React, { FC } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import styles from './styles/ItemBarStyles'; // 스타일 파일 import
 
 interface ItemBarProps {
     /** 남은 생명 수 */
@@ -78,52 +80,3 @@ const ItemBar: FC<ItemBarProps> = ({
 };
 
 export default ItemBar;
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        backgroundColor: '#f2f2f2',
-    },
-    groupContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginLeft: 20,
-        marginRight:20,
-    },
-    itemContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginHorizontal: 10,
-    },
-    iconWrapper: {
-        position: 'relative',
-    },
-    icon: {
-        width: 40,
-        height: 40,
-        resizeMode: 'contain',
-    },
-    // 숫자(카운트)를 아이콘 위에 배치하는 배지 스타일
-    countBadge: {
-        position: 'absolute',
-        bottom: 2,
-        right:0,
-        color: '#fff',
-        fontSize: 14,
-        paddingHorizontal: 4,
-        paddingVertical: 1,
-        borderRadius: 8,
-        overflow: 'hidden',
-        fontWeight: 'bold',
-    },
-    // 아이콘 아래에 표시할 라벨 텍스트
-    itemLabel: {
-        marginTop: 4,
-        fontSize: 12,
-        color: '#000',
-    },
-});

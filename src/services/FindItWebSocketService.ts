@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { gameService } from './GameService';
 import { webSocketService } from './WebSocketService';
 import { NavigationRefType } from '../navigation/navigationTypes';
-import findItViewModel from '../games/find-it/FindItViewModel';
+import findItViewModel from '../games/find-it/services/FindItViewModel';
 import {findItService} from './FindItService';
 import {WS_BASE_URL} from '../config';
 class FindItWebSocketService {

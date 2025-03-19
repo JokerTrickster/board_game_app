@@ -7,7 +7,7 @@ import { AuthService } from '../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
-import FindItViewModel from '../games/find-it/FindItViewModel';
+import FindItViewModel from '../games/find-it/services/FindItViewModel';
 
 const MultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
     const [users, setUsers] = useState(userData?.users || []);

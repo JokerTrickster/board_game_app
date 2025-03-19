@@ -3,8 +3,8 @@ import { Animated as RNAnimated, View, Text, Image, Button, TouchableWithoutFeed
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
-import findItViewModel from './FindItViewModel'; // ✅ 올바른 경로로 변경
-import { styles } from './ReactFindItStyles';
+import findItViewModel from './services/FindItViewModel'; // ✅ 올바른 경로로 변경
+import { styles } from './styles/ReactFindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import { webSocketService } from '../../services/WebSocketService';
 import AnimatedCircle from './AnimatedCircle';
