@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/navigationTypes';
-import { styles } from './ReactFindItGameOverStyles';
+import { styles } from './styles/ReactFindItGameOverStyles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const API_BASE_URL = 'http://10.0.2.2:8080/find-it/v0.1/game'; // ✅ API_BASE_URL 수정

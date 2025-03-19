@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
-import { webSocketService } from '../../services/WebSocketService';
-import { findItWebSocketService } from '../../services/FindItWebSocketService';
+import { webSocketService } from '../../../services/WebSocketService';
+import { findItWebSocketService } from '../../../services/FindItWebSocketService';
 
 class GameViewModel {
     life = 3; // 목숨 개수

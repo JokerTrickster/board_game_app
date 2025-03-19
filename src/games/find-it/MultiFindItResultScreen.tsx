@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import styles from './MultiFindItResultStyles';
+import styles from './styles/MultiFindItResultStyles';
 import MultiHeader from '../../components/MultiHeader';
 import { RootStackParamList } from '../../navigation/navigationTypes';
-import findItViewModel from './FindItViewModel';
+import findItViewModel from './services/FindItViewModel';
 type MultiFindItResultRouteProp = RouteProp<RootStackParamList, 'MultiFindItResult'>;
 
 

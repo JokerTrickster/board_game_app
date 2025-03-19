@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground } from 'react-native';
-import styles from '../styles/ReactActionCardStyles';
+import styles from './styles/ActionCardStyles';
 
 interface PodiumItem {
     rank: number;           // 1, 2, 3

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import styles from './SoloFindItResultStyles';
+import styles from './styles/SoloFindItResultStyles';
 import SoloHeader from '../../components/SoloHeader';
-import soloGameViewModel from './SoloFindItViewModel';
+import soloGameViewModel from './services/SoloFindItViewModel';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 
 type SoloFindItResultRouteProp = RouteProp<RootStackParamList, 'SoloFindItResult'>;
