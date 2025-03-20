@@ -1,5 +1,6 @@
 import { action, makeAutoObservable, runInAction } from 'mobx';
 import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './constants';
+import Sound from 'react-native-sound';
 class SoloGameViewModel {
     life = LIFE; // 목숨 개수
     hints = HINTS; // 힌트 개수
@@ -238,6 +239,21 @@ class SoloGameViewModel {
         this.wrongClicks = [];
     }
     nextRound() {
+        // next_stage.mp3 사운드를 재생합니다.
+        const nextStageSound = new Sound('next_stage.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log("Failed to load next stage sound:", error);
+                return;
+            }
+            nextStageSound.setNumberOfLoops(0); // 한 번만 재생
+            nextStageSound.play((success) => {
+                if (!success) {
+                    console.log("Next stage sound playback failed");
+                }
+                nextStageSound.release(); // 재생 완료 후 리소스 해제
+            });
+        });
+
         this.timer = GAME_TIMER;
         this.remainingTime = GAME_TIMER;
         this.initClicks();

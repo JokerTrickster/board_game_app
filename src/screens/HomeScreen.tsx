@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, ScrollView, Alert,ImageBackground } from 'react-native';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
@@ -7,13 +7,14 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { LoginService } from '../services/LoginService';
 import { gameService } from '../services/GameService';
 import { AuthService } from '../services/AuthService';
+import { CommonAudioManager } from '../services/CommonAudioManager'; // Global Audio Manager import
 
 const HomeScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const [userData, setUserData] = useState<{ success: boolean; user: any; profileImage: string | null } | null>(null);
     const [gameList, setGameList] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-
+  
     // ✅ 유저 데이터를 서버에서 받아와 저장한 후, 최신 데이터를 state에 반영합니다.
     const fetchAndSetUserData = async () => {
         const userID = await AuthService.getUserID();
@@ -47,6 +48,15 @@ const HomeScreen: React.FC = () => {
             loadGameList();
         }, [])
     );
+    useEffect(() => {
+        CommonAudioManager.initBackgroundMusic();
+        CommonAudioManager.playBackgroundMusic();
+        // 홈 화면을 벗어나면 음악을 계속 재생할지, 아니면 중단할지 결정합니다.
+        // 예를 들어, 홈 화면을 벗어날 때 정지하고 싶다면 아래 cleanup 코드를 활성화하면 됩니다.
+        return () => {
+            CommonAudioManager.stopBackgroundMusic();
+        };
+    }, []);
 
     // ✅ 게임 선택 시 실행 여부 확인
     const handleGamePress = (game: any) => {

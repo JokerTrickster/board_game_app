@@ -68,7 +68,7 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: scale(10),
         borderRadius: scale(8),
-        marginTop: verticalScale(10),
+        marginTop: verticalScale(2),
         paddingVertical: verticalScale(6),
     },
     profileImage: {
@@ -96,11 +96,10 @@ export default StyleSheet.create({
     },
     // 홈으로 이동하는 버튼 스타일
     homeButton: {
-        marginTop: verticalScale(20),
         paddingVertical: verticalScale(10),
-        paddingHorizontal: scale(20),
-        backgroundColor: '#FF5722',
-        borderRadius: scale(8),
+        paddingHorizontal: scale(30),
+        backgroundColor: '#FC9D99',
+        borderRadius: scale(10),
         alignSelf: 'center',
     },
     homeButtonText: {

@@ -4,6 +4,9 @@ import { useNavigation, useRoute, StackActions } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/navigationTypes';
 import { LoadingScreenStyles } from '../styles/LoadingStyles';
+import Sound from 'react-native-sound';
+import { CommonAudioManager } from '../services/CommonAudioManager'; // AudioManager import
+
 
 type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Loading'>;
 
@@ -21,7 +24,10 @@ const LoadingScreen: React.FC = () => {
                 : '로딩 중...';
 
     const progress = useRef(new Animated.Value(0)).current;
-
+    // 로딩 화면 마운트 시 배경음악 정지
+    useEffect(() => {
+        CommonAudioManager.initBackgroundMusic();
+    }, []);
     useEffect(() => {
         Animated.timing(progress, {
             toValue: 1,

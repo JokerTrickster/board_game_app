@@ -14,6 +14,9 @@ import SoloHeader from '../../components/SoloHeader';
 import ItemBar from '../../components/ItemBar';
 import {findItService} from '../../services/FindItService';
 import Sound from 'react-native-sound';
+import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
+
+
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -53,7 +56,8 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
     const clickSoundRef = useRef<Sound | null>(null);
-
+    // 새로운 correct_click 사운드 ref 추가
+    const correctSoundRef = useRef<Sound | null>(null);
 
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
@@ -149,7 +153,18 @@ const SoloFindItScreen: React.FC = observer(() => {
             });
         }
     };
-
+    // 새로 추가: 맞은 클릭 사운드 재생 함수
+    const playCorrectSound = () => {
+        if (correctSoundRef.current) {
+            correctSoundRef.current.stop(() => {
+                correctSoundRef.current?.play((success) => {
+                    if (!success) {
+                        console.log('Correct sound playback failed');
+                    }
+                });
+            });
+        }
+    };
 
     // 컴포넌트 마운트 시 사운드 파일 로드
     useEffect(() => {
@@ -161,10 +176,28 @@ const SoloFindItScreen: React.FC = observer(() => {
             // 사운드 로드 완료
             console.log('Sound loaded successfully');
         });
+        // correct_click 사운드 로드
+        correctSoundRef.current = new Sound('correct_click.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('Failed to load correct sound', error);
+                return;
+            }
+            console.log('Correct sound loaded successfully');
+        });
 
         return () => {
             // 컴포넌트 언마운트 시 사운드 해제
             clickSoundRef.current?.release();
+            correctSoundRef.current?.release();
+        };
+    }, []);
+    useEffect(() => {
+        CommonAudioManager.initBackgroundMusic();
+        CommonAudioManager.playGameBackgroundMusic();
+        // 홈 화면을 벗어나면 음악을 계속 재생할지, 아니면 중단할지 결정합니다.
+        // 예를 들어, 홈 화면을 벗어날 때 정지하고 싶다면 아래 cleanup 코드를 활성화하면 됩니다.
+        return () => {
+            CommonAudioManager.stopGameBackgroundMusic();
         };
     }, []);
 
@@ -217,7 +250,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     const handleImageClick = useCallback((event: any) => {
         'worklet';
-        runOnJS(playClickSound)();
 
         const { locationX, locationY } = event.nativeEvent;
         const finalX = parseFloat(locationX.toFixed(2));
@@ -245,9 +277,12 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
 
         if (isCorrect) {
+            runOnJS(playCorrectSound)();
             // JS 스레드에서 상태 업데이트 실행
             runOnJS(addCorrectClick)(matchedPos.x, matchedPos.y);
         } else {
+            runOnJS(playClickSound)();
+
             // 필요에 따라 오답 처리 로직 추가 가능 (예: wrongClicks 배열에 추가)
             soloFindItViewModel.life -= 1;
             runOnJS(addWrongClick)(finalX, finalY);
