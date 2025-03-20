@@ -224,8 +224,15 @@ const GameDetailScreen: React.FC = () => {
                             <ScrollView>
                                 <Text style={styles.modalDescriptionText}>{game.description}</Text>
                             </ScrollView>
-                            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setDescriptionModalVisible(false)}>
-                                <Text style={styles.modalCloseButtonText}>닫기</Text>
+                            {/* 오른쪽 상단 닫기 아이콘 */}
+                            <TouchableOpacity
+                                style={styles.modalCloseIcon}
+                                onPress={() => setDescriptionModalVisible(false)}
+                            >
+                                <Image
+                                    source={require('../assets/images/game_detail/close.png')}
+                                    style={styles.modalCloseIconImage}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -244,10 +251,17 @@ const GameDetailScreen: React.FC = () => {
                                 style={styles.youtubeWebView}
                                 javaScriptEnabled={true}
                                 domStorageEnabled={true}
-                                source={{ uri: 'https://www.youtube.com/embed/HDanI-V1iyM?si=eh5Gvz0XHmhmrx3Q' }}
+                                source={{ uri: 'https://www.youtube.com/embed/xvqMWEfSgbY?si=H7qpoTWl4X5gKMUJ' }}
                             />
-                            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setYoutubeModalVisible(false)}>
-                                <Text style={styles.modalCloseButtonText}>닫기</Text>
+                            {/* 오른쪽 상단 닫기 아이콘 */}
+                            <TouchableOpacity
+                                style={styles.modalCloseIcon}
+                                onPress={() => setYoutubeModalVisible(false)}
+                            >
+                                <Image
+                                    source={require('../assets/images/game_detail/close.png')}
+                                    style={styles.modalCloseIconImage}
+                                />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -289,8 +303,9 @@ const GameDetailScreen: React.FC = () => {
                                     style={styles.modalButton}
                                     onPress={() => {
                                         // 친구와 함께 버튼: 배경 및 텍스트 타입 변경
-                                        setTogetherModalBackground(require('../assets/images/game_detail/together_join.png'));
-                                        setModalType("together");
+                                        Alert.alert("현재 준비중입니다.");
+                                       // setTogetherModalBackground(require('../assets/images/game_detail/together_join.png'));
+                                        //setModalType("together");
                                     } }
                                 >
                                         <Text style={styles.modalButtonText}>친구와 함께</Text>

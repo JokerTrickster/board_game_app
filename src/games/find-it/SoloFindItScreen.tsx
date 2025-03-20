@@ -33,8 +33,8 @@ const SoloFindItScreen: React.FC = observer(() => {
     const [normalImage, setNormalImage] = useState<string | null>(soloFindItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(soloFindItViewModel.abnormalImage);
 
-    const IMAGE_FRAME_WIDTH = 350; // 이미지 프레임 크기 (고정)
-    const IMAGE_FRAME_HEIGHT = 242;
+    const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
+    const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
     const MAX_SCALE = 2.5; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율

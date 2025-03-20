@@ -30,18 +30,19 @@ export const styles = StyleSheet.create({
     },
     // 기존 imageContainer 수정:
     normalImageContainer: {
-        width: scale(350),
-        aspectRatio: 350 / 242, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
-        marginTop: verticalScale(-1),
+        width: scale(400),
+        aspectRatio: 400 / 277, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
     },
     abnormalImageContainer: {
-        width: scale(350),
-        aspectRatio: 350 / 242, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
-        marginTop: verticalScale(2.4),
+        width: scale(400),
+        aspectRatio: 400 / 277, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: verticalScale(1),
     },
     gameContainer: {
-        width: '86.5%',
-        height: '58.5%',
+        width: '98%',
+        height: '66.2%',
         borderWidth: scale(3),
         borderColor: '#FC9D99',
     },
@@ -55,14 +56,14 @@ export const styles = StyleSheet.create({
     timerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '94%',
+        width: '96%',
         marginVertical: verticalScale(-9),
     },
     timerImage: {
-        width: scale(36),
-        height: scale(36),
+        width: scale(30),
+        height: scale(35),
         resizeMode: 'contain',
-        marginLeft: scale(-17),
+        marginLeft: scale(-10),
         zIndex: 1,
     },
     timerBar: {

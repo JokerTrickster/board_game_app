@@ -131,7 +131,7 @@ export default StyleSheet.create({
     },
     modalContent: {
         width: '90%',
-        height: '70%',
+        height: '45%',
         backgroundColor: '#fff',
         borderRadius: scale(10),
         padding: scale(20),
