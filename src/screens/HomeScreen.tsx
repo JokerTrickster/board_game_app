@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, ScrollView, Alert,ImageBackground } from 'react-native';
+import { View, ScrollView, Alert,ImageBackground,AppState} from 'react-native';
 import Header from '../components/Header';
 import GameCard from '../components/GameCard';
 import styles from '../styles/ReactHomeStyles';
@@ -66,6 +66,23 @@ const HomeScreen: React.FC = () => {
         }
         navigation.navigate('GameDetail', { game });
     };
+    // 앱 상태 감지
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
+                CommonAudioManager.initBackgroundMusic();
+            } else if (nextAppState === 'active') {
+                // 앱이 포그라운드로 돌아올 때 배경음악 재생 (원하는 경우)
+                CommonAudioManager.playGameBackgroundMusic();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
     useEffect(() => {
         const fetchUserData = async () => {
             const storedUser = await gameService.getUserInfo();

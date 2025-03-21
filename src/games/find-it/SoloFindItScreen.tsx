@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Animated as RNAnimated, View, Text, Image, Button, TouchableWithoutFeedback, TouchableOpacity, Easing } from 'react-native';
+import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback, TouchableOpacity, Easing } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
@@ -165,6 +165,22 @@ const SoloFindItScreen: React.FC = observer(() => {
             });
         }
     };
+    // 앱 상태 감지
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
+                CommonAudioManager.initBackgroundMusic();
+            } else if (nextAppState === 'active') {
+                // 앱이 포그라운드로 돌아올 때 배경음악 재생 (원하는 경우)
+                CommonAudioManager.playGameBackgroundMusic();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
 
     // 컴포넌트 마운트 시 사운드 파일 로드
     useEffect(() => {

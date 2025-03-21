@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Animated as RNAnimated, View, Text, Image, Button, TouchableWithoutFeedback,  TouchableOpacity, Easing } from 'react-native';
+import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback,  TouchableOpacity, Easing } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
@@ -13,6 +13,7 @@ import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDer
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import MultiHeader from '../../components/MultiHeader';
 import ItemBar from '../../components/ItemBar';
+import {CommonAudioManager} from '../../services/CommonAudioManager';
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -210,7 +211,22 @@ const FindItScreen: React.FC = observer(() => {
         setNormalImage(findItViewModel.normalImage);
         setAbnormalImage(findItViewModel.abnormalImage);
     }, [findItViewModel.normalImage, findItViewModel.abnormalImage]);
+    // 앱 상태 감지
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
+                CommonAudioManager.initBackgroundMusic();
+            } else if (nextAppState === 'active') {
+                // 앱이 포그라운드로 돌아올 때 배경음악 재생 (원하는 경우)
+                CommonAudioManager.playGameBackgroundMusic();
+            }
+        });
 
+        return () => {
+            subscription.remove();
+        };
+    }, []);
     // ✅ 라운드 변경 시 타이머 바 초기화 & 다시 시작 및 이미지 transform 초기화
     useEffect(() => {
         if (!findItViewModel.roundClearEffect) {
