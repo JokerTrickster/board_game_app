@@ -10,6 +10,7 @@ import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
 import { findItService } from '../services/FindItService';
 import soloGameViewModel from '../games/find-it/services/SoloFindItViewModel';
+import Button from '../components/Button';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -35,8 +36,8 @@ const GameDetailScreen: React.FC = () => {
     const [modalContentText, setModalContentText] = useState("게임 매칭 방식을 선택해주세요.");
     // 추가: 모달 타입 state (기본: "start")
     const [modalType, setModalType] = useState("start");
-    const isCoinZero = userData && userData.coin <= 0;
-    
+
+
     const podiumData = [
         {
             rank: 2,
@@ -98,8 +99,10 @@ const GameDetailScreen: React.FC = () => {
         setMatchMessage("매칭 중입니다...");
 
     };
+
     const handleSoloPlay = async () => {
         try {
+
             const deductResult = await findItService.deductCoin(-1);
             console.log("코인 차감 결과:", deductResult);
 
@@ -111,7 +114,7 @@ const GameDetailScreen: React.FC = () => {
             Alert.alert("Error", error.message);
         }
     };
-
+   
     const handleCancelMatching = () => {
         // ✅ 매칭 취소 이벤트 전송
         findItWebSocketService.sendMatchCancelEvent();
@@ -182,34 +185,21 @@ const GameDetailScreen: React.FC = () => {
                 {/* 하단 버튼 영역: 항상 화면 하단에 고정 */}
                 <View style={styles.buttonContainer}>
                     {/* 혼자하기 버튼 (이미지 + 텍스트) */}
-                    <TouchableOpacity
-                        style={[styles.aloneButton, { opacity: isCoinZero ? 0.5 : 1 }]}
+                    <Button
                         onPress={handleSoloPlay}
-                        disabled={isCoinZero}
-                    >
-                        <ImageBackground
-                            source={require('../assets/images/game_detail/alone_button.png')}
-                            style={styles.aloneButtonImage}
-                            imageStyle={{ resizeMode: 'contain' }}
-                        >
-                            <Text style={styles.soloButtonText}>혼자하기</Text>
-                        </ImageBackground>
-                    </TouchableOpacity>
-
+                        disabled={false} // 또는 필요한 조건
+                        text="혼자하기"
+                        containerStyle={styles.aloneButton} // 필요 시 개별 스타일 추가
+                        textStyle={styles.soloButtonText}
+                    />
                     {/* 함께하기 버튼 (이미지 + 텍스트) */}
-                    <TouchableOpacity
-                        style={[styles.togetherButton, { opacity: isCoinZero ? 0.5 : 1 }]}
+                    <Button
                         onPress={() => setTogetherModalVisible(true)}
-                        disabled={isCoinZero}
-                    >
-                        <ImageBackground
-                            source={require('../assets/images/game_detail/match_button.png')}
-                            style={styles.togetherButtonImage}
-                            imageStyle={{ resizeMode: 'contain' }}
-                        >
-                            <Text style={styles.togetherButtonText}>함께하기</Text>
-                        </ImageBackground>
-                    </TouchableOpacity>
+                        disabled={isMatching} // 매칭 중일 때 비활성화
+                        text="함께하기"
+                        containerStyle={styles.togetherButton} // 필요 시 개별 스타일 추가
+                        textStyle={styles.togetherButtonText}
+                    />
                 </View>
 
                 {/* 게임 설명 모달 */}
