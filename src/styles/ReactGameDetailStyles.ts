@@ -10,9 +10,9 @@ const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 export default StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: scale(16),
+        paddingHorizontal: scale(18),
         justifyContent: 'flex-start',
-        marginTop: verticalScale(-20),
+        marginTop: verticalScale(-10),
     },
     backButton: {
         position: 'absolute',
@@ -99,11 +99,11 @@ export default StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        marginVertical: verticalScale(-30),
-        height: verticalScale(0),
-        marginBottom: verticalScale(40),
+        width: '90%',
+        height: verticalScale(40),
+        justifyContent: 'center',
+        marginVertical: verticalScale(10),
+        
     },
 
     buttonText: {
@@ -122,7 +122,6 @@ export default StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
     },
-
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
@@ -162,15 +161,16 @@ export default StyleSheet.create({
     },
     // ReactGameDetailStyles.js (또는 관련 스타일 파일에 추가)
     aloneButton: {
+        // 기존 matchButton과 유사한 스타일을 적용할 수도 있습니다.
         alignItems: 'center',
         justifyContent: 'center',
-        // 기존 matchButton과 유사한 스타일을 적용할 수도 있습니다.
-    },
-    aloneButtonImage: {
-        width: scale(185),
-        height: verticalScale(60),
-        resizeMode: 'contain',
-        marginBottom: 5,
+        borderWidth: scale(1),
+        borderRadius: scale(30),
+        backgroundColor: '#FC9D99',
+        marginBottom: verticalScale(15),
+        marginRight: scale(25),
+        marginLeft: scale(25),
+
     },
     soloButtonText: {
         color: '#000',
@@ -178,36 +178,27 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 20,
-        bottom: 0,
     },
     togetherButton: {
-        flex: 1,
-        marginHorizontal: scale(4),
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: scale(1),
+        borderRadius: scale(30),
+        backgroundColor: '#FC9D99',
+        marginBottom: verticalScale(15),
     },
-    togetherButtonImage: {
-        width: scale(185),
-        height: verticalScale(60),
-        resizeMode: 'contain',
-        marginBottom: 5,
-    },
+
     togetherButtonText: {
         color: '#000',
         fontSize: scale(18),
         fontWeight: 'bold',
         textAlign: 'center',
         position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 20,
-        bottom: 0,
+
     },
     content: {
         flex: 1,
+        marginBottom:   verticalScale(75),
     },
     // 함께하기 옵션 모달 스타일 추가
     togetherModalContent: {

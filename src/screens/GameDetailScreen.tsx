@@ -102,7 +102,6 @@ const GameDetailScreen: React.FC = () => {
 
     const handleSoloPlay = async () => {
         try {
-
             const deductResult = await findItService.deductCoin(-1);
             console.log("코인 차감 결과:", deductResult);
 
@@ -195,7 +194,7 @@ const GameDetailScreen: React.FC = () => {
                     {/* 함께하기 버튼 (이미지 + 텍스트) */}
                     <Button
                         onPress={() => setTogetherModalVisible(true)}
-                        disabled={isMatching} // 매칭 중일 때 비활성화
+                        disabled={false} // 매칭 중일 때 비활성화
                         text="함께하기"
                         containerStyle={styles.togetherButton} // 필요 시 개별 스타일 추가
                         textStyle={styles.togetherButtonText}

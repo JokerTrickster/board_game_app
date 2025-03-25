@@ -1,19 +1,20 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+const guidelineBaseWidth = 414;
+const guidelineBaseHeight = 736;
+
+const scale = (size: number) => (width / guidelineBaseWidth) * size;
+const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
     buttonContainer: {
         // 기본적으로 버튼 컨테이너에 필요한 margin/padding 등을 추가할 수 있습니다.
-    },
-    imageBackground: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        // 버튼의 기본 크기를 설정하거나 부모에서 전달한 containerStyle에 따라 결정합니다.
+        flex:1,
         width: '100%',
-        height: '100%',
+        marginTop: verticalScale(-20),
     },
-    imageStyle: {
-        resizeMode: 'contain',
-    },
+
     text: {
         color: '#FFF',
         fontSize: 16,

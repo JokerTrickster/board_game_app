@@ -12,10 +12,8 @@ export default StyleSheet.create({
     // 전체 랭킹 카드 바깥 컨테이너
     cardOuterContainer: {
         width: scale(380),
-        height: verticalScale(235),
+        height: verticalScale(250),
         overflow: 'hidden',
-        marginVertical: verticalScale(-5),
-        alignSelf: 'center',
     },
 
     // rank_background.png 를 깔아주는 배경
@@ -25,7 +23,7 @@ export default StyleSheet.create({
     actionCardBackgroundImage: {
         // 이미지를 좌우로 늘리지 않고,
         // 세로/가로 비율을 유지하면서 컨테이너에 맞춤
-        resizeMode: 'contain',
+        resizeMode: 'cover',
         height: '100%',
         width: '100%',
     },

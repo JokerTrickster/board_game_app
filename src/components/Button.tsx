@@ -24,14 +24,9 @@ const Button: React.FC<ButtonProps> = ({
             style={[buttonStyles.buttonContainer, containerStyle, disabled && buttonStyles.disabled]}
             activeOpacity={0.7}
         >
-            <ImageBackground
-                style={buttonStyles.imageBackground}
-                imageStyle={buttonStyles.imageStyle}
-            >
                 <Text style={[buttonStyles.text, textStyle]}>
                     {text}
                 </Text>
-            </ImageBackground>
         </TouchableOpacity>
     );
 };

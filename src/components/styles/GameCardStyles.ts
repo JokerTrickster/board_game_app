@@ -40,7 +40,6 @@ export default StyleSheet.create({
         backgroundColor: '#fff',
         marginVertical: verticalScale(10),
         borderRadius: scale(10),
-        padding: scale(5),
         elevation: scale(6),
         alignItems: 'center',
         borderWidth: scale(1),
