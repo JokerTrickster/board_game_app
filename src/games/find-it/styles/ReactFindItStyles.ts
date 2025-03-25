@@ -41,10 +41,11 @@ export const styles = StyleSheet.create({
         marginTop: verticalScale(1),
     },
     gameContainer: {
-        width: '98%',
-        height: '66.2%',
+        width: width * 0.98,    // 현재 화면 너비의 98%
+        height: height * 0.715, // 현재 화면 높이의 74.2%
         borderWidth: scale(3),
         borderColor: '#FC9D99',
+        overflow: 'hidden',
     },
     // image 스타일 수정:
     image: {
@@ -55,7 +56,6 @@ export const styles = StyleSheet.create({
 
     timerContainer: {
         flexDirection: 'row',
-        alignItems: 'center',
         width: '96%',
         marginVertical: verticalScale(-9),
     },
@@ -64,6 +64,7 @@ export const styles = StyleSheet.create({
         height: scale(35),
         resizeMode: 'contain',
         marginLeft: scale(-10),
+        marginVertical: verticalScale(-9),
         zIndex: 1,
     },
     timerBar: {

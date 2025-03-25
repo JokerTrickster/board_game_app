@@ -36,7 +36,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
-    const MAX_SCALE = 2.5; // 최대 확대 비율
+    const MAX_SCALE = 2; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값
@@ -82,8 +82,17 @@ const SoloFindItScreen: React.FC = observer(() => {
         const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
         const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-        offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
-        offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+        // offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
+        // offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+        // offset이 컨테이너 밖으로 나가지 않도록 clamp 처리
+        offsetX.value = withTiming(
+            Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
+            { duration: 200 }
+        );
+        offsetY.value = withTiming(
+            Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
+            { duration: 200 }
+        );
     };
 
     // ✅ 핀치 줌 제스처 정의
@@ -119,7 +128,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     const animatedStyle = useAnimatedStyle(() => ({
         width: IMAGE_FRAME_WIDTH,
         height: IMAGE_FRAME_HEIGHT,
-        overflow: 'hidden',
+        // overflow: 'hidden',
         transform: [
             { translateX: derivedOffsetX.value },
             { translateY: derivedOffsetY.value },

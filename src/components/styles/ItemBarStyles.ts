@@ -15,7 +15,6 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: scale(20),
-        paddingVertical: verticalScale(8),
         backgroundColor: '#f2f2f2',
     },
     groupContainer: {
