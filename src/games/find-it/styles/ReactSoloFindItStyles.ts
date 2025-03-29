@@ -38,14 +38,13 @@ export const styles = StyleSheet.create({
         aspectRatio: 400 / 277, // 컨테이너의 비율을 이미지 원본과 동일하게 설정
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: verticalScale(1),
+        marginTop: verticalScale(7),
     },
     gameContainer: {
         width: width * 0.98,    // 현재 화면 너비의 98%
         height: height * 0.715, // 현재 화면 높이의 74.2%
         borderWidth: scale(3),
         borderColor: '#FC9D99',
-        overflow: 'hidden',
     },
     // image 스타일 수정:
     image: {
@@ -64,8 +63,8 @@ export const styles = StyleSheet.create({
         height: scale(35),
         resizeMode: 'contain',
         marginLeft: scale(-10),
-        marginVertical: verticalScale(-9),
-        zIndex: 1,
+        marginVertical: verticalScale(-10),
+        zIndex: 1
     },
     timerBar: {
         height: scale(15),
