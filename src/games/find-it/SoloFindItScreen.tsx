@@ -126,9 +126,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
     const animatedStyle = useAnimatedStyle(() => ({
-        width: IMAGE_FRAME_WIDTH,
-        height: IMAGE_FRAME_HEIGHT,
-        // overflow: 'hidden',
         transform: [
             { translateX: derivedOffsetX.value },
             { translateY: derivedOffsetY.value },
@@ -436,6 +433,16 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
     }, [soloFindItViewModel.gameOver]);
 
+    // 이미지 확대/축소 핸들러
+    const handleZoom = (scaleFactor: number) => {
+        // 이미지의 크기를 조정하는 대신, transform을 사용하여 확대/축소
+        imageRef.current?.setNativeProps({
+            style: {
+                transform: [{ scale: scaleFactor }]
+            }
+        });
+    };
+
     return (
         <View style={styles.container}>
             <SoloHeader />
@@ -447,33 +454,14 @@ const SoloFindItScreen: React.FC = observer(() => {
             <View style={styles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.normalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
-                    <Animated.View style={[animatedStyle]}>
-                            <TouchableWithoutFeedback onPress={handleImageClick}>
-                                {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
-                                <View ref={imageRef} style={styles.normalImageContainer}>
-                                    {gameInfoList[currentRound-1].normalUrl ? (
-                                    <Image source={{ uri: gameInfoList[currentRound - 1].normalUrl }} style={styles.image} />
-                                    ) : (
-                                        <Text>이미지를 불러오는 중...</Text>
-                                    )}
-                                    {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                        <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
-                                    ))}
-                                    {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
-                                            <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                            <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                        </View>
-                                    ))}
-                                    {soloFindItViewModel.missedPositions.map((pos, index) => (
-                                        <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
-                                    ))}
-                                    {hintVisible && soloFindItViewModel.hintPosition && (
-                                        <View style={[styles.hintCircle, { left: soloFindItViewModel.hintPosition.x - 15, top: soloFindItViewModel.hintPosition.y - 15 }]} />
-                                    )}
-                                </View>
-                            </TouchableWithoutFeedback>
+                <View style={styles.normalImageContainer}>
+                    <Animated.View style={[styles.image, animatedStyle]}>
+                        <TouchableWithoutFeedback onPress={handleImageClick}>
+                            <Image
+                                source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
+                                style={styles.image}
+                            />
+                        </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
             </GestureDetector>
@@ -501,38 +489,14 @@ const SoloFindItScreen: React.FC = observer(() => {
                 />
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                    <View style={[styles.abnormalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
-                    <Animated.View style={[animatedStyle]}>
+                    <View style={styles.abnormalImageContainer}>
+                    <Animated.View style={[styles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
-                                <View ref={imageRef} style={styles.abnormalImageContainer}>
-                                {gameInfoList[currentRound - 1].abnormalUrl ? (
-                                    <Image source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }} style={styles.image} />
-                                ) : (
-                                    <Text>이미지를 불러오는 중...</Text>
-                                )}
-                                {/* ✅ 정답 표시 */}
-                                {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                    <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
-                                ))}
-
-                                {/* ✅ 오답 표시 */}
-                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                    <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                    </View>
-                                ))}
-                                {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
-                                {soloFindItViewModel.missedPositions.map((pos, index) => (
-                                    <View key={`missed-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
-                                ))}
-                                {/* ✅ 힌트 표시 */}
-                                {hintVisible && soloFindItViewModel.hintPosition && (
-                                    <View style={[styles.hintCircle, { left: soloFindItViewModel.hintPosition.x - 15, top: soloFindItViewModel.hintPosition.y - 15 }]} />
-                                )}
-                            </View>
-
+                                <Image
+                                    source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }}
+                                    style={styles.image}
+                                />
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
