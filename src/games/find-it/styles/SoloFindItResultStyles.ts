@@ -1,13 +1,14 @@
 import { StyleSheet, Dimensions } from 'react-native';
+import { scale, verticalScale } from 'react-native-size-matters';
 
 const { width, height } = Dimensions.get('window');
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;
 
-const scale = (size: number) => (width / guidelineBaseWidth) * size;
-const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
+// const scale = (size: number) => (width / guidelineBaseWidth) * size;
+// const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
     // 전체 배경 이미지 스타일
     background: {
         flex: 1,
@@ -20,6 +21,7 @@ export default StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
     },
     // 가운데 카드 이미지 스타일
     centerCard: {
@@ -35,7 +37,13 @@ export default StyleSheet.create({
     clearText: {
         fontSize: scale(28),
         fontWeight: 'bold',
-        marginTop: verticalScale(105),
+        marginTop: verticalScale(20),
+    },
+    title: {
+        fontSize: scale(32),
+        fontWeight: 'bold',
+        color: '#222',
+        marginBottom: verticalScale(20),
     },
     // 최종 라운드 정보 스타일
     roundInfo: {
@@ -44,7 +52,7 @@ export default StyleSheet.create({
         paddingVertical: verticalScale(19),
         paddingHorizontal: scale(23),
         borderRadius: scale(8),
-        marginLeft: scale(190),
+        marginTop: verticalScale(10),
     },
     roundTitle: {
         fontSize: scale(16),
@@ -82,30 +90,26 @@ export default StyleSheet.create({
         marginLeft: scale(55),
     },
     profileName: {
-        flex: 1,
-        marginLeft: scale(10),
-        fontSize: scale(16),
-        fontWeight: '600',
-        color: '#333',
+        fontSize: scale(18),
+        color: '#222',
     },
-    plusScore: {
-        fontSize: scale(16),
+    profileScore: {
+        fontSize: scale(18),
+        color: '#FFD700', // 금색
+    },
+    mainButton: {
+        marginTop: 30,
+        backgroundColor: '#007bff', // 파란색
+        paddingVertical: 12,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+    },
+    mainButtonText: {
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#000',
-        marginRight: scale(13),
-    },
-    // 홈으로 이동하는 버튼 스타일
-    homeButton: {
-        paddingVertical: verticalScale(10),
-        paddingHorizontal: scale(30),
-        backgroundColor: '#FC9D99',
-        borderRadius: scale(10),
-        alignSelf: 'center',
-    },
-    homeButtonText: {
-        fontSize: scale(16),
-        color: '#FFF',
-        fontWeight: 'bold',
+        color: '#fff',
         textAlign: 'center',
     },
 });
+
+export default styles;

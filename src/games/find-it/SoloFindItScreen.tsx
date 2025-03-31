@@ -313,17 +313,39 @@ const SoloFindItScreen: React.FC = observer(() => {
 
 
     // ✅ 힌트 아이템 사용
-    const handleHint = () => {
+    const handleHint = useCallback(() => {
         if (soloFindItViewModel.hints > 0) {
-            // ✅ 서버에 아이템 사용 이벤트 전송
-            const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
-            soloFindItViewModel.useHintItem(currentGameInfo.correctPositions);
-            runInAction(() => {
-                soloFindItViewModel.hints -= 1;
-            });
-        }
+            const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
+            const unsolvedPositions = currentGameInfo.correctPositions.filter((pos: { x: number; y: number; }) => 
+                !soloFindItViewModel.correctClicks.some(click => 
+                    Math.abs(click.x - pos.x) < TOLERANCE && Math.abs(click.y - pos.y) < TOLERANCE
+                )
+            );
 
-    };
+            if (unsolvedPositions.length > 0) {
+                // 랜덤하게 하나의 힌트 위치 선택
+                const randomIndex = Math.floor(Math.random() * unsolvedPositions.length);
+                const hintPos = unsolvedPositions[randomIndex];
+
+                // 힌트 위치 설정
+                runInAction(() => {
+                    soloFindItViewModel.hintPosition = hintPos;
+                    soloFindItViewModel.hints -= 1;
+                });
+
+                setHintVisible(true);
+
+                // 4초 후에 힌트 숨기기
+                setTimeout(() => {
+                    setHintVisible(false);
+                    runInAction(() => {
+                        soloFindItViewModel.hintPosition = null; // 힌트 위치 초기화
+                    });
+                }, 4000);
+            }
+        }
+    }, [gameInfoList]);
+
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
         if (soloFindItViewModel.item_timer_stop > 0 && !soloFindItViewModel.timerStopped) {
@@ -463,10 +485,45 @@ const SoloFindItScreen: React.FC = observer(() => {
                 <View style={styles.normalImageContainer}>
                     <Animated.View style={[styles.image, animatedStyle]}>
                         <TouchableWithoutFeedback onPress={handleImageClick}>
-                            <Image
-                                source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
-                                style={styles.image}
-                            />
+                            <View>
+                                <Image
+                                    source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
+                                    style={styles.image}
+                                />
+                                {/* 정답 표시 */}
+                                {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                    <AnimatedCircle 
+                                        key={`correct-normal-${index}`} 
+                                        x={pos.x} 
+                                        y={pos.y} 
+                                    />
+                                ))}
+                                {/* 오답 표시 */}
+                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                    <View 
+                                        key={`wrong-normal-${index}`} 
+                                        style={[
+                                            styles.wrongXContainer, 
+                                            { left: pos.x - 15, top: pos.y - 15 }
+                                        ]}
+                                    >
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                    </View>
+                                ))}
+                                {/* 힌트 표시 */}
+                                {hintVisible && soloFindItViewModel.hintPosition && (
+                                    <View
+                                        style={[
+                                            styles.hintCircle,
+                                            {
+                                                left: soloFindItViewModel.hintPosition.x - 15,
+                                                top: soloFindItViewModel.hintPosition.y - 15,
+                                            }
+                                        ]}
+                                    />
+                                )}
+                            </View>
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
@@ -499,10 +556,45 @@ const SoloFindItScreen: React.FC = observer(() => {
                     <Animated.View style={[styles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
+                            <View>
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }}
                                     style={styles.image}
                                 />
+                                {/* 정답 표시 */}
+                                {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                    <AnimatedCircle 
+                                        key={`correct-abnormal-${index}`} 
+                                        x={pos.x} 
+                                        y={pos.y} 
+                                    />
+                                ))}
+                                {/* 오답 표시 */}
+                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                    <View 
+                                        key={`wrong-abnormal-${index}`} 
+                                        style={[
+                                            styles.wrongXContainer, 
+                                            { left: pos.x - 15, top: pos.y - 15 }
+                                        ]}
+                                    >
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
+                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
+                                    </View>
+                                ))}
+                                {/* 힌트 표시 */}
+                                {hintVisible && soloFindItViewModel.hintPosition && (
+                                    <View
+                                        style={[
+                                            styles.hintCircle,
+                                            {
+                                                left: soloFindItViewModel.hintPosition.x - 15,
+                                                top: soloFindItViewModel.hintPosition.y - 15,
+                                            }
+                                        ]}
+                                    />
+                                )}
+                            </View>
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>

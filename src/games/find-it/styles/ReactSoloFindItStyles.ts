@@ -49,7 +49,7 @@ export const styles = StyleSheet.create({
         height: height * 0.715, // 현재 화면 높이의 74.2%
         borderWidth: scale(3),
         borderColor: '#FC9D99',
-        
+        zIndex: 1,
     },
     // image 스타일 수정:
     image: {
