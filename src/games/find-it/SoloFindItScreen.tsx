@@ -391,7 +391,13 @@ const SoloFindItScreen: React.FC = observer(() => {
         setAbnormalImage(gameInfoList[soloFindItViewModel.round - 1].abnormalUrl);
         setCurrentRound(soloFindItViewModel.round);
     }, [soloFindItViewModel.round]);
-
+    
+    useEffect(() => {
+        gameInfoList.forEach((gameInfo:any) => {
+          Image.prefetch(gameInfo.normalUrl);
+          Image.prefetch(gameInfo.abnormalUrl);
+        });
+      }, []);
 
     // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
     useEffect(() => {
