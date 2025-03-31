@@ -38,29 +38,54 @@ const GameDetailScreen: React.FC = () => {
     const [modalType, setModalType] = useState("start");
 
 
-    const podiumData = [
-        {
-            rank: 2,
-            profileImage: require('../assets/images/home/default_profile.png'),
-            nickname: '라이언',
-            title: '보드게임 초보자',
-            score: 75,
-        },
-        {
-            rank: 1,
-            profileImage: require('../assets/images/home/default_profile.png'),
-            nickname: '조커',
-            title: '보드게임 매니아',
-            score: 95,
-        },
-        {
-            rank: 3,
-            profileImage: require('../assets/images/home/default_profile.png'),
-            nickname: '혜봉',
-            title: '보드게임 중급자',
-            score: 65,
-        },
-    ];
+    // const podiumData = [
+    //     {
+    //         rank: 2,
+    //         profileImage: require('../assets/images/home/default_profile.png'),
+    //         nickname: '라이언',
+    //         title: '보드게임 초보자',
+    //         score: 75,
+    //     },
+    //     {
+    //         rank: 1,
+    //         profileImage: require('../assets/images/home/default_profile.png'),
+    //         nickname: '조커',
+    //         title: '보드게임 매니아',
+    //         score: 95,
+    //     },
+    //     {
+    //         rank: 3,
+    //         profileImage: require('../assets/images/home/default_profile.png'),
+    //         nickname: '혜봉',
+    //         title: '보드게임 중급자',
+    //         score: 65,
+    //     },
+    // ];
+
+    // podiumData state를 선언 (초기값은 빈 배열)
+    const [podiumData, setPodiumData] = useState<any[]>([]);
+    // 게임 제목이 '틀린그림찾기'일 때만 랭킹 API를 호출하여 podiumData 갱신
+    useEffect(() => {
+        if (game.title === '틀린그림찾기') {
+          (async () => {
+            try {
+              const ranking = await findItService.fetchRankings();
+              const transformedData = ranking.map((item: any) => ({
+                rank: item.rank,
+                nickname: item.name,
+                score: item.score,
+                profileImage: require('../assets/images/home/default_profile.png'),
+              }));
+              setPodiumData(transformedData);
+            } catch (error) {
+              console.error("Failed to fetch ranking data", error);
+            }
+          })();
+        } else {
+          setPodiumData([]);
+        }
+      }, [game.title]);
+
 
     useEffect(() => {
         const fetchUserData = async () => {

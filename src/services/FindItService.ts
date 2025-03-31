@@ -62,6 +62,36 @@ class FindItService {
             throw error;
         }
     }
+
+    /**
+     * 랭킹 정보를 가져오는 함수
+     * @returns Promise resolving to rankUserList 배열
+     */
+    async fetchRankings(): Promise<any[]> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/find-it/v0.1/game/rank`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`서버 요청 실패: ${response.status}`);
+            }
+            const data = await response.json();
+            if (!data.rankUserList) {
+                throw new Error('Invalid response from server');
+            }
+            return data.rankUserList;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export const findItService = new FindItService();
