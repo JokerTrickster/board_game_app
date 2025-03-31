@@ -84,11 +84,11 @@ const GameDetailScreen: React.FC = () => {
             case '틀린그림찾기':
                 findItWebSocketService.connect();
                 break;
-            case '장미의전쟁':
+            case '????':
                 break;
-            case '카르카손':
+            case '????':
                 break;
-            case '카후나':
+            case '????':
                 break;
             default:
                 Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');

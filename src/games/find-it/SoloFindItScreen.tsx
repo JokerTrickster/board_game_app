@@ -19,7 +19,7 @@ import { CommonAudioManager } from '../../services/CommonAudioManager'; // Globa
 
 
 const SoloFindItScreen: React.FC = observer(() => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
     const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
@@ -233,7 +233,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         if (soloFindItViewModel.correctClicks.length === 5) {
             if (soloFindItViewModel.round == 10) {
                 findItService.deductCoin(1);
-                navigation.navigate('SoloFindItResult', { isSuccess: true });
+                navigation.navigate('SoloFindItResult', { isSuccess: true ,gameInfoList: gameInfoList});
             } else {
                 soloFindItViewModel.nextRound();
             }
@@ -435,7 +435,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
-            navigation.navigate('SoloFindItResult', { isSuccess: false });
+            navigation.navigate('SoloFindItResult', { isSuccess: false,gameInfoList:gameInfoList});
         }
     }, [soloFindItViewModel.gameOver]);
 

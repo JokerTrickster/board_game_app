@@ -1,13 +1,15 @@
-import React from 'react';
+import React,{ useEffect, useState }  from 'react';
 import { View, Text, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import styles from './styles/SoloFindItResultStyles';
 import SoloHeader from '../../components/SoloHeader';
 import soloGameViewModel from './services/SoloFindItViewModel';
 import { RootStackParamList } from '../../navigation/navigationTypes';
+import { gameService } from '../../services/GameService'; // gameService import
 
 type SoloFindItResultRouteProp = RouteProp<RootStackParamList, 'SoloFindItResult'>;
 
+  
 const SoloFindItResultScreen: React.FC = () => {
     // 성공 여부 변수 (실제 로직에 따라 변경)
     const navigation = useNavigation<any>();
@@ -16,7 +18,20 @@ const SoloFindItResultScreen: React.FC = () => {
         soloGameViewModel.resetGameState();
         (navigation as any).navigate("Loading", { nextScreen: 'Home' });
     };
-    const { isSuccess } = route.params || { isSuccess: false };
+    // route 파라미터로부터 isSuccess와 gameInfoList를 받음
+    const { isSuccess, gameInfoList } = route.params || { isSuccess: false, gameInfoList: [] };
+
+    // 유저 정보를 저장할 상태
+    const [userInfo, setUserInfo] = useState<any>(null);
+    // 컴포넌트 마운트 시 gameService로부터 유저 정보 불러오기
+    useEffect(() => {
+        async function loadUserInfo() {
+            const fetchedUserInfo = await gameService.getUserInfo();
+            setUserInfo(fetchedUserInfo);
+        }
+        loadUserInfo();
+    }, []);
+
     return (
         // 전체 배경 이미지
         <ImageBackground
@@ -56,8 +71,8 @@ const SoloFindItResultScreen: React.FC = () => {
                                 source={require('../../assets/images/home/default_profile.png')}
                                 style={styles.profileImage}
                             />
-                            <Text style={styles.profileName}>프로필 명</Text>
-                            <Text style={styles.plusScore}>+200</Text>
+                            <Text style={styles.profileName}>  {userInfo ? userInfo.name : '유저'}</Text>
+                            <Text style={styles.plusScore}>{isSuccess ? "+1" : "0"}</Text>
                         </View>
                     </View>
                 </ImageBackground>
