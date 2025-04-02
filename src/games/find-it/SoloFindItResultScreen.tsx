@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, Text, ImageBackground, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import soloFindItViewModel from './services/SoloFindItViewModel';
 import styles from './styles/SoloFindItResultStyles'; // 스타일 임포트
 
 const SoloFindItResultScreen: React.FC = observer(() => {
     const navigation = useNavigation(); // navigation 타입을 명확히 지정
+    const route = useRoute();
+    const { gameInfoList } = route.params as { gameInfoList: any[] };
+    const userName = (gameInfoList && gameInfoList.length > 0 && gameInfoList[0].user && gameInfoList[0].user.name) || '혜봉이';
     const isSuccess = soloFindItViewModel.roundClearEffect; // 성공 여부
 
     const goToHome = () => {
@@ -34,8 +37,8 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                     <View style={styles.profilesContainer}>
                         <View style={styles.profileRow}>
                             <View style={styles.profileImage} />
-                            <Text style={styles.profileName}>혜봉이</Text>
-                            <Text style={styles.profileScore}>+500</Text>
+                            <Text style={styles.profileName}>{userName}</Text>
+                            <Text style={styles.profileScore}>+1</Text>
                         </View>
                     </View>
 

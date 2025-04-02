@@ -15,7 +15,7 @@ import ItemBar from '../../components/ItemBar';
 import {findItService} from '../../services/FindItService';
 import Sound from 'react-native-sound';
 import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
-
+import AnimatedX from './AnimatedX';
 
 
 const SoloFindItScreen: React.FC = observer(() => {
@@ -36,7 +36,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
-    const MAX_SCALE = 2; // 최대 확대 비율
+    const MAX_SCALE = 1.5; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값
@@ -75,24 +75,28 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     const adjustOffset = () => {
         'worklet';
-        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
-        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+        if (scale.value <= MIN_SCALE + 0.001) {
+            // Center image when fully zoomed out
+            offsetX.value = withTiming(0, { duration: 200 });
+            offsetY.value = withTiming(0, { duration: 200 });
+        } else {
+            const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+            const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
 
-        // 허용 가능한 최대 offset (양쪽 각각)
-        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
-        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
+            // 허용 가능한 최대 offset (양쪽 각각)
+            const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+            const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-        // offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
-        // offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
-        // offset이 컨테이너 밖으로 나가지 않도록 clamp 처리
-        offsetX.value = withTiming(
-            Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
-            { duration: 200 }
-        );
-        offsetY.value = withTiming(
-            Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
-            { duration: 200 }
-        );
+            // offset이 컨테이너 밖으로 나가지 않도록 clamp 처리
+            offsetX.value = withTiming(
+                Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
+                { duration: 200 }
+            );
+            offsetY.value = withTiming(
+                Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
+                { duration: 200 }
+            );
+        }
     };
 
     // ✅ 핀치 줌 제스처 정의
@@ -231,15 +235,28 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     useEffect(() => {
         if (soloFindItViewModel.correctClicks.length === 5) {
-            if (soloFindItViewModel.round == 10) {
-                findItService.deductCoin(1);
-                navigation.navigate('SoloFindItResult', { isSuccess: true ,gameInfoList: gameInfoList});
+            // Activate round clear animation effect
+            runInAction(() => {
+                soloFindItViewModel.roundClearEffect = true;
+            });
+            if (soloFindItViewModel.round === 10) {
+                // If it's the last round, navigate to result screen after 1.5 seconds
+                setTimeout(() => {
+                    findItService.deductCoin(1);
+                    navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
+                }, 1500);
             } else {
-                soloFindItViewModel.nextRound();
+                // Otherwise, proceed to the next round after 1.5 seconds
+                setTimeout(() => {
+                    runInAction(() => {
+                        soloFindItViewModel.nextRound();
+                        soloFindItViewModel.roundClearEffect = false; // Reset the effect
+                    });
+                }, 1500);
             }
         }
-    }), [soloFindItViewModel.correctClicks]
-    
+    }, [soloFindItViewModel.correctClicks]);
+
     // 정답 클릭 시 좌표를 추가하는 함수
     const addCorrectClick = (x: number, y: number) => {
         runInAction(() => {
@@ -453,11 +470,14 @@ const SoloFindItScreen: React.FC = observer(() => {
         if (soloFindItViewModel.gameOver) {
             runInAction(() => {
                 soloFindItViewModel.timerStopped = true;
+                soloFindItViewModel.roundFailEffect = true; // GAME OVER 애니메이션 활성화
             });
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
-            navigation.navigate('SoloFindItResult', { isSuccess: false,gameInfoList:gameInfoList});
+            setTimeout(() => {
+                navigation.navigate('SoloFindItResult', { isSuccess: false, gameInfoList: gameInfoList });
+            }, 1500);
         }
     }, [soloFindItViewModel.gameOver]);
 
@@ -500,16 +520,11 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 ))}
                                 {/* 오답 표시 */}
                                 {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                    <View 
-                                        key={`wrong-normal-${index}`} 
-                                        style={[
-                                            styles.wrongXContainer, 
-                                            { left: pos.x - 15, top: pos.y - 15 }
-                                        ]}
-                                    >
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                    </View>
+                                    <AnimatedX 
+                                        key={`wrong-normal-${index}`}
+                                        x={pos.x}
+                                        y={pos.y}
+                                    />
                                 ))}
                                 {/* 힌트 표시 */}
                                 {hintVisible && soloFindItViewModel.hintPosition && (
@@ -571,16 +586,11 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 ))}
                                 {/* 오답 표시 */}
                                 {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                    <View 
-                                        key={`wrong-abnormal-${index}`} 
-                                        style={[
-                                            styles.wrongXContainer, 
-                                            { left: pos.x - 15, top: pos.y - 15 }
-                                        ]}
-                                    >
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                    </View>
+                                    <AnimatedX 
+                                        key={`wrong-abnormal-${index}`}
+                                        x={pos.x}
+                                        y={pos.y}
+                                    />
                                 ))}
                                 {/* 힌트 표시 */}
                                 {hintVisible && soloFindItViewModel.hintPosition && (
@@ -619,7 +629,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             )}
             {soloFindItViewModel.roundFailEffect && (
                 <View style={styles.failEffectContainer}>
-                    <Text style={styles.failEffectText}>🎉 TIME OUT! 🎉</Text>
+                    <Text style={styles.failEffectText}>GAME OVER</Text>
                 </View>
             )}
         </View>

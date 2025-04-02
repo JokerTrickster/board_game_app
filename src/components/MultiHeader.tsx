@@ -96,64 +96,6 @@ const MultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                     <Text style={styles.nickname}>{profile2.name || '보린이'}</Text>
                 </View>
             </View>
-
-            {/* 설정 아이콘 */}
-            <TouchableOpacity style={styles.settingsIcon} onPress={toggleModal}>
-                <Icon name="bars" size={24} />
-            </TouchableOpacity>
-
-            {/* 설정 모달 */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={isModalVisible}
-                onRequestClose={toggleModal}>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>설정</Text>
-                        <View style={styles.settingItem}>
-                            <Text>효과음</Text>
-                            <Slider
-                                style={styles.slider}
-                                minimumValue={0}
-                                maximumValue={1}
-                                step={0.1}
-                                value={effectVolume}
-                                onValueChange={(value) => setEffectVolume(value)}
-                                minimumTrackTintColor="#1E90FF"
-                                maximumTrackTintColor="#ddd"
-                                thumbTintColor="#1E90FF"
-                            />
-                        </View>
-                        <View style={styles.settingItem}>
-                            <Text>배경음</Text>
-                            <Slider
-                                style={styles.slider}
-                                minimumValue={0}
-                                maximumValue={1}
-                                step={0.1}
-                                value={bgmVolume}
-                                onValueChange={(value) => setBgmVolume(value)}
-                                minimumTrackTintColor="#1E90FF"
-                                maximumTrackTintColor="#ddd"
-                                thumbTintColor="#1E90FF"
-                            />
-                        </View>
-                        <TouchableOpacity style={styles.modalButton} onPress={() => Linking.openURL('https://www.notion.so/10d2c71ec7c580e1bba8c16dd448a94b?pvs=4')}>
-                            <Text>📜 약관보기</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
-                            <Text>🚪 로그아웃</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.modalButton} onPress={handleDeleteAccount}>
-                            <Text>🚨 회원 탈퇴</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
-                            <Text>닫기</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 };
