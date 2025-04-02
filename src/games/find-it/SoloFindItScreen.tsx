@@ -327,13 +327,23 @@ const SoloFindItScreen: React.FC = observer(() => {
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
         
-        // 이미 클릭한 위치인지 확인 (정답 표시된 곳 근처 클릭 무시)
+        // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
             const dx = finalX - click.x;
             const dy = finalY - click.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // 정답 표시 근처를 클릭한 경우 무시
+            if (distance <= TOLERANCE) {
+                return;
+            }
+        }
+
+        // 이미 클릭한 오답 위치인지 확인
+        for (const click of soloFindItViewModel.wrongClicks) {
+            const dx = finalX - click.x;
+            const dy = finalY - click.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
             if (distance <= TOLERANCE) {
                 return;
             }
@@ -342,13 +352,13 @@ const SoloFindItScreen: React.FC = observer(() => {
         const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
         let isCorrect = false;
         let matchedPos = null;
-        console.log("클릭 좌표 ", finalX, finalY);
+
         for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
             const pos = currentGameInfo.correctPositions[i];
             const dx = finalX - pos.x;
             const dy = finalY - pos.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            // 허용 오차 범위를 약간 늘려서 클릭 판정을 더 관대하게 설정
+
             if (distance <= TOLERANCE) {
                 matchedPos = pos;
                 isCorrect = true;
