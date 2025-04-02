@@ -68,9 +68,34 @@ const SoloFindItScreen: React.FC = observer(() => {
     };
 
     const handleZoomOut = () => {
-        scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
-        isZoomed.value = scale.value > 1;
-        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
+        // 축소할 때는 항상 중앙으로 이동
+        const newScale = Math.max(MIN_SCALE, scale.value - 0.5);
+        scale.value = withTiming(newScale, { duration: 200 });
+        
+        // 스케일이 1이 되면 중앙으로 이동
+        if (newScale <= 1) {
+            offsetX.value = withTiming(0, { duration: 200 });
+            offsetY.value = withTiming(0, { duration: 200 });
+        } else {
+            // 스케일이 1보다 크면 현재 위치에서 중앙으로 부드럽게 이동
+            const scaledWidth = IMAGE_FRAME_WIDTH * newScale;
+            const scaledHeight = IMAGE_FRAME_HEIGHT * newScale;
+            
+            const maxOffsetX = (scaledWidth - IMAGE_FRAME_WIDTH) / 2;
+            const maxOffsetY = (scaledHeight - IMAGE_FRAME_HEIGHT) / 2;
+            
+            // 현재 offset을 허용 범위 내로 조정
+            offsetX.value = withTiming(
+                Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
+                { duration: 200 }
+            );
+            offsetY.value = withTiming(
+                Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
+                { duration: 200 }
+            );
+        }
+        
+        isZoomed.value = newScale > 1;
     };
 
     const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
