@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback, TouchableOpacity, Easing } from 'react-native';
+import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback, TouchableOpacity, Easing, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
@@ -17,6 +17,7 @@ import Sound from 'react-native-sound';
 import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
 import AnimatedX from './AnimatedX';
 
+const GAME_TIMER = 60; // 60초로 설정 (또는 원하는 시간으로 설정)
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
@@ -72,6 +73,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
     };
 
+    const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
 
     const adjustOffset = () => {
         'worklet';
@@ -291,23 +293,37 @@ const SoloFindItScreen: React.FC = observer(() => {
         'worklet';
 
         const { locationX, locationY } = event.nativeEvent;
-        const finalX = parseFloat(locationX.toFixed(2));
-        const finalY = parseFloat(locationY.toFixed(2));
         
-        if (soloFindItViewModel.isAlreadyClicked(finalX, finalY)) return;
-        // 현재 라운드에 해당하는 게임 정보 가져오기
-        const currentGameInfo = gameInfoList[soloFindItViewModel.round-1];
+        // 이미지의 실제 크기와 화면에 표시되는 크기의 비율 계산
+        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
+        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
+
+        // 클릭 좌표를 실제 이미지 크기에 맞게 조정
+        const finalX = parseFloat((locationX * scaleX).toFixed(2));
+        const finalY = parseFloat((locationY * scaleY).toFixed(2));
+        
+        // 이미 클릭한 위치인지 확인 (정답 표시된 곳 근처 클릭 무시)
+        for (const click of soloFindItViewModel.correctClicks) {
+            const dx = finalX - click.x;
+            const dy = finalY - click.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // 정답 표시 근처를 클릭한 경우 무시
+            if (distance <= TOLERANCE) {
+                return;
+            }
+        }
+
+        const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
         let isCorrect = false;
         let matchedPos = null;
-        // correctPositions 배열을 순회하며 클릭 위치와의 거리를 계산하고, 
-        // 사용자가 클릭한 좌표에 해당하는 정답 좌표(gameInfo에 있는 좌표)를 찾음
+        console.log("클릭 좌표 ", finalX, finalY);
         for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
             const pos = currentGameInfo.correctPositions[i];
             const dx = finalX - pos.x;
             const dy = finalY - pos.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // 허용 오차 이내면 해당 정답 좌표를 저장
+            // 허용 오차 범위를 약간 늘려서 클릭 판정을 더 관대하게 설정
             if (distance <= TOLERANCE) {
                 matchedPos = pos;
                 isCorrect = true;
@@ -317,14 +333,45 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         if (isCorrect) {
             runOnJS(playCorrectSound)();
-            // JS 스레드에서 상태 업데이트 실행
             runOnJS(addCorrectClick)(matchedPos.x, matchedPos.y);
+            console.log("정답 좌표 " ,matchedPos);
+            if (soloFindItViewModel.correctClicks.length + 1 >= currentGameInfo.correctPositions.length) {
+                runOnJS(() => {
+                    soloFindItViewModel.roundClearEffect = true;
+                    setTimeout(() => {
+                        soloFindItViewModel.roundClearEffect = false;
+                        if (soloFindItViewModel.round < gameInfoList.length) {
+                            soloFindItViewModel.round += 1;
+                            soloFindItViewModel.correctClicks = [];
+                            soloFindItViewModel.wrongClicks = [];
+                            soloFindItViewModel.hintPosition = null;
+                            soloFindItViewModel.remainingTime = GAME_TIMER;
+                        } else {
+                            // 모든 라운드 클리어
+                            navigation.navigate('SoloFindItResult', {
+                                gameInfoList: gameInfoList,
+                                isSuccess: true 
+                            });
+                        }
+                    }, 1000);
+                })();
+            }
         } else {
             runOnJS(playClickSound)();
-
-            // 필요에 따라 오답 처리 로직 추가 가능 (예: wrongClicks 배열에 추가)
             soloFindItViewModel.life -= 1;
             runOnJS(addWrongClick)(finalX, finalY);
+
+            if (soloFindItViewModel.life <= 0) {
+                runOnJS(() => {
+                    soloFindItViewModel.roundFailEffect = true;
+                    setTimeout(() => {
+                        navigation.navigate('SoloFindItResult', {
+                            gameInfoList: gameInfoList,
+                            isSuccess: false 
+                        });
+                    }, 1000);
+                })();
+            }
         }
     }, [gameInfoList]);
 
@@ -509,35 +556,42 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
                                     style={styles.image}
+                                    onLayout={(event) => {
+                                        const { width, height } = event.nativeEvent.layout;
+                                        imageSize.current = { width, height };
+                                    }}
                                 />
-                                {/* 정답 표시 */}
-                                {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                    <AnimatedCircle 
-                                        key={`correct-normal-${index}`} 
-                                        x={pos.x} 
-                                        y={pos.y} 
-                                    />
-                                ))}
-                                {/* 오답 표시 */}
-                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                    <AnimatedX 
-                                        key={`wrong-normal-${index}`}
-                                        x={pos.x}
-                                        y={pos.y}
-                                    />
-                                ))}
-                                {/* 힌트 표시 */}
-                                {hintVisible && soloFindItViewModel.hintPosition && (
-                                    <View
-                                        style={[
-                                            styles.hintCircle,
-                                            {
-                                                left: soloFindItViewModel.hintPosition.x - 15,
-                                                top: soloFindItViewModel.hintPosition.y - 15,
-                                            }
-                                        ]}
-                                    />
-                                )}
+                                {/* 정답, 오답, 힌트 표시를 포함하는 View에 pointerEvents="none" 추가 */}
+                                <View style={StyleSheet.absoluteFill} pointerEvents="none">
+                                    {/* 정답 표시 */}
+                                    {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                        <AnimatedCircle 
+                                            key={`correct-normal-${index}`} 
+                                            x={pos.x} 
+                                            y={pos.y} 
+                                        />
+                                    ))}
+                                    {/* 오답 표시 */}
+                                    {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                        <AnimatedX 
+                                            key={`wrong-normal-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
+                                        />
+                                    ))}
+                                    {/* 힌트 표시 */}
+                                    {hintVisible && soloFindItViewModel.hintPosition && (
+                                        <View
+                                            style={[
+                                                styles.hintCircle,
+                                                {
+                                                    left: soloFindItViewModel.hintPosition.x - 15,
+                                                    top: soloFindItViewModel.hintPosition.y - 15,
+                                                }
+                                            ]}
+                                        />
+                                    )}
+                                </View>
                             </View>
                         </TouchableWithoutFeedback>
                     </Animated.View>
@@ -575,35 +629,42 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }}
                                     style={styles.image}
+                                    onLayout={(event) => {
+                                        const { width, height } = event.nativeEvent.layout;
+                                        imageSize.current = { width, height };
+                                    }}
                                 />
-                                {/* 정답 표시 */}
-                                {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                    <AnimatedCircle 
-                                        key={`correct-abnormal-${index}`} 
-                                        x={pos.x} 
-                                        y={pos.y} 
-                                    />
-                                ))}
-                                {/* 오답 표시 */}
-                                {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                    <AnimatedX 
-                                        key={`wrong-abnormal-${index}`}
-                                        x={pos.x}
-                                        y={pos.y}
-                                    />
-                                ))}
-                                {/* 힌트 표시 */}
-                                {hintVisible && soloFindItViewModel.hintPosition && (
-                                    <View
-                                        style={[
-                                            styles.hintCircle,
-                                            {
-                                                left: soloFindItViewModel.hintPosition.x - 15,
-                                                top: soloFindItViewModel.hintPosition.y - 15,
-                                            }
-                                        ]}
-                                    />
-                                )}
+                                {/* 정답, 오답, 힌트 표시를 포함하는 View에 pointerEvents="none" 추가 */}
+                                <View style={StyleSheet.absoluteFill} pointerEvents="none">
+                                    {/* 정답 표시 */}
+                                    {soloFindItViewModel.correctClicks.map((pos, index) => (
+                                        <AnimatedCircle 
+                                            key={`correct-abnormal-${index}`} 
+                                            x={pos.x} 
+                                            y={pos.y} 
+                                        />
+                                    ))}
+                                    {/* 오답 표시 */}
+                                    {soloFindItViewModel.wrongClicks.map((pos, index) => (
+                                        <AnimatedX 
+                                            key={`wrong-abnormal-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
+                                        />
+                                    ))}
+                                    {/* 힌트 표시 */}
+                                    {hintVisible && soloFindItViewModel.hintPosition && (
+                                        <View
+                                            style={[
+                                                styles.hintCircle,
+                                                {
+                                                    left: soloFindItViewModel.hintPosition.x - 15,
+                                                    top: soloFindItViewModel.hintPosition.y - 15,
+                                                }
+                                            ]}
+                                        />
+                                    )}
+                                </View>
                             </View>
                         </TouchableWithoutFeedback>
                     </Animated.View>
