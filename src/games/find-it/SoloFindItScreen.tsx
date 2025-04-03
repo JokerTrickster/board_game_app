@@ -34,10 +34,10 @@ const SoloFindItScreen: React.FC = observer(() => {
     const [normalImage, setNormalImage] = useState<string | null>(soloFindItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(soloFindItViewModel.abnormalImage);
 
-    const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
+    const IMAGE_FRAME_WIDTH = 380; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
-    const MAX_SCALE = 1.5; // 최대 확대 비율
+    const MAX_SCALE = 2; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값
@@ -59,7 +59,9 @@ const SoloFindItScreen: React.FC = observer(() => {
     const clickSoundRef = useRef<Sound | null>(null);
     // 새로운 correct_click 사운드 ref 추가
     const correctSoundRef = useRef<Sound | null>(null);
-
+    const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
+    // shared value로 마지막 클릭 시간을 저장합니다.
+    const lastClickTimeSV = useSharedValue(0);
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
         scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
@@ -312,13 +314,20 @@ const SoloFindItScreen: React.FC = observer(() => {
             });
         }, 2500);
     };
-    const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
+
 
     const handleImageClick = useCallback((event: any) => {
         'worklet';
 
+        // 1초 이내의 연속 클릭이면 무시합니다.
+        const now = Date.now();
+        if (now - lastClickTimeSV.value < 1000) {
+            return;
+        }
+        lastClickTimeSV.value = now;
+
         const { locationX, locationY } = event.nativeEvent;
-        
+        console.log("현재 클릭한 좌표 ", locationX, locationY);
         // 이미지의 실제 크기와 화면에 표시되는 크기의 비율 계산
         const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
         const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
@@ -326,13 +335,13 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-        
+
         // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
             const dx = finalX - click.x;
             const dy = finalY - click.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             if (distance <= TOLERANCE) {
                 return;
             }
@@ -343,7 +352,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             const dx = finalX - click.x;
             const dy = finalY - click.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             if (distance <= TOLERANCE) {
                 return;
             }
@@ -369,7 +378,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         if (isCorrect) {
             runOnJS(playCorrectSound)();
             runOnJS(addCorrectClick)(matchedPos.x, matchedPos.y);
-            console.log("정답 좌표 " ,matchedPos);
+            console.log("정답 좌표 ", matchedPos);
             if (soloFindItViewModel.correctClicks.length + 1 >= currentGameInfo.correctPositions.length) {
                 runOnJS(() => {
                     soloFindItViewModel.roundClearEffect = true;
@@ -385,7 +394,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                             // 모든 라운드 클리어
                             navigation.navigate('SoloFindItResult', {
                                 gameInfoList: gameInfoList,
-                                isSuccess: true 
+                                isSuccess: true
                             });
                         }
                     }, 1000);
@@ -402,7 +411,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                     setTimeout(() => {
                         navigation.navigate('SoloFindItResult', {
                             gameInfoList: gameInfoList,
-                            isSuccess: false 
+                            isSuccess: false
                         });
                     }, 1000);
                 })();
