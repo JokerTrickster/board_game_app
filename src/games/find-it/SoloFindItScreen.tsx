@@ -34,7 +34,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     const [normalImage, setNormalImage] = useState<string | null>(soloFindItViewModel.normalImage);
     const [abnormalImage, setAbnormalImage] = useState<string | null>(soloFindItViewModel.abnormalImage);
 
-    const IMAGE_FRAME_WIDTH = 380; // 이미지 프레임 크기 (고정)
+    const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
     const MAX_SCALE = 2; // 최대 확대 비율
@@ -327,28 +327,31 @@ const SoloFindItScreen: React.FC = observer(() => {
         lastClickTimeSV.value = now;
 
         const { locationX, locationY } = event.nativeEvent;
-        console.log("현재 클릭한 좌표 ", locationX, locationY);
         // 이미지의 실제 크기와 화면에 표시되는 크기의 비율 계산
-        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
-        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
-
+        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
+        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height; // IMAGE_FRAME_HEIGHT가 277이면 1이 됩니다.
+    
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-
+        console.log(finalX, finalY);
+       
         // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
-            const dx = finalX - click.x;
-            const dy = finalY - click.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
+            const correctPosX = parseFloat((click.x * scaleX).toFixed(2));
+            const correctPosY = parseFloat((click.y * scaleY).toFixed(2));
 
-            if (distance <= TOLERANCE) {
+            const dx = finalX - correctPosX;
+            const dy = finalY - correctPosY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance <= 30) {
                 return;
             }
         }
 
         // 이미 클릭한 오답 위치인지 확인
         for (const click of soloFindItViewModel.wrongClicks) {
+            // 클릭 좌표를 실제 이미지 크기에 맞게 조정
             const dx = finalX - click.x;
             const dy = finalY - click.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -362,14 +365,19 @@ const SoloFindItScreen: React.FC = observer(() => {
         let isCorrect = false;
         let matchedPos = null;
 
+        // 정답을 찾는다. 
         for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
             const pos = currentGameInfo.correctPositions[i];
-            const dx = finalX - pos.x;
-            const dy = finalY - pos.y;
+
+            // 클릭 좌표를 실제 이미지 크기에 맞게 조정
+            const correctPosX = parseFloat((pos.x * scaleX).toFixed(2));
+            const correctPosY = parseFloat((pos.y * scaleY).toFixed(2));
+
+            const dx = finalX - correctPosX;
+            const dy = finalY - correctPosY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance <= TOLERANCE) {
-                matchedPos = pos;
+            if (distance <= 30) {
                 isCorrect = true;
                 break;
             }
@@ -377,8 +385,7 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         if (isCorrect) {
             runOnJS(playCorrectSound)();
-            runOnJS(addCorrectClick)(matchedPos.x, matchedPos.y);
-            console.log("정답 좌표 ", matchedPos);
+            runOnJS(addCorrectClick)(locationX,locationY);
             if (soloFindItViewModel.correctClicks.length + 1 >= currentGameInfo.correctPositions.length) {
                 runOnJS(() => {
                     soloFindItViewModel.roundClearEffect = true;
@@ -403,7 +410,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         } else {
             runOnJS(playClickSound)();
             soloFindItViewModel.life -= 1;
-            runOnJS(addWrongClick)(finalX, finalY);
+            runOnJS(addWrongClick)(locationX, locationY);
 
             if (soloFindItViewModel.life <= 0) {
                 runOnJS(() => {
@@ -429,15 +436,22 @@ const SoloFindItScreen: React.FC = observer(() => {
                     Math.abs(click.x - pos.x) < TOLERANCE && Math.abs(click.y - pos.y) < TOLERANCE
                 )
             );
-
             if (unsolvedPositions.length > 0) {
                 // 랜덤하게 하나의 힌트 위치 선택
                 const randomIndex = Math.floor(Math.random() * unsolvedPositions.length);
                 const hintPos = unsolvedPositions[randomIndex];
 
+                // 이미지 크기에 맞게 힌트 위치 조정
+                const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
+                const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
+                const scaledHintPos = {
+                    x: parseFloat((hintPos.x / scaleX).toFixed(2)),
+                    y: parseFloat((hintPos.y / scaleY).toFixed(2))
+                };
+
                 // 힌트 위치 설정
                 runInAction(() => {
-                    soloFindItViewModel.hintPosition = hintPos;
+                    soloFindItViewModel.hintPosition = scaledHintPos;
                     soloFindItViewModel.hints -= 1;
                 });
 
