@@ -14,6 +14,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import MultiHeader from '../../components/MultiHeader';
 import ItemBar from '../../components/ItemBar';
 import {CommonAudioManager} from '../../services/CommonAudioManager';
+import Sound from 'react-native-sound';
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -33,6 +34,12 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ 확대/축소 관련 값
     const MAX_SCALE = 2; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
+    // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
+    const clickSoundRef = useRef<Sound | null>(null);
+    // 새로운 correct_click 사운드 ref 추가
+    const correctSoundRef = useRef<Sound | null>(null);
+    const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
+    const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
 
     // ✅ 확대 및 이동 관련 상태값
     const scale = useSharedValue(1);
@@ -54,27 +61,65 @@ const FindItScreen: React.FC = observer(() => {
         adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
     };
 
+
     const handleZoomOut = () => {
-        scale.value = withTiming(Math.max(MIN_SCALE, scale.value - 0.5), { duration: 200 });
-        isZoomed.value = scale.value > 1;
-        adjustOffset(); // ✅ `runOnJS(adjustOffset)()` 제거
+        // 축소할 때는 항상 중앙으로 이동
+        const newScale = Math.max(MIN_SCALE, scale.value - 0.5);
+        scale.value = withTiming(newScale, { duration: 200 });
+
+        // 스케일이 1이 되면 중앙으로 이동
+        if (newScale <= 1) {
+            offsetX.value = withTiming(0, { duration: 200 });
+            offsetY.value = withTiming(0, { duration: 200 });
+        } else {
+            // 스케일이 1보다 크면 현재 위치에서 중앙으로 부드럽게 이동
+            const scaledWidth = IMAGE_FRAME_WIDTH * newScale;
+            const scaledHeight = IMAGE_FRAME_HEIGHT * newScale;
+
+            const maxOffsetX = (scaledWidth - IMAGE_FRAME_WIDTH) / 2;
+            const maxOffsetY = (scaledHeight - IMAGE_FRAME_HEIGHT) / 2;
+
+            // 현재 offset을 허용 범위 내로 조정
+            offsetX.value = withTiming(
+                Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
+                { duration: 200 }
+            );
+            offsetY.value = withTiming(
+                Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
+                { duration: 200 }
+            );
+        }
+
+        isZoomed.value = newScale > 1;
     };
-
-
 
 
     const adjustOffset = () => {
         'worklet';
-        const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
-        const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
+        if (scale.value <= MIN_SCALE + 0.001) {
+            // Center image when fully zoomed out
+            offsetX.value = withTiming(0, { duration: 200 });
+            offsetY.value = withTiming(0, { duration: 200 });
+        } else {
+            const scaledWidth = IMAGE_FRAME_WIDTH * scale.value;
+            const scaledHeight = IMAGE_FRAME_HEIGHT * scale.value;
 
-        // 허용 가능한 최대 offset (양쪽 각각)
-        const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
-        const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
+            // 허용 가능한 최대 offset (양쪽 각각)
+            const maxOffsetX = scaledWidth > IMAGE_FRAME_WIDTH ? (scaledWidth - IMAGE_FRAME_WIDTH) / 2 : 0;
+            const maxOffsetY = scaledHeight > IMAGE_FRAME_HEIGHT ? (scaledHeight - IMAGE_FRAME_HEIGHT) / 2 : 0;
 
-        offsetX.value = withTiming(Math.max(-maxOffsetX, Math.min(offsetX.value, maxOffsetX)), { duration: 200 });
-        offsetY.value = withTiming(Math.max(-maxOffsetY, Math.min(offsetY.value, maxOffsetY)), { duration: 200 });
+            // offset이 컨테이너 밖으로 나가지 않도록 clamp 처리
+            offsetX.value = withTiming(
+                Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
+                { duration: 200 }
+            );
+            offsetY.value = withTiming(
+                Math.min(maxOffsetY, Math.max(-maxOffsetY, offsetY.value)),
+                { duration: 200 }
+            );
+        }
     };
+
 
     // ✅ 핀치 줌 제스처 정의
     const pinchGesture = Gesture.Pinch()
@@ -107,15 +152,36 @@ const FindItScreen: React.FC = observer(() => {
 
     // ✅ 애니메이션 적용 (두 이미지 동일하게 적용)
     const animatedStyle = useAnimatedStyle(() => ({
-        width: IMAGE_FRAME_WIDTH,
-        height: IMAGE_FRAME_HEIGHT,
-        overflow: 'hidden',
         transform: [
             { translateX: derivedOffsetX.value },
             { translateY: derivedOffsetY.value },
             { scale: derivedScale.value },
         ],
     }));
+    // 사용자 클릭 시 사운드 재생 함수
+    const playClickSound = () => {
+        if (clickSoundRef.current) {
+            clickSoundRef.current.stop(() => {
+                clickSoundRef.current?.play((success) => {
+                    if (!success) {
+                        console.log('Sound playback failed');
+                    }
+                });
+            });
+        }
+    };
+    // 새로 추가: 맞은 클릭 사운드 재생 함수
+    const playCorrectSound = () => {
+        if (correctSoundRef.current) {
+            correctSoundRef.current.stop(() => {
+                correctSoundRef.current?.play((success) => {
+                    if (!success) {
+                        console.log('Correct sound playback failed');
+                    }
+                });
+            });
+        }
+    };
 
     const startTimerAnimation = useCallback((duration: number) => {
         if (timerAnimation.current) {
@@ -130,19 +196,75 @@ const FindItScreen: React.FC = observer(() => {
 
         timerAnimation.current.start();
     }, []);
+
+    // 앱 상태 감지
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
+                CommonAudioManager.initBackgroundMusic();
+            } else if (nextAppState === 'active') {
+                // 앱이 포그라운드로 돌아올 때 배경음악 재생 (원하는 경우)
+                CommonAudioManager.playGameBackgroundMusic();
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+    useEffect(() => {
+        clickSoundRef.current = new Sound('wrong_click.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('Failed to load the sound', error);
+                return;
+            }
+            // 사운드 로드 완료
+            console.log('Sound loaded successfully');
+        });
+        // correct_click 사운드 로드
+        correctSoundRef.current = new Sound('correct_click.mp3', Sound.MAIN_BUNDLE, (error) => {
+            if (error) {
+                console.log('Failed to load correct sound', error);
+                return;
+            }
+            console.log('Correct sound loaded successfully');
+        });
+
+        return () => {
+            // 컴포넌트 언마운트 시 사운드 해제
+            clickSoundRef.current?.release();
+            correctSoundRef.current?.release();
+        };
+    }, []);
     useEffect(() => {
         if (findItViewModel.timer > 0 && !findItViewModel.timerStopped) {
             startTimerAnimation(findItViewModel.timer);
         }
     }, [findItViewModel.timer]);
-    
+
+    useEffect(() => {
+        CommonAudioManager.initBackgroundMusic();
+        CommonAudioManager.playGameBackgroundMusic();
+        // 홈 화면을 벗어나면 음악을 계속 재생할지, 아니면 중단할지 결정합니다.
+        // 예를 들어, 홈 화면을 벗어날 때 정지하고 싶다면 아래 cleanup 코드를 활성화하면 됩니다.
+        return () => {
+            CommonAudioManager.stopGameBackgroundMusic();
+        };
+    }, []);
+
+
     // ✅ 클릭 좌표 계산 (확대/이동 고려)
     const handleImageClick = useCallback((event: any) => {
         'worklet';
         // transform 보정 없이 원본 좌표 사용
         const { locationX, locationY } = event.nativeEvent;
-        const finalX = parseFloat(locationX.toFixed(2));
-        const finalY = parseFloat(locationY.toFixed(2));
+        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
+        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height; // IMAGE_FRAME_HEIGHT가 277이면 1이 됩니다.
+
+        
+        const finalX = parseFloat((locationX * scaleX).toFixed(2));
+        const finalY = parseFloat((locationY * scaleY).toFixed(2));
 
         runOnJS(sendClickToServer)(finalX, finalY);
         console.log(`📌 [클릭 좌표] (${finalX}, ${finalY})`);
@@ -161,8 +283,8 @@ const FindItScreen: React.FC = observer(() => {
             // ✅ 서버에 아이템 사용 이벤트 전송
             findItWebSocketService.sendHintItemEvent();
         }
-
     };
+
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
         if (findItViewModel.item_timer_stop > 0 && !findItViewModel.timerStopped) {
@@ -210,6 +332,13 @@ const FindItScreen: React.FC = observer(() => {
     useEffect(() => {
         setNormalImage(findItViewModel.normalImage);
         setAbnormalImage(findItViewModel.abnormalImage);
+
+        if (findItViewModel.normalImage) {
+            Image.prefetch(findItViewModel.normalImage);
+        }
+        if (findItViewModel.abnormalImage) {
+            Image.prefetch(findItViewModel.abnormalImage);
+        }
     }, [findItViewModel.normalImage, findItViewModel.abnormalImage]);
     // 앱 상태 감지
     useEffect(() => {
@@ -291,12 +420,12 @@ const FindItScreen: React.FC = observer(() => {
             <View style={styles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.normalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
-                    <Animated.View style={[animatedStyle]}>
+                <View style={[styles.normalImageContainer]}>
+                        <Animated.View style={[styles.image, animatedStyle]}>
                         {normalImage ? (
                             <TouchableWithoutFeedback onPress={handleImageClick}>
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
-                                <View ref={imageRef} style={styles.normalImageContainer}>
+                                <View ref={imageRef} >
                                     {normalImage ? (
                                         <Image source={{ uri: normalImage }} style={styles.image} />
                                     ) : (
@@ -348,11 +477,11 @@ const FindItScreen: React.FC = observer(() => {
                 />
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={[styles.abnormalImageContainer, { width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT, overflow: 'hidden' }]}>
-                    <Animated.View style={[animatedStyle]}>
+                <View style={[styles.abnormalImageContainer]}>
+                        <Animated.View style={[styles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
-                            <View ref={imageRef} style={styles.abnormalImageContainer}>
+                            <View ref={imageRef} >
                                 {abnormalImage ? (
                                     <Image source={{ uri: abnormalImage }} style={styles.image} />
                                 ) : (

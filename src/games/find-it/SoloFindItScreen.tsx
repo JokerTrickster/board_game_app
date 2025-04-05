@@ -16,8 +16,7 @@ import {findItService} from '../../services/FindItService';
 import Sound from 'react-native-sound';
 import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
 import AnimatedX from './AnimatedX';
-
-const GAME_TIMER = 60; // 60초로 설정 (또는 원하는 시간으로 설정)
+import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants' 
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
@@ -62,6 +61,8 @@ const SoloFindItScreen: React.FC = observer(() => {
     const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
     // shared value로 마지막 클릭 시간을 저장합니다.
     const lastClickTimeSV = useSharedValue(0);
+    const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
+
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
         scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
@@ -100,7 +101,6 @@ const SoloFindItScreen: React.FC = observer(() => {
         isZoomed.value = newScale > 1;
     };
 
-    const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
 
     const adjustOffset = () => {
         'worklet';
@@ -334,7 +334,6 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-        console.log(finalX, finalY);
        
         // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {

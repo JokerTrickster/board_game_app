@@ -17,6 +17,7 @@ const MultiFindItResultScreen: React.FC = () => {
         navigation.navigate('Loading', { nextScreen: 'Home' });
     };
     const { isSuccess } = route.params || { isSuccess: false };
+    const userName = '임시개굴맨'; // 임시 사용자 이름
 
     return (
         // 전체 배경 이미지
@@ -28,47 +29,89 @@ const MultiFindItResultScreen: React.FC = () => {
             <View style={styles.container}>
                 <MultiHeader />
 
-                {/* 가운데 카드 이미지 안에 내용 표시 */}
-                {/* 가운데 카드 이미지 안에 내용 표시 */}
-                
-                    {/* "클리어" 텍스트 */}
-                    <Text style={styles.clearText}>
-                        {isSuccess ? "클리어!" : "게임오버"}
-                    </Text>
+                <View style={styles.resultContainer}>
+                    <View style={styles.clearConatiner}>
+                        <Image
+                            source={isSuccess ?
+                                require('../../assets/icons/find-it/clear_star.png') :
+                                require('../../assets/icons/find-it/fail_star.png')
+                            }
+                            style={styles.clearIcon}
+                        />
+                        <View style={styles.clearTextContainer}>
+                            <Text style={styles.clearText}>
+                                {isSuccess ? "클리어!" : "게임오버"}
+                            </Text>
+                        </View>
+                    </View>
 
-                    {/* 최종 라운드 정보 */}
                     <View style={styles.roundInfo}>
                         <Text style={styles.roundTitle}>최종 라운드</Text>
                         <Text style={styles.roundNumber}>{findItViewModel.round}</Text>
                     </View>
 
-                    {/* 프로필 영역 (2개 정보 표시) */}
+                    {/* 프로필 영역 (1개 정보 표시) */}
+                    <View style={styles.profilesRootContainer}>
                     <View style={styles.profilesContainer}>
-                        {/* 첫번째 프로필 */}
                         <View style={styles.profileRow}>
-                            <Image
-                                source={require('../../assets/images/home/default_profile.png')}
-                                style={styles.profileImage}
-                            />
-                            <Text style={styles.profileName}>프로필 명</Text>
-                            <Text style={styles.plusScore}>+200</Text>
-                        </View>
+                            <View style={styles.profileIconContainer} >
+                                <Image
+                                    source={require('../../assets/icons/find-it/medal.png')}
+                                    style={styles.medalIcon}
+                                />
+                            </View>
 
-                        {/* 두번째 프로필 */}
-                        <View style={styles.profileRow}>
-                            <Image
-                                source={require('../../assets/images/home/default_profile.png')}
-                                style={styles.profileImage}
-                            />
-                            <Text style={styles.profileName}>프로필 명 2</Text>
-                            <Text style={styles.plusScore}>+200</Text>
+                            <View style={styles.profileImageContainer} >
+                                <Image
+                                    source={require('../../assets/images/home/default_profile.png')}
+                                    style={styles.profileImage}
+                                />
+                            </View>
+                            <Text style={styles.profileName}>{userName}</Text>
+                            <View style={styles.profileScoreContainer}>
+                                <Image
+                                    source={require('../../assets/icons/find-it/coin.png')}
+                                    style={styles.profileScoreIcon}
+                                />
+                                <Text style={styles.profileScore}>{isSuccess ? "+ 1" : "- 1"}</Text>
+                            </View>
                         </View>
-                    </View>
+                        </View>
+                        <View style={styles.profilesTwoContainer}>
+                            <View style={styles.profileRow}>
+                                <View style={styles.profileTwoIconContainer} >
+                                    <Image
+                                        source={require('../../assets/icons/find-it/medal2.png')}
+                                        style={styles.medalTwoIcon}
+                                    />
+                                </View>
 
-                {/* 홈으로 이동하는 버튼 */}
-                <TouchableOpacity style={styles.homeButton} onPress={goToHome}>
-                    <Text style={styles.homeButtonText}>홈으로 이동</Text>
-                </TouchableOpacity>
+                                <View style={styles.profileImageContainer} >
+                                    <Image
+                                        source={require('../../assets/images/home/default_profile.png')}
+                                        style={styles.profileImage}
+                                    />
+                                </View>
+                                <Text style={styles.profileName}>{userName}</Text>
+                                <View style={styles.profileTwoScoreContainer}>
+                                    <Image
+                                        source={require('../../assets/icons/find-it/coin.png')}
+                                        style={styles.profileScoreIcon}
+                                    />
+                                    <Text style={styles.profileScore}>{isSuccess ? "+ 1" : "- 1"}</Text>
+                                </View>
+                            </View>
+                        </View>
+                        </View>
+                </View>
+                <View style={styles.ResultButtonContainer}>
+                    <TouchableOpacity
+                        style={styles.resultButton}
+                        onPress={goToHome}
+                    >
+                        <Text style={styles.resultButtonText}>홈으로</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </ImageBackground>
     );
