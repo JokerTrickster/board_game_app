@@ -1,16 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ImageBackground, TouchableOpacity,Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import soloFindItViewModel from './services/SoloFindItViewModel';
 import styles from './styles/SoloFindItResultStyles'; // 스타일 임포트
 import SoloHeader from '../../components/SoloHeader'; // 헤더 컴포넌트 임포트
-import Button from '../../components/Button'; // 버튼 컴포넌트 임포트
 const SoloFindItResultScreen: React.FC = observer(() => {
     const navigation = useNavigation(); // navigation 타입을 명확히 지정
     const route = useRoute();
-    const { gameInfoList } = route.params as { gameInfoList: any[] };
-    const userName = (gameInfoList && gameInfoList.length > 0 && gameInfoList[0].user && gameInfoList[0].user.name) || '혜봉이';
+    const userName = '임시개굴맨';
     const isSuccess = soloFindItViewModel.roundClearEffect; // 성공 여부
 
     const goToHome = () => {
@@ -70,7 +68,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                                     source={require('../../assets/icons/find-it/coin.png')}
                                     style={styles.profileScoreIcon}
                                 />
-                                <Text style={styles.profileScore}>+1</Text>
+                                <Text style={styles.profileScore}>{isSuccess ? "+ 1" : "- 1"}</Text>
                             </View>
                         </View>
                     </View>

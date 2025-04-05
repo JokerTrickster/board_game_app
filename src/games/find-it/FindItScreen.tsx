@@ -31,7 +31,7 @@ const FindItScreen: React.FC = observer(() => {
     const IMAGE_FRAME_WIDTH = 400; // 이미지 프레임 크기 (고정)
     const IMAGE_FRAME_HEIGHT = 277;
     // ✅ 확대/축소 관련 값
-    const MAX_SCALE = 2.5; // 최대 확대 비율
+    const MAX_SCALE = 2; // 최대 확대 비율
     const MIN_SCALE = 1; // 최소 축소 비율
 
     // ✅ 확대 및 이동 관련 상태값

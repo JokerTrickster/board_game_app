@@ -57,15 +57,13 @@ export const styles = StyleSheet.create({
         height: '100%',
         resizeMode: 'contain', // 원본 비율 유지, 컨테이너에 맞춰 전체가 보임
     },
-
     timerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '96%',
+        width: '94%',
         marginTop: verticalScale(-5),
         marginBottom: verticalScale(10),
         zIndex:1,
-    
     },
     timerImage: {
         width: scale(35),

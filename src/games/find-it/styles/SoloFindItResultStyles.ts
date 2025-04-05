@@ -161,8 +161,9 @@ const styles = StyleSheet.create({
     },
     profileName: {
         marginLeft: scale(10),
-        fontSize: scale(18),
+        fontSize: scale(14),
         color: '#FFF',
+        fontWeight: 'bold',
     },
 
     profileScoreContainer: {
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
         width: scale(80),
         borderColor: '#FFF',
         borderRadius: scale(5),
-        marginLeft: scale(30),  
+        marginLeft: scale(20),  
         // opacity: 1,
         flexDirection: 'row',
         borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
