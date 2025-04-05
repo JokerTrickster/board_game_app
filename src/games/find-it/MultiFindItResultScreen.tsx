@@ -30,15 +30,7 @@ const MultiFindItResultScreen: React.FC = () => {
 
                 {/* 가운데 카드 이미지 안에 내용 표시 */}
                 {/* 가운데 카드 이미지 안에 내용 표시 */}
-                <ImageBackground
-                    source={
-                        isSuccess
-                            ? require('../../assets/images/game/multi_result_clear.png')
-                            : require('../../assets/images/game/multi_result_fail.png')
-                    }
-                    style={styles.centerCard}
-                    imageStyle={styles.centerCardImage}
-                >
+                
                     {/* "클리어" 텍스트 */}
                     <Text style={styles.clearText}>
                         {isSuccess ? "클리어!" : "게임오버"}
@@ -72,7 +64,6 @@ const MultiFindItResultScreen: React.FC = () => {
                             <Text style={styles.plusScore}>+200</Text>
                         </View>
                     </View>
-                </ImageBackground>
 
                 {/* 홈으로 이동하는 버튼 */}
                 <TouchableOpacity style={styles.homeButton} onPress={goToHome}>

@@ -21,23 +21,50 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+    },
+    resultContainer: {
+        flex:1,
+        alignContent: 'center',
         justifyContent: 'center',
-    },
-    // 가운데 카드 이미지 스타일
-    centerCard: {
-        width: scale(350),
-        height: verticalScale(400),
         alignItems: 'center',
-        padding: scale(20),
+        marginTop: verticalScale(50),
+        width: '90%',
+        borderWidth: scale(1),
+        borderRadius: scale(10),
+        marginBottom: verticalScale(100),
+        backgroundColor: '#F5EDD8',
     },
-    centerCardImage: {
+
+    clearConatiner: {
+        flexDirection: 'column',
+        width: '100%',
+        height: verticalScale(100),
+        borderRadius: scale(10),
+        alignItems: 'center',
+    },
+    clearIcon: {
+        width: '100%',
+        height: verticalScale(60),
         resizeMode: 'contain',
+        marginBottom: verticalScale(10),
+    },
+    clearTextContainer: {
+        width: scale(200),
+        height: verticalScale(35),
+        backgroundColor: '#C4C4C4',
+        borderRadius: scale(20),
+        borderWidth: scale(1.5),
+        justifyContent: 'center',
     },
     // "클리어" 텍스트 스타일
     clearText: {
-        fontSize: scale(28),
+        fontSize: scale(20),
+        textAlign: 'center',
         fontWeight: 'bold',
-        marginTop: verticalScale(20),
+        color: '#FFFFFF',
+        textShadowColor: '#000000',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 1,
     },
     title: {
         fontSize: scale(32),
@@ -49,37 +76,68 @@ const styles = StyleSheet.create({
     roundInfo: {
         flexDirection: 'column',
         width: '100%',
-        paddingVertical: verticalScale(19),
         paddingHorizontal: scale(23),
+        paddingTop: verticalScale(10),
+        paddingBottom: verticalScale(20),
         borderRadius: scale(8),
-        marginTop: verticalScale(10),
+        alignItems: 'center',
     },
     roundTitle: {
-        fontSize: scale(16),
+        fontSize: scale(13),
         fontWeight: '600',
         color: '#444',
+        borderWidth: scale(2),
+        width: scale(100),
+        textAlign: 'center',
+        backgroundColor: '#BFA276',
+        borderRadius: scale(5),
+        top: verticalScale(10),
+        zIndex:1,
     },
     roundNumber: {
+        backgroundColor: '#F0E3C3',
+        width: scale(250),
         fontSize: scale(40),
+        textAlign: 'center',
         fontWeight: 'bold',
-        color: '#222',
-        marginLeft: scale(20),
+        color: '#fff',
+        borderRadius: scale(10),
+        borderWidth: scale(2),
+        borderColor: '#BFA276',
     },
     // 프로필 영역 컨테이너 (두 개 프로필 정보)
     profilesContainer: {
-        width: '100%',
+        width: '95%',
+        backgroundColor: '#5F86C8',
+        borderRadius: scale(10),
+        zIndex:1,
+
     },
     // 각 프로필 정보 행
     profileRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: scale(10),
-        borderRadius: scale(8),
-        marginTop: verticalScale(2),
-        paddingVertical: verticalScale(6),
+        
+        // paddingHorizontal: scale(10),
+        // marginTop: verticalScale(2),
+        // paddingVertical: verticalScale(6),
     },
-    profileImage: {
+    profileIconContainer: {
+        width: scale(50),
+        height: '100%',
+        borderColor: '#FFF',
+        backgroundColor: '#345B9C',
+        opacity: 1,
+        borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
+        borderBottomLeftRadius: scale(10), 
+        
+    },
+    medalIcon: {
+        marginVertical: scale(10),
+        marginLeft: scale(5),
+        zIndex:2,
+    },
+    profileImageContainer: {
         width: scale(50),
         height: scale(50),
         borderRadius: scale(10),
@@ -87,28 +145,67 @@ const styles = StyleSheet.create({
         borderColor: '#FFF',
         backgroundColor: '#FFF',
         resizeMode: 'cover',
-        marginLeft: scale(55),
+        marginVertical: verticalScale(5),
+        marginLeft: scale(10),
+    },
+    profileImage: {
+        width: scale(50),
+        height: scale(50),
+        borderRadius: scale(10),
+        borderWidth: scale(1),
+        borderColor: '#FFF',
+        backgroundColor: '#FFF',
+        resizeMode: 'cover',
+        marginVertical: verticalScale(-2),
+        marginLeft: scale(-2),
     },
     profileName: {
+        marginLeft: scale(10),
         fontSize: scale(18),
-        color: '#222',
+        color: '#FFF',
+    },
+
+    profileScoreContainer: {
+        backgroundColor: '#345B9C',
+        width: scale(80),
+        borderColor: '#FFF',
+        borderRadius: scale(5),
+        marginLeft: scale(30),  
+        // opacity: 1,
+        flexDirection: 'row',
+        borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
+        borderBottomLeftRadius: scale(10), 
+    },
+    profileScoreIcon: {
+        resizeMode: 'contain',
+        zIndex: 2,
     },
     profileScore: {
         fontSize: scale(18),
-        color: '#FFD700', // 금색
-    },
-    mainButton: {
-        marginTop: 30,
-        backgroundColor: '#007bff', // 파란색
-        paddingVertical: 12,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-    },
-    mainButtonText: {
-        fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#FFD700',
+        marginLeft: scale(10),// 금색
+    },
+    ResultButtonContainer: {
+        width: '40%',
+        height: verticalScale(45),
+        bottom: verticalScale(80),
+    },
+    resultButton: {
+        alignItems: 'center',
+        borderWidth: scale(1),
+        borderRadius: scale(30),
+        backgroundColor: '#F4AEB0',
+        width: '100%',
+        height: verticalScale(40),
+        justifyContent: 'center',
+    },  
+    resultButtonText: {
+        color: '#000',
+        fontSize: scale(18),
+        fontWeight: 'bold',
         textAlign: 'center',
+        position: 'absolute',
     },
 });
 
