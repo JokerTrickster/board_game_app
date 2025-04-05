@@ -136,14 +136,6 @@ const SoloHeader: React.FC<SoloHeaderProps> = ({ userData, showRound = true }) =
                             <Text>📜 약관보기</Text>
                         </TouchableOpacity>
 
-                        {/* 로그아웃 */}
-                        <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
-                            <Text>🚪 로그아웃</Text>
-                        </TouchableOpacity>
-                        {/* 회원 탈퇴 */}
-                        <TouchableOpacity style={styles.modalButton} onPress={handleDeleteAccount}>
-                            <Text>🚨 회원 탈퇴</Text>
-                        </TouchableOpacity>
                         {/* 닫기 버튼 */}
                         <TouchableOpacity style={styles.closeButton} onPress={toggleModal}>
                             <Text>닫기</Text>

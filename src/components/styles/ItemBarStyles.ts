@@ -32,16 +32,16 @@ export default StyleSheet.create({
         position: 'relative',
     },
     icon: {
-        width: scale(40),
-        height: scale(40),
+        width: scale(35),
+        height: scale(35),
         resizeMode: 'contain',
     },
     countBadge: {
         position: 'absolute',
-        bottom: verticalScale(2),
+        bottom: verticalScale(1),
         right: scale(0),
         color: '#fff',
-        fontSize: scale(14),
+        fontSize: scale(12),
         paddingHorizontal: scale(4),
         paddingVertical: verticalScale(1),
         borderRadius: scale(8),
@@ -49,7 +49,6 @@ export default StyleSheet.create({
         fontWeight: 'bold',
     },
     itemLabel: {
-        marginTop: verticalScale(4),
         fontSize: scale(12),
         color: '#000',
     },

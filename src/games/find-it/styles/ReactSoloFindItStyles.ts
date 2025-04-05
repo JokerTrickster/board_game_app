@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
-        marginTop: verticalScale(-10),
+        marginTop: verticalScale(-20),
     },
 
     timerText: {
@@ -271,7 +271,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: verticalScale(8),
+        marginVertical: verticalScale(6),
     },
     checkBoxImage: {
         width: scale(17),
