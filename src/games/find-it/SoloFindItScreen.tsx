@@ -431,11 +431,16 @@ const SoloFindItScreen: React.FC = observer(() => {
     const handleHint = useCallback(() => {
         if (soloFindItViewModel.hints > 0) {
             const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
-            const unsolvedPositions = currentGameInfo.correctPositions.filter((pos: { x: number; y: number; }) => 
-                !soloFindItViewModel.correctClicks.some(click => 
-                    Math.abs(click.x - pos.x) < TOLERANCE && Math.abs(click.y - pos.y) < TOLERANCE
-                )
-            );
+            const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
+            const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
+            
+            const unsolvedPositions = currentGameInfo.correctPositions.filter((pos: { x: number; y: number; }) => {
+                const finalX = parseFloat((pos.x * scaleX).toFixed(2));
+                const finalY = parseFloat((pos.y * scaleY).toFixed(2));
+                return !soloFindItViewModel.correctClicks.some(click => 
+                    Math.abs(click.x - finalX) < TOLERANCE && Math.abs(click.y - finalY) < TOLERANCE
+                );
+            });
             if (unsolvedPositions.length > 0) {
                 // 랜덤하게 하나의 힌트 위치 선택
                 const randomIndex = Math.floor(Math.random() * unsolvedPositions.length);
