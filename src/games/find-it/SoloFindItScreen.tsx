@@ -263,7 +263,6 @@ const SoloFindItScreen: React.FC = observer(() => {
     }, [soloFindItViewModel.timer]);
 
     useEffect(() => {
-        console.log("정답 개수 ", soloFindItViewModel.correctClicks.length);
         if (soloFindItViewModel.correctClicks.length === 5) {
             // Activate round clear animation effect
             runInAction(() => {
@@ -361,7 +360,6 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
 
         let isCorrect = false;
-        console.log("현재 정답 좌표 ", correctPositions);
         
         // 정답을 찾는다. 
         for (let i = 0; i < correctPositions.length; i++) {
@@ -512,7 +510,6 @@ const SoloFindItScreen: React.FC = observer(() => {
                 soloFindItViewModel.item_timer_stop -= 1;
             });
             setTimeout(() => {
-                console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
                 isPaused.current = false;
                 startTimerAnimation(remainingTime.current); // ✅ 남은 시간만큼 다시 진행
             }, 5000);
@@ -630,7 +627,6 @@ const SoloFindItScreen: React.FC = observer(() => {
     useEffect(() => {
         // 첫 라운드의 정답 좌표를 correctPositions에 저장
         const initialPositions = gameInfoList[0].correctPositions.map((pos: { x: number; y: number }) => ({ ...pos }));
-        console.log("초기 정답 좌표 ", initialPositions);
         setCorrectPositions(initialPositions);
     }, []); // 빈 의존성 배열로 컴포넌트 마운트 시 한 번만 실행
 
