@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback, TouchableOpacity, Easing, StyleSheet } from 'react-native';
+import { Animated as RNAnimated, View, Text, Image, AppState, TouchableWithoutFeedback, TouchableOpacity, Easing, StyleSheet, Modal } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
 import soloFindItViewModel from './services/SoloFindItViewModel'; // ✅ 올바른 경로로 변경
-import { styles } from './styles/ReactSoloFindItStyles';
+import { styles as importedStyles } from './styles/ReactSoloFindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
@@ -262,29 +262,9 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
     }, [soloFindItViewModel.timer]);
 
-    useEffect(() => {
-        if (soloFindItViewModel.correctClicks.length === 5) {
-            // Activate round clear animation effect
-            runInAction(() => {
-                soloFindItViewModel.roundClearEffect = true;
-            });
-            if (soloFindItViewModel.round === 10) {
-                // If it's the last round, navigate to result screen after 1.5 seconds
-                setTimeout(() => {
-                    findItService.deductCoin(1);
-                    navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
-                }, 1500);
-            } else {
-                // Otherwise, proceed to the next round after 1.5 seconds
-                setTimeout(() => {
-                    runInAction(() => {
-                        soloFindItViewModel.nextRound();
-                        soloFindItViewModel.roundClearEffect = false; // Reset the effect
-                    });
-                }, 3000);
-            }
-        }
-    }, [soloFindItViewModel.correctClicks]);
+    // Add modal state
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
 
     // 정답 클릭 시 좌표를 추가하는 함수
     const addCorrectClick = (x: number, y: number) => {
@@ -334,7 +314,9 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-
+        // 아래 콘솔은 절대 지우지마라 
+        console.log('이미지 클릭 좌표', finalX, finalY);
+        console.log('현재 남은 정답 좌표 ', correctPositions);
         // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
             const correctPosX = parseFloat((click.x * scaleX).toFixed(2));
@@ -360,7 +342,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
 
         let isCorrect = false;
-        
+        let correctIndex = -1;
         // 정답을 찾는다. 
         for (let i = 0; i < correctPositions.length; i++) {
             const pos = correctPositions[i];
@@ -373,14 +355,16 @@ const SoloFindItScreen: React.FC = observer(() => {
             const dy = finalY - correctPosY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (finalX >= 250) {
+            if (finalX >= 200) {
                 if (distance <= 30) {
                     isCorrect = true;
+                    correctIndex = i;
                     break;
                 }
             } else {
                 if (distance <= 20) {
                     isCorrect = true;
+                    correctIndex = i;
                     break;
                 }
             }
@@ -390,36 +374,33 @@ const SoloFindItScreen: React.FC = observer(() => {
             runOnJS(playCorrectSound)();
             runOnJS(addCorrectClick)(locationX, locationY);
             // Remove the matched correct position
-            const index = correctPositions.findIndex((pos: { x: number; y: number }) => {
-                const correctPosX = parseFloat((pos.x * scaleX).toFixed(2));
-                const correctPosY = parseFloat((pos.y * scaleY).toFixed(2));
-                return Math.abs(finalX - correctPosX) <= 20 && Math.abs(finalY - correctPosY) <= 20;
-            });
-            if (index !== -1) {
+            
+            if (correctIndex !== -1) {
                 runOnJS(setCorrectPositions)(prev => {
                     const updated = [...prev];
-                    updated.splice(index, 1);
+                    updated.splice(correctIndex, 1);
                     return updated;
                 });
             }
-
-            if (soloFindItViewModel.correctClicks.length + 1 >= 5) {
-                runOnJS(() => {
+            if (soloFindItViewModel.correctClicks.length+1 === 5) {
+                runInAction(() => {
                     soloFindItViewModel.roundClearEffect = true;
+                });
+                if (soloFindItViewModel.round === 10) {
                     setTimeout(() => {
-                        if (soloFindItViewModel.round < gameInfoList.length) {
-                            setTimeout(() => {
-                                soloFindItViewModel.roundClearEffect = false;
-                                soloFindItViewModel.nextRound();
-                            }, 2000);
-                        } else {
-                            navigation.navigate('SoloFindItResult', {
-                                gameInfoList: gameInfoList,
-                                isSuccess: true
-                            });
-                        }
-                    }, 2000);
-                })();
+                        soloFindItViewModel.roundClearEffect = false;
+                        findItService.deductCoin(1);
+                        navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
+                        setModalVisible(false);
+                    }, 3000);
+                } else {
+                    setTimeout(() => {
+                        runInAction(() => {
+                            soloFindItViewModel.roundClearEffect = false;
+                            soloFindItViewModel.nextRound();
+                        });
+                    }, 3000);
+                }
             }
         } else {
             runOnJS(playClickSound)();
@@ -430,11 +411,12 @@ const SoloFindItScreen: React.FC = observer(() => {
                 runOnJS(() => {
                     soloFindItViewModel.roundFailEffect = true;
                     setTimeout(() => {
+                        soloFindItViewModel.roundFailEffect = false;
                         navigation.navigate('SoloFindItResult', {
                             gameInfoList: gameInfoList,
                             isSuccess: false
                         });
-                    }, 1000);
+                    }, 3000);
                 })();
             }
         }
@@ -515,7 +497,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         const total = 5;
         const correctCount = soloFindItViewModel.correctClicks.length;
         return (
-            <View style={styles.checkBoxContainer}>
+            <View style={importedStyles.checkBoxContainer}>
                 {Array.from({ length: total }, (_, i) => (
                     <Image
                         key={i}
@@ -524,7 +506,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 ? require('../../assets/icons/find-it/check_box.png')
                                 : require('../../assets/icons/find-it/empty_check_box.png')
                         }
-                        style={styles.checkBoxImage}
+                        style={importedStyles.checkBoxImage}
                     />
                 ))}
             </View>
@@ -588,18 +570,21 @@ const SoloFindItScreen: React.FC = observer(() => {
     }, [soloFindItViewModel.life]);
 
 
-    // ✅ 게임 종료 시 타이머 바 정지
+    // Update useEffect for game over
     useEffect(() => {
         if (soloFindItViewModel.gameOver) {
             runInAction(() => {
                 soloFindItViewModel.timerStopped = true;
-                soloFindItViewModel.roundFailEffect = true; // GAME OVER 애니메이션 활성화
+                soloFindItViewModel.roundFailEffect = true;
             });
+            setModalMessage('GAME OVER');
+            setModalVisible(true);
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
             setTimeout(() => {
                 navigation.navigate('SoloFindItResult', { isSuccess: false, gameInfoList: gameInfoList });
+                setModalVisible(false);
             }, 1500);
         }
     }, [soloFindItViewModel.gameOver]);
@@ -622,23 +607,23 @@ const SoloFindItScreen: React.FC = observer(() => {
     }, []); // 빈 의존성 배열로 컴포넌트 마운트 시 한 번만 실행
 
     return (
-        <View style={styles.container}>
+        <View style={importedStyles.container}>
             <SoloHeader />
             {/* 상단 UI */}
-            <View style={styles.topBar}>
+            <View style={importedStyles.topBar}>
             </View>
 
 
-            <View style={styles.gameContainer}>
+            <View style={importedStyles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                <View style={styles.normalImageContainer}>
-                    <Animated.View style={[styles.image, animatedStyle]}>
+                <View style={importedStyles.normalImageContainer}>
+                    <Animated.View style={[importedStyles.image, animatedStyle]}>
                         <TouchableWithoutFeedback onPress={handleImageClick}>
                             <View>
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
-                                    style={styles.image}
+                                    style={importedStyles.image}
                                     onLayout={(event) => {
                                         const { width, height } = event.nativeEvent.layout;
                                         imageSize.current = { width, height };
@@ -666,7 +651,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                                     {hintVisible && soloFindItViewModel.hintPosition && (
                                         <View
                                             style={[
-                                                styles.hintCircle,
+                                                importedStyles.hintCircle,
                                                 {
                                                     left: soloFindItViewModel.hintPosition.x - 15,
                                                     top: soloFindItViewModel.hintPosition.y - 15,
@@ -683,16 +668,16 @@ const SoloFindItScreen: React.FC = observer(() => {
 
 
             {/* ✅ 타이머 바 추가 */}
-            <View style={styles.timerContainer}>
+            <View style={importedStyles.timerContainer}>
                 {/* 타이머 이미지 */}
                 <Image
                     source={require('../../assets/icons/find-it/timer_bar.png')}
-                    style={styles.timerImage}
+                    style={importedStyles.timerImage}
                 />
                 {/* 타이머 바 */}
                 <RNAnimated.View
                     style={[
-                        styles.timerBar,
+                        importedStyles.timerBar,
                         {
                             width: timerWidth.interpolate({
                                 inputRange: [0, 100],
@@ -704,14 +689,14 @@ const SoloFindItScreen: React.FC = observer(() => {
                 />
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
-                    <View style={styles.abnormalImageContainer}>
-                    <Animated.View style={[styles.image, animatedStyle]}>
+                    <View style={importedStyles.abnormalImageContainer}>
+                    <Animated.View style={[importedStyles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback onPress={handleImageClick}>
                             <View>
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }}
-                                    style={styles.image}
+                                    style={importedStyles.image}
                                     onLayout={(event) => {
                                         const { width, height } = event.nativeEvent.layout;
                                         imageSize.current = { width, height };
@@ -739,7 +724,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                                     {hintVisible && soloFindItViewModel.hintPosition && (
                                         <View
                                             style={[
-                                                styles.hintCircle,
+                                                importedStyles.hintCircle,
                                                 {
                                                     left: soloFindItViewModel.hintPosition.x - 15,
                                                     top: soloFindItViewModel.hintPosition.y - 15,
@@ -767,17 +752,56 @@ const SoloFindItScreen: React.FC = observer(() => {
             />
 
             {soloFindItViewModel.roundClearEffect && (
-                <View style={styles.clearEffectContainer}>
-                    <Text style={styles.clearEffectText}>🎉 ROUND CLEAR! 🎉</Text>
+                <View style={importedStyles.clearEffectContainer}>
+                    <Image
+                        source= {require('../../assets/icons/find-it/clear_star.png')} 
+                        style={styles.clearIcon}
+                    />
+                    <Text style={importedStyles.clearEffectRound}>ROUND {soloFindItViewModel.round}</Text>
+                    <Text style={importedStyles.clearEffectText}>클리어!</Text>
+                    <View style={importedStyles.clearEffectTextContainer}>
+                        <Text style={importedStyles.clearEffectMessage}>다음 라운드 준비중...</Text>
+                    </View>
                 </View>
             )}
             {soloFindItViewModel.roundFailEffect && (
-                <View style={styles.failEffectContainer}>
-                    <Text style={styles.failEffectText}>GAME OVER</Text>
+                <View style={importedStyles.failEffectContainer}>
+                    <Image
+                        source={require('../../assets/icons/find-it/fail_star.png')} 
+                        style={styles.clearIcon}
+                    />
+                    <Text style={importedStyles.clearEffectRound}>ROUND {soloFindItViewModel.round}</Text>
+                    <Text style={importedStyles.clearEffectText}>게임오버</Text>
+                    <View style={importedStyles.clearEffectTextContainer}>
+                        <Text style={importedStyles.clearEffectMessage}>다시 도전해보세요!</Text>
+                    </View>
                 </View>
             )}
+
         </View>
     );
+});
+
+// Define and apply modal styles directly in SoloFindItScreen.tsx
+const styles = StyleSheet.create({
+    ...importedStyles,
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
 });
 
 export default SoloFindItScreen;
