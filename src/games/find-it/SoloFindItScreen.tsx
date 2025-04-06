@@ -407,19 +407,10 @@ const SoloFindItScreen: React.FC = observer(() => {
                 runOnJS(() => {
                     soloFindItViewModel.roundClearEffect = true;
                     setTimeout(() => {
-                        soloFindItViewModel.roundClearEffect = false;
                         if (soloFindItViewModel.round < gameInfoList.length) {
-                            soloFindItViewModel.round += 1;
-                            soloFindItViewModel.correctClicks = [];
-                            soloFindItViewModel.wrongClicks = [];
-                            soloFindItViewModel.hintPosition = null;
-                            soloFindItViewModel.remainingTime = GAME_TIMER;
-                            remainingTime.current = GAME_TIMER;
-                            startTimerAnimation(GAME_TIMER);
                             setTimeout(() => {
-                                setNormalImage(gameInfoList[soloFindItViewModel.round - 1].normalUrl);
-                                setAbnormalImage(gameInfoList[soloFindItViewModel.round - 1].abnormalUrl);
-                                setCurrentRound(soloFindItViewModel.round);
+                                soloFindItViewModel.roundClearEffect = false;
+                                soloFindItViewModel.nextRound();
                             }, 2000);
                         } else {
                             navigation.navigate('SoloFindItResult', {

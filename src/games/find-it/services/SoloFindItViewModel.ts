@@ -239,6 +239,7 @@ class SoloGameViewModel {
         this.wrongClicks = [];
     }
     nextRound() {
+        console.log("다음 라운드로 이동 성공 !!!");
         // next_stage.mp3 사운드를 재생합니다.
         const nextStageSound = new Sound('next_stage.mp3', Sound.MAIN_BUNDLE, (error) => {
             if (error) {
