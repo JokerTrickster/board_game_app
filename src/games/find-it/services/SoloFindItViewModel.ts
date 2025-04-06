@@ -258,6 +258,7 @@ class SoloGameViewModel {
         this.remainingTime = GAME_TIMER;
         this.initClicks();
         this.wrongClicks = [];
+        this.correctClicks = [];
         this.roundClearEffect = false;
         this.roundFailEffect = false;
         this.round += 1;

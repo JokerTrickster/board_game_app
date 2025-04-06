@@ -9,7 +9,7 @@ import { RootStackParamList } from '../../navigation/navigationTypes';
 import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { runInAction } from 'mobx';
+import { runInAction, set } from 'mobx';
 import SoloHeader from '../../components/SoloHeader';
 import ItemBar from '../../components/ItemBar';
 import {findItService} from '../../services/FindItService';
@@ -53,6 +53,7 @@ const SoloFindItScreen: React.FC = observer(() => {
    
     const route = useRoute<any>();
     const { gameInfoList } = route.params; 
+    const [correctPositions, setCorrectPositions] = useState<any[]>([]); // ✅ 정답 좌표 저장
 
     // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
     const clickSoundRef = useRef<Sound | null>(null);
@@ -62,7 +63,6 @@ const SoloFindItScreen: React.FC = observer(() => {
     // shared value로 마지막 클릭 시간을 저장합니다.
     const lastClickTimeSV = useSharedValue(0);
     const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
-
     // ✅ 확대/축소 버튼 핸들러 (두 이미지 동기화)
     const handleZoomIn = () => {
         scale.value = withTiming(Math.min(MAX_SCALE, scale.value + 0.5), { duration: 200 });
@@ -220,7 +220,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             subscription.remove();
         };
     }, []);
-
+   
     // 컴포넌트 마운트 시 사운드 파일 로드
     useEffect(() => {
         clickSoundRef.current = new Sound('wrong_click.mp3', Sound.MAIN_BUNDLE, (error) => {
@@ -263,6 +263,7 @@ const SoloFindItScreen: React.FC = observer(() => {
     }, [soloFindItViewModel.timer]);
 
     useEffect(() => {
+        console.log("정답 개수 ", soloFindItViewModel.correctClicks.length);
         if (soloFindItViewModel.correctClicks.length === 5) {
             // Activate round clear animation effect
             runInAction(() => {
@@ -281,7 +282,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                         soloFindItViewModel.nextRound();
                         soloFindItViewModel.roundClearEffect = false; // Reset the effect
                     });
-                }, 1500);
+                }, 3000);
             }
         }
     }, [soloFindItViewModel.correctClicks]);
@@ -307,7 +308,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 4초 후 해당 오답 좌표를 제거합니다.
         setTimeout(() => {
             runInAction(() => {
-                const index = soloFindItViewModel.wrongClicks.findIndex(item => item.x === x && item.y === y);
+                const index = soloFindItViewModel.wrongClicks.findIndex((pos: { x: number; y: number }) => pos.x === x && pos.y === y);
                 if (index > -1) {
                     soloFindItViewModel.wrongClicks.splice(index, 1);
                 }
@@ -328,13 +329,13 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         const { locationX, locationY } = event.nativeEvent;
         // 이미지의 실제 크기와 화면에 표시되는 크기의 비율 계산
-        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
-        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height; // IMAGE_FRAME_HEIGHT가 277이면 1이 됩니다.
-    
+        const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
+        const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
+
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-       
+
         // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
             const correctPosX = parseFloat((click.x * scaleX).toFixed(2));
@@ -350,7 +351,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         // 이미 클릭한 오답 위치인지 확인
         for (const click of soloFindItViewModel.wrongClicks) {
-            // 클릭 좌표를 실제 이미지 크기에 맞게 조정
             const dx = finalX - click.x;
             const dy = finalY - click.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -360,13 +360,12 @@ const SoloFindItScreen: React.FC = observer(() => {
             }
         }
 
-        const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
         let isCorrect = false;
-        let matchedPos = null;
-
+        console.log("현재 정답 좌표 ", correctPositions);
+        
         // 정답을 찾는다. 
-        for (let i = 0; i < currentGameInfo.correctPositions.length; i++) {
-            const pos = currentGameInfo.correctPositions[i];
+        for (let i = 0; i < correctPositions.length; i++) {
+            const pos = correctPositions[i];
 
             // 클릭 좌표를 실제 이미지 크기에 맞게 조정
             const correctPosX = parseFloat((pos.x * scaleX).toFixed(2));
@@ -375,17 +374,38 @@ const SoloFindItScreen: React.FC = observer(() => {
             const dx = finalX - correctPosX;
             const dy = finalY - correctPosY;
             const distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (distance <= 30) {
-                isCorrect = true;
-                break;
+            
+            if (finalX >= 250) {
+                if (distance <= 30) {
+                    isCorrect = true;
+                    break;
+                }
+            } else {
+                if (distance <= 20) {
+                    isCorrect = true;
+                    break;
+                }
             }
         }
 
         if (isCorrect) {
             runOnJS(playCorrectSound)();
-            runOnJS(addCorrectClick)(locationX,locationY);
-            if (soloFindItViewModel.correctClicks.length + 1 >= currentGameInfo.correctPositions.length) {
+            runOnJS(addCorrectClick)(locationX, locationY);
+            // Remove the matched correct position
+            const index = correctPositions.findIndex((pos: { x: number; y: number }) => {
+                const correctPosX = parseFloat((pos.x * scaleX).toFixed(2));
+                const correctPosY = parseFloat((pos.y * scaleY).toFixed(2));
+                return Math.abs(finalX - correctPosX) <= 20 && Math.abs(finalY - correctPosY) <= 20;
+            });
+            if (index !== -1) {
+                runOnJS(setCorrectPositions)(prev => {
+                    const updated = [...prev];
+                    updated.splice(index, 1);
+                    return updated;
+                });
+            }
+
+            if (soloFindItViewModel.correctClicks.length + 1 >= 5) {
                 runOnJS(() => {
                     soloFindItViewModel.roundClearEffect = true;
                     setTimeout(() => {
@@ -396,14 +416,20 @@ const SoloFindItScreen: React.FC = observer(() => {
                             soloFindItViewModel.wrongClicks = [];
                             soloFindItViewModel.hintPosition = null;
                             soloFindItViewModel.remainingTime = GAME_TIMER;
+                            remainingTime.current = GAME_TIMER;
+                            startTimerAnimation(GAME_TIMER);
+                            setTimeout(() => {
+                                setNormalImage(gameInfoList[soloFindItViewModel.round - 1].normalUrl);
+                                setAbnormalImage(gameInfoList[soloFindItViewModel.round - 1].abnormalUrl);
+                                setCurrentRound(soloFindItViewModel.round);
+                            }, 2000);
                         } else {
-                            // 모든 라운드 클리어
                             navigation.navigate('SoloFindItResult', {
                                 gameInfoList: gameInfoList,
                                 isSuccess: true
                             });
                         }
-                    }, 1000);
+                    }, 2000);
                 })();
             }
         } else {
@@ -423,17 +449,16 @@ const SoloFindItScreen: React.FC = observer(() => {
                 })();
             }
         }
-    }, [gameInfoList]);
+    }, [gameInfoList, correctPositions, navigation, soloFindItViewModel.round, soloFindItViewModel.life]);
 
 
     // ✅ 힌트 아이템 사용
     const handleHint = useCallback(() => {
         if (soloFindItViewModel.hints > 0) {
-            const currentGameInfo = gameInfoList[soloFindItViewModel.round - 1];
             const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
             const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
             
-            const unsolvedPositions = currentGameInfo.correctPositions.filter((pos: { x: number; y: number; }) => {
+            const unsolvedPositions = correctPositions.filter((pos: { x: number; y: number; }) => {
                 const finalX = parseFloat((pos.x * scaleX).toFixed(2));
                 const finalY = parseFloat((pos.y * scaleY).toFixed(2));
                 return !soloFindItViewModel.correctClicks.some(click => 
@@ -470,7 +495,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                 }, 4000);
             }
         }
-    }, [gameInfoList]);
+    }, [gameInfoList, correctPositions]);
 
     // ✅ 타이머 멈춤 아이템 사용 시 타이머 바 멈추기
     const handleTimerStop = () => {
@@ -538,6 +563,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         setNormalImage(gameInfoList[soloFindItViewModel.round - 1].normalUrl);
         setAbnormalImage(gameInfoList[soloFindItViewModel.round - 1].abnormalUrl);
         setCurrentRound(soloFindItViewModel.round);
+        setCorrectPositions(gameInfoList[soloFindItViewModel.round - 1].correctPositions);
     }, [soloFindItViewModel.round]);
     
     useEffect(() => {
@@ -599,6 +625,14 @@ const SoloFindItScreen: React.FC = observer(() => {
             }
         });
     };
+
+    // 게임 시작 시 초기 정답 좌표 설정
+    useEffect(() => {
+        // 첫 라운드의 정답 좌표를 correctPositions에 저장
+        const initialPositions = gameInfoList[0].correctPositions.map((pos: { x: number; y: number }) => ({ ...pos }));
+        console.log("초기 정답 좌표 ", initialPositions);
+        setCorrectPositions(initialPositions);
+    }, []); // 빈 의존성 배열로 컴포넌트 마운트 시 한 번만 실행
 
     return (
         <View style={styles.container}>
