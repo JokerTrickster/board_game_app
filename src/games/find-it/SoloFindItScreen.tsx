@@ -355,7 +355,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             const dy = finalY - correctPosY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (finalX >= 200) {
+            if (finalX >= 250) {
                 if (distance <= 30) {
                     isCorrect = true;
                     correctIndex = i;
@@ -388,9 +388,9 @@ const SoloFindItScreen: React.FC = observer(() => {
                 });
                 if (soloFindItViewModel.round === 10) {
                     setTimeout(() => {
-                        soloFindItViewModel.roundClearEffect = false;
                         findItService.deductCoin(1);
                         navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
+                        soloFindItViewModel.roundClearEffect = false;
                         setModalVisible(false);
                     }, 3000);
                 } else {
