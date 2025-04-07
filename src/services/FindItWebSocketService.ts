@@ -205,7 +205,7 @@ class FindItWebSocketService {
                         findItViewModel.setRoundFailEffect(false);
                         findItViewModel.clearMissedPositions(); // 못 맞춘 좌표 초기화
                         this.sendNextRoundEvent();
-                    }, 4000);
+                    }, 3000);
                     break;
                 case "ROUND_CLEAR":
                     console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
@@ -213,7 +213,7 @@ class FindItWebSocketService {
                     setTimeout(() => {
                         findItViewModel.setRoundClearEffect(false);
                         this.sendNextRoundEvent();
-                    }, 2000);
+                    }, 3000);
                     break;
                 case "GAME_CLEAR":
                     // ✅ 웹소켓 종료
