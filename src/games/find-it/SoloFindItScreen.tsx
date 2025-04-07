@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack'; // ✅ 네비게이션 타입 import
 import soloFindItViewModel from './services/SoloFindItViewModel'; // ✅ 올바른 경로로 변경
-import { styles as importedStyles } from './styles/ReactSoloFindItStyles';
+import { styles as importedStyles, styles } from './styles/ReactSoloFindItStyles';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import AnimatedCircle from './AnimatedCircle';
 import Animated, { runOnJS, useSharedValue, useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'; // ✅ React Native의 Animated 제거
@@ -780,28 +780,6 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         </View>
     );
-});
-
-// Define and apply modal styles directly in SoloFindItScreen.tsx
-const styles = StyleSheet.create({
-    ...importedStyles,
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        width: 300,
-        padding: 20,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        alignItems: 'center',
-    },
-    modalText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
 });
 
 export default SoloFindItScreen;

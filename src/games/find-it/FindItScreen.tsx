@@ -530,13 +530,29 @@ const FindItScreen: React.FC = observer(() => {
 
             {findItViewModel.roundClearEffect && (
                 <View style={styles.clearEffectContainer}>
-                    <Text style={styles.clearEffectText}>🎉 ROUND CLEAR! 🎉</Text>
+                <Image
+                    source= {require('../../assets/icons/find-it/clear_star.png')} 
+                    style={styles.clearIcon}
+                />
+                <Text style={styles.clearEffectRound}>ROUND {findItViewModel.round}</Text>
+                <Text style={styles.clearEffectText}>클리어!</Text>
+                <View style={styles.clearEffectTextContainer}>
+                    <Text style={styles.clearEffectMessage}>다음 라운드 준비중...</Text>
                 </View>
+            </View>
             )}
             {findItViewModel.roundFailEffect && (
                 <View style={styles.failEffectContainer}>
-                    <Text style={styles.failEffectText}>🎉 TIME OUT! 🎉</Text>
+                <Image
+                    source={require('../../assets/icons/find-it/fail_star.png')} 
+                    style={styles.clearIcon}
+                />
+                <Text style={styles.clearEffectRound}>ROUND {findItViewModel.round}</Text>
+                <Text style={styles.clearEffectText}>게임오버</Text>
+                <View style={styles.clearEffectTextContainer}>
+                    <Text style={styles.clearEffectMessage}>다시 도전해보세요!</Text>
                 </View>
+            </View>
             )}
         </View>
     );
