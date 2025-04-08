@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ImageBackground, TouchableOpacity,Image } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import soloFindItViewModel from './services/SoloFindItViewModel';
 import styles from './styles/SoloFindItResultStyles'; // 스타일 임포트
 import SoloHeader from '../../components/SoloHeader'; // 헤더 컴포넌트 임포트
+import { RootStackParamList } from '../../navigation/navigationTypes';
+
 const SoloFindItResultScreen: React.FC = observer(() => {
     const navigation = useNavigation(); // navigation 타입을 명확히 지정
-    const route = useRoute();
+    const route = useRoute<RouteProp<RootStackParamList, 'SoloFindItResult'>>(); // 타입을 명확히 지정
     const userName = '임시개굴맨';
     const { isSuccess = false } = route.params || {};  // 기본값 false
 

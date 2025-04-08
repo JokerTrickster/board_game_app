@@ -49,12 +49,25 @@ const HomeScreen: React.FC = () => {
         }, [])
     );
     useEffect(() => {
+        // 초기 배경음악 설정
         CommonAudioManager.initBackgroundMusic();
         CommonAudioManager.playBackgroundMusic();
-        // 홈 화면을 벗어나면 음악을 계속 재생할지, 아니면 중단할지 결정합니다.
-        // 예를 들어, 홈 화면을 벗어날 때 정지하고 싶다면 아래 cleanup 코드를 활성화하면 됩니다.
+
+        // 앱 상태 변경 감지
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            if (nextAppState === 'background' || nextAppState === 'inactive') {
+                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
+                CommonAudioManager.initBackgroundMusic();
+            } else if (nextAppState === 'active') {
+                // 앱이 포그라운드로 돌아올 때 배경음악 재생
+                CommonAudioManager.playBackgroundMusic();
+            }
+        });
+
+        // 컴포넌트 언마운트 시 정리
         return () => {
             CommonAudioManager.stopBackgroundMusic();
+            subscription.remove();
         };
     }, []);
 
@@ -66,22 +79,6 @@ const HomeScreen: React.FC = () => {
         }
         navigation.navigate('GameDetail', { game });
     };
-    // 앱 상태 감지
-    useEffect(() => {
-        const subscription = AppState.addEventListener('change', nextAppState => {
-            if (nextAppState === 'background' || nextAppState === 'inactive') {
-                // 앱이 백그라운드 또는 비활성화 상태일 때 배경음악 정지
-                CommonAudioManager.initBackgroundMusic();
-            } else if (nextAppState === 'active') {
-                // 앱이 포그라운드로 돌아올 때 배경음악 재생 (원하는 경우)
-                CommonAudioManager.playGameBackgroundMusic();
-            }
-        });
-
-        return () => {
-            subscription.remove();
-        };
-    }, []);
 
     useEffect(() => {
         const fetchUserData = async () => {
