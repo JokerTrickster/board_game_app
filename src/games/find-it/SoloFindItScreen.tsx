@@ -390,7 +390,6 @@ const SoloFindItScreen: React.FC = observer(() => {
                     setTimeout(() => {
                         findItService.deductCoin(1);
                         navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
-                        soloFindItViewModel.roundClearEffect = false;
                         setModalVisible(false);
                     }, 3000);
                 } else {
@@ -584,7 +583,6 @@ const SoloFindItScreen: React.FC = observer(() => {
             }
             setTimeout(() => {
                 navigation.navigate('SoloFindItResult', { isSuccess: false, gameInfoList: gameInfoList });
-                setModalVisible(false);
             }, 1500);
         }
     }, [soloFindItViewModel.gameOver]);

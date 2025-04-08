@@ -9,8 +9,8 @@ const SoloFindItResultScreen: React.FC = observer(() => {
     const navigation = useNavigation(); // navigation 타입을 명확히 지정
     const route = useRoute();
     const userName = '임시개굴맨';
-    const isSuccess = soloFindItViewModel.roundClearEffect; // 성공 여부
-    
+    const { isSuccess = false } = route.params || {};  // 기본값 false
+
     const goToHome = () => {
         navigation.navigate('Home' as never); // 타입 오류를 피하기 위해 'Home'을 never로 캐스팅
     };
