@@ -139,11 +139,11 @@ export const styles = StyleSheet.create({
     },
     hintCircle: {
         position: 'absolute',
-        width: scale(30),
-        height: scale(30),
+        width: scale(40),
+        height: scale(40),
         borderRadius: scale(15),
         borderWidth: scale(3),
-        borderColor: 'black',
+        borderColor: 'rgba(36, 140, 205, 0.85)',
     },
     wrongXRotate45: {
         transform: [{ rotate: '45deg' }]

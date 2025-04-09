@@ -235,6 +235,14 @@ class FindItWebSocketService {
                 case "MATCH_CANCEL":
                     console.log("🚫 매칭 취소:", data.message);
                     break;
+                case "DISCONNECT":
+                    console.log("❌ 서버와 연결이 끊어졌습니다.");
+                    this.disconnect();
+                    // ✅ 게임 결과 화면으로 이동
+                    if (navigation) {
+                        navigation.navigate('MultiFindItResult', { isSuccess: false });
+                    }
+                    break;
                 default:
                     console.warn("⚠️ 알 수 없는 이벤트:", data.event);
             }
