@@ -50,7 +50,7 @@ export default StyleSheet.create({
         height: verticalScale(190),
         borderRadius: scale(10),
         borderWidth: scale(1),
-        resizeMode: 'contain', // 이미지 전체가 보이도록 설정
+        resizeMode: 'cover', // 이미지 전체가 보이도록 설정
         marginBottom: verticalScale(-10), // 음수 값을 제거 또는 양수로 조정
     },
     gameTitle: {

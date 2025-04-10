@@ -47,7 +47,7 @@ export default StyleSheet.create({
     },
     goldNickname: {
         marginTop: verticalScale(2),
-        fontSize: scale(12),
+        fontSize: scale(10),
         fontWeight: '600',
         color: '#000',
     },
@@ -80,7 +80,7 @@ export default StyleSheet.create({
     },
     silverNickname: {
         marginTop: verticalScale(2),
-        fontSize: scale(11),
+        fontSize: scale(10),
         fontWeight: '600',
         color: '#000',
     },
@@ -106,7 +106,7 @@ export default StyleSheet.create({
     },
     bronzeNickname: {
         marginTop: verticalScale(2),
-        fontSize: scale(11),
+        fontSize: scale(10),
         fontWeight: '600',
         color: '#000',
     },
