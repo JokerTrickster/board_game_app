@@ -10,6 +10,7 @@ class GameService {
     private abnormalImageUrl: string | null = null;
     private userInfo: any = null;
     private gameList: any[] = [];
+    private password: string | null = null;
 
     async setGameList(games: any[]) {
         this.gameList = games;
@@ -55,6 +56,13 @@ class GameService {
             }
         }
         return this.userInfo;
+    }
+    async setPassword(password: string) {
+        this.password = password;
+        await AsyncStorage.setItem('password', String(password));
+    }
+    async getPassword() {
+        return this.password;
     }
 
     async setRoomID(id: number) {

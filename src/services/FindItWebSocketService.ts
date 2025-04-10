@@ -13,6 +13,7 @@ class FindItWebSocketService {
     private imageID: number | null = null;
     private round: number | null = null;
     private gameStarted: boolean = false;
+    private password: string | null = null;
     async initialize() {
         this.accessToken = await AsyncStorage.getItem('accessToken');
         const storedUserID = await AsyncStorage.getItem('userID');
@@ -37,6 +38,32 @@ class FindItWebSocketService {
         const wsUrl = WS_BASE_URL +`/find-it/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
         webSocketService.connect(wsUrl, this.handleMessage);
         this.sendMatchEvent();
+    }
+    async togetherConnect() {
+        // ✅ 기존 상태 초기화
+        this.gameStarted = false;
+        this.roomID = null;
+        this.imageID = null;
+        this.round = null;
+        const isInitialized = await this.initialize();
+        if (!isInitialized) return;
+
+        const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/play/together/ws?tkn=${this.accessToken}`;
+        webSocketService.connect(wsUrl, this.handleMessage);
+        this.sendTogetherMatchEvent();
+    }
+    async joinConnect() {
+        // ✅ 기존 상태 초기화
+        this.gameStarted = false;
+        this.roomID = null;
+        this.imageID = null;
+        this.round = null;
+        const isInitialized = await this.initialize();
+        if (!isInitialized) return;
+        const password = await gameService.getPassword();
+        const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/join/play/ws?tkn=${this.accessToken}&password=${password}`;
+        webSocketService.connect(wsUrl, this.handleMessage);
+        this.sendJoinMatchEvent();
     }
 
     handleMessage = async (eventType: string, data: any) => {
@@ -100,10 +127,54 @@ class FindItWebSocketService {
             switch (eventType) {
                 case "MATCH":
                     console.log("✅ 매칭 성공!", data.message);
-                    await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                    await gameService.setRound(data.gameInfo.round);
+
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
+                        await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(data.gameInfo.round);
+                        // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
+                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
+
+                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                            if (isOwner) {
+                                console.log(this.roomID);
+                                console.log("방장이 게임 시작한다. ");
+                                this.sendStartEvent();
+                            } else {
+                                console.log("🕒 게임 시작 대기 중...");
+                            }
+                        }
+                    }
+                    break;
+                case "TOGETHER":
+                    console.log("✅ 함께하기 매칭 성공!", data.message);
+
+                    // ✅ 게임 정보가 있는 경우 처리
+                    if (data.gameInfo) {
+                        gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                        gameService.setRound(data.gameInfo.round);
+                        gameService.setPassword(data.gameInfo.password);
+                        console.log("함께하기 비밀번호 : ",data.gameInfo.password);
+                        // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
+                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
+
+                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                            if (isOwner) {
+                                console.log(this.roomID);
+                                console.log("방장이 게임 시작한다. ");
+                                this.sendStartEvent();
+                            } else {
+                                console.log("🕒 게임 시작 대기 중...");
+                            }
+                        }
+                    }
+                    break;
+                case "JOIN":
+                    console.log("✅ 참여 매칭 성공!", data.message);
+                    if (data.gameInfo) {
+                        await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(data.gameInfo.round);
+                        await gameService.setPassword(data.gameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
 
@@ -278,6 +349,12 @@ class FindItWebSocketService {
 
     sendMatchEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "MATCH", { userID: this.userID });
+    }
+    sendTogetherMatchEvent() {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TOGETHER", { userID: this.userID });
+    }
+    sendJoinMatchEvent() {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { userID: this.userID });
     }
 
     sendStartEvent() {
