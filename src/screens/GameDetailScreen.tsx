@@ -231,6 +231,7 @@ const GameDetailScreen: React.FC = () => {
                                         source={require('../assets/images/game_detail/tutorial_image.png')}
                                         style={styles.infoTutorialImage}
                                     />
+                                    <Text style={[styles.buttonText, { position: 'absolute', bottom: 5, right: 15 }]}>게임방법</Text>
                                 </TouchableOpacity>
                                 {game.youtubeUrl && (
                                     <TouchableOpacity style={styles.infoCard} onPress={() => setYoutubeModalVisible(true)}>
@@ -238,6 +239,7 @@ const GameDetailScreen: React.FC = () => {
                                             source={require('../assets/images/game_detail/tutorial_youtube.png')}
                                             style={styles.infoYoutubeImage}
                                         />
+                                        <Text style={[styles.buttonText, { position: 'absolute', bottom: 15, right: 15 }]}>게임영상</Text>
                                     </TouchableOpacity>
                                 )}
                             </View>

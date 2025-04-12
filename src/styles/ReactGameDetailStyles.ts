@@ -79,6 +79,7 @@ export default StyleSheet.create({
         borderBottomRightRadius: scale(10), // 왼쪽 모서리 borderRadius 추가
 
     },
+
     infoText: {
         fontSize: scale(16),
         textAlign: 'center',
@@ -120,9 +121,9 @@ export default StyleSheet.create({
     },
 
     buttonText: {
-        fontSize: scale(16),
-        fontWeight: '600',
-        color: '#333',
+        fontSize: scale(10),
+        fontWeight: '900',
+        color: '#000',
     },
    
     infoContainer: {
