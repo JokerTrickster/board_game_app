@@ -40,17 +40,17 @@ export default StyleSheet.create({
         marginBottom: verticalScale(10),
         marginLeft: scale(4),
         borderWidth: scale(1),
-        borderRadius: scale(13),
+        borderRadius: scale(10),
     },
     // --- 이미지 ---
     gameImage: {
-        marginTop: verticalScale(5),
+        marginTop: verticalScale(8),
         width: scale(180),
-        height: '95%',
+        height: '92%',
         resizeMode: 'cover',
         marginLeft: scale(10),
-        borderTopLeftRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
-        borderBottomLeftRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+        borderTopLeftRadius: scale(10), // 왼쪽 모서리 borderRadius 추가
+        borderBottomLeftRadius: scale(10), // 왼쪽 모서리 borderRadius 추가
     },
     // --- 오른쪽 영역 ---
     rightColumn: {
@@ -60,21 +60,23 @@ export default StyleSheet.create({
     },
     // --- infoCard: 부모(topRow)의 남은 높이를 절반씩 사용 (대략 48%) ---
     infoCard: {
-        height: '50%',
+        height: '48%',
         justifyContent: 'center',
         overflow: 'hidden', // 추가: 컨테이너 범위 내에 이미지가 표시되도록
     },
     infoTutorialImage: {
+        marginTop: verticalScale(8),
         width: '95%',
         height: '90%',
         resizeMode: 'cover', // 전체 영역 채우기
-        borderTopRightRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+        borderTopRightRadius: scale(10), // 왼쪽 모서리 borderRadius 추가
     },
     infoYoutubeImage: {
+        marginBottom: verticalScale(8),
         width: '95%',
         height: '90%',
         resizeMode: 'cover', // 전체 영역 채우기
-        borderBottomRightRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+        borderBottomRightRadius: scale(10), // 왼쪽 모서리 borderRadius 추가
 
     },
     infoText: {
