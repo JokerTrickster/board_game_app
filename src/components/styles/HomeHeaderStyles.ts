@@ -48,17 +48,21 @@ export default StyleSheet.create({
         marginRight: scale(15),
     },
     profileInfo: {
-        justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'column',
+        alignContent: 'center',
+        justifyContent: 'space-between',
+        height: '70%',
     },
     nickname: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        paddingBottom: verticalScale(15),
+        
     },
     title: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        marginTop: verticalScale(-5),
+        marginBottom: verticalScale(5),
     },
     // 하트(코인) 영역
     coin: {

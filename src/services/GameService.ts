@@ -60,9 +60,7 @@ class GameService {
         return this.userInfo;
     }
     async setPassword(password: string) {
-        console.log("비밀번호 변경전 ,"+ this.password);
         this.password = password;
-        console.log("여기 들어와서 비밀번호 변경 ");
         await AsyncStorage.setItem('password', String(password));
         // Emit an event when password changes
         eventEmitter.emit('passwordChanged', password);

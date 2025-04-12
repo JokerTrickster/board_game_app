@@ -55,7 +55,7 @@ export default StyleSheet.create({
     },
     gameTitle: {
         marginTop: verticalScale(5),
-        fontWeight: 'bold',
+        fontWeight: '900', // Increased font weight for bolder text
         fontSize: scale(20)
     },
     hashtagContainer: {
