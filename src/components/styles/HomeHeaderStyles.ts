@@ -74,7 +74,6 @@ export default StyleSheet.create({
         height: verticalScale(80),
         marginRight: scale(20),
         resizeMode: 'contain',
-        marginLeft: scale(-30),
     },
     coinCount: {
         fontSize: scale(16),
@@ -87,7 +86,8 @@ export default StyleSheet.create({
         alignItems: 'center'
     },
     settingsIcon: {
-        padding: scale(10)
+        padding: scale(10),
+        paddingRight: scale(18),
     },
     gameContainer: {
         flexDirection: 'row',

@@ -90,7 +90,7 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
 
             {/* 설정 아이콘 */}
             <TouchableOpacity style={styles.settingsIcon} onPress={toggleModal}>
-                <Icon name="bars" size={24} />
+                <Icon name="bars" size={26} />
             </TouchableOpacity>
 
             {/* 설정 모달 */}

@@ -45,9 +45,12 @@ export default StyleSheet.create({
     // --- 이미지 ---
     gameImage: {
         marginTop: verticalScale(5),
-        width: scale(175),
+        width: scale(180),
         height: '95%',
-        resizeMode: 'contain',
+        resizeMode: 'cover',
+        marginLeft: scale(10),
+        borderTopLeftRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+        borderBottomLeftRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
     },
     // --- 오른쪽 영역 ---
     rightColumn: {
@@ -61,10 +64,18 @@ export default StyleSheet.create({
         justifyContent: 'center',
         overflow: 'hidden', // 추가: 컨테이너 범위 내에 이미지가 표시되도록
     },
-    infoImage: {
+    infoTutorialImage: {
         width: '95%',
         height: '90%',
         resizeMode: 'cover', // 전체 영역 채우기
+        borderTopRightRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+    },
+    infoYoutubeImage: {
+        width: '95%',
+        height: '90%',
+        resizeMode: 'cover', // 전체 영역 채우기
+        borderBottomRightRadius: scale(13), // 왼쪽 모서리 borderRadius 추가
+
     },
     infoText: {
         fontSize: scale(16),

@@ -229,14 +229,14 @@ const GameDetailScreen: React.FC = () => {
                                 <TouchableOpacity style={styles.infoCard} onPress={() => setDescriptionModalVisible(true)}>
                                     <Image
                                         source={require('../assets/images/game_detail/tutorial_image.png')}
-                                        style={styles.infoImage}
+                                        style={styles.infoTutorialImage}
                                     />
                                 </TouchableOpacity>
                                 {game.youtubeUrl && (
                                     <TouchableOpacity style={styles.infoCard} onPress={() => setYoutubeModalVisible(true)}>
                                         <Image
                                             source={require('../assets/images/game_detail/tutorial_youtube.png')}
-                                            style={styles.infoImage}
+                                            style={styles.infoYoutubeImage}
                                         />
                                     </TouchableOpacity>
                                 )}
