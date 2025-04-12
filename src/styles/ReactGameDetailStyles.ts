@@ -177,7 +177,7 @@ export default StyleSheet.create({
         // 기존 matchButton과 유사한 스타일을 적용할 수도 있습니다.
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: scale(1),
+        borderWidth: scale(2),
         borderRadius: scale(30),
         backgroundColor: '#F4AEB0',
         marginBottom: verticalScale(15),
@@ -185,15 +185,15 @@ export default StyleSheet.create({
     },
     soloButtonText: {
         color: '#000',
-        fontSize: scale(18),
-        fontWeight: 'bold',
+        fontSize: scale(20),
+        fontWeight: '900',
         textAlign: 'center',
         position: 'absolute',
     },
     togetherButton: {
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: scale(1),
+        borderWidth: scale(2),
         borderRadius: scale(30),
         backgroundColor: '#F3CDB1',
         marginBottom: verticalScale(15),
@@ -202,8 +202,8 @@ export default StyleSheet.create({
 
     togetherButtonText: {
         color: '#000',
-        fontSize: scale(18),
-        fontWeight: 'bold',
+        fontSize: scale(20),
+        fontWeight: '900',
         textAlign: 'center',
         position: 'absolute',
 
