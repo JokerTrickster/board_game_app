@@ -113,11 +113,10 @@ export default StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        width: '90%',
+        width: '95%',
         height: verticalScale(40),
         justifyContent: 'center',
-        marginVertical: verticalScale(10),
-        
+        marginVertical: verticalScale(20),
     },
 
     buttonText: {
@@ -180,11 +179,9 @@ export default StyleSheet.create({
         justifyContent: 'center',
         borderWidth: scale(1),
         borderRadius: scale(30),
-        backgroundColor: '#FC9D99',
+        backgroundColor: '#F4AEB0',
         marginBottom: verticalScale(15),
-        marginRight: scale(25),
-        marginLeft: scale(25),
-
+        marginLeft: scale(10),
     },
     soloButtonText: {
         color: '#000',
@@ -198,8 +195,9 @@ export default StyleSheet.create({
         justifyContent: 'center',
         borderWidth: scale(1),
         borderRadius: scale(30),
-        backgroundColor: '#FC9D99',
+        backgroundColor: '#F3CDB1',
         marginBottom: verticalScale(15),
+        marginLeft: scale(20),
     },
 
     togetherButtonText: {

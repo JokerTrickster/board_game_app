@@ -53,11 +53,11 @@ export default StyleSheet.create({
     },
     rankingText: {
         position: 'absolute',
-        top: verticalScale(12),
+        top: verticalScale(10),
         alignSelf: 'center',
         fontSize: scale(20),
         fontWeight: 'bold',
-        color: '#333',
+        color: '#000', // 흰색 텍스트
     },
     // 2등 (실버) 컨테이너
     silverContainer: {
