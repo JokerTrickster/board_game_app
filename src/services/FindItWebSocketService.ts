@@ -6,6 +6,7 @@ import { NavigationRefType } from '../navigation/navigationTypes';
 import findItViewModel from '../games/find-it/services/FindItViewModel';
 import {findItService} from './FindItService';
 import {WS_BASE_URL} from '../config';
+import GameDetailScreen from '../screens/GameDetailScreen';
 class FindItWebSocketService {
     private accessToken: string | null = null;
     private userID: number | null = null;
@@ -61,7 +62,7 @@ class FindItWebSocketService {
         const isInitialized = await this.initialize();
         if (!isInitialized) return;
         const password = await gameService.getPassword();
-        const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/join/play/ws?tkn=${this.accessToken}&password=${password}`;
+        const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/play/join/ws?tkn=${this.accessToken}&password=${password}`;
         webSocketService.connect(wsUrl, this.handleMessage);
         this.sendJoinMatchEvent();
     }
@@ -154,7 +155,7 @@ class FindItWebSocketService {
                         gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         gameService.setRound(data.gameInfo.round);
                         gameService.setPassword(data.gameInfo.password);
-                        console.log("함께하기 비밀번호 : ",data.gameInfo.password);
+                        console.log("함께하기 비밀번호 : ", data.gameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
 
@@ -354,7 +355,8 @@ class FindItWebSocketService {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "TOGETHER", { userID: this.userID });
     }
     sendJoinMatchEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { userID: this.userID });
+        const password = gameService.getPassword();
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { userID: this.userID,password: password });
     }
 
     sendStartEvent() {

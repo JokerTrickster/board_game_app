@@ -11,6 +11,7 @@ import ActionCard from '../components/ActionCard';
 import { findItService } from '../services/FindItService';
 import soloGameViewModel from '../games/find-it/services/SoloFindItViewModel';
 import Button from '../components/Button';
+import eventEmitter from '../services/EventEmitter';
 
 const GameDetailScreen: React.FC = () => {
     const navigation = useNavigation();
@@ -38,32 +39,11 @@ const GameDetailScreen: React.FC = () => {
     const [modalType, setModalType] = useState("start");
 
 
-    // const podiumData = [
-    //     {
-    //         rank: 2,
-    //         profileImage: require('../assets/images/home/default_profile.png'),
-    //         nickname: '라이언',
-    //         title: '보드게임 초보자',
-    //         score: 75,
-    //     },
-    //     {
-    //         rank: 1,
-    //         profileImage: require('../assets/images/home/default_profile.png'),
-    //         nickname: '조커',
-    //         title: '보드게임 매니아',
-    //         score: 95,
-    //     },
-    //     {
-    //         rank: 3,
-    //         profileImage: require('../assets/images/home/default_profile.png'),
-    //         nickname: '혜봉',
-    //         title: '보드게임 중급자',
-    //         score: 65,
-    //     },
-    // ];
-
     // podiumData state를 선언 (초기값은 빈 배열)
     const [podiumData, setPodiumData] = useState<any[]>([]);
+
+    
+  
     // 게임 제목이 '틀린그림찾기'일 때만 랭킹 API를 호출하여 podiumData 갱신
     useEffect(() => {
         if (game.title === '틀린그림찾기') {
@@ -94,9 +74,10 @@ const GameDetailScreen: React.FC = () => {
                 setUserData(storedUser);
             }
         };
+        setTogetherModalVisible(false);
+        setModalType("start");
         fetchUserData();
     }, []);
-
     // ✅ GameDetailScreen에서 Header 설정 (navigation.setOptions 사용)
     useEffect(() => {
         navigation.setOptions({
@@ -106,8 +87,23 @@ const GameDetailScreen: React.FC = () => {
 
     // 게임 비밀번호 변경이되면 모달 타입 변경
     useEffect(() => {
-        setModalType("together_create");
-    }, [password]);
+        // Listen for password change events
+        const handlePasswordChange = (newPassword: string) => {
+            console.log("Password change event received:", newPassword);
+            setPassword(newPassword);
+            setModalType("together_create");
+        };
+        
+        // Subscribe to the event
+        eventEmitter.on('passwordChanged', handlePasswordChange);
+        console.log("Event listener registered for passwordChanged");
+        
+        // Clean up the event listener when component unmounts
+        return () => {
+            eventEmitter.off('passwordChanged', handlePasswordChange);
+            console.log("Event listener cleaned up");
+        };
+    }, []);
 
     const handleMatching = () => {
         switch (game.title) {
@@ -129,10 +125,10 @@ const GameDetailScreen: React.FC = () => {
         setMatchMessage("매칭 중입니다...");
 
     };
-    const handleTogetherMatching = () => {
+    const handleTogetherMatching = async () => {
         switch (game.title) {
             case '틀린그림찾기':
-                findItWebSocketService.togetherConnect();
+                await findItWebSocketService.togetherConnect();
                 break;
             case '????':
                 break;
@@ -147,7 +143,6 @@ const GameDetailScreen: React.FC = () => {
         // ✅ 매칭 시작 UI 업데이트
         setIsMatching(true);
         setMatchMessage("매칭 중입니다...");
-
     };
     const handleJoinMatching = () => {
         switch (game.title) {
@@ -190,6 +185,7 @@ const GameDetailScreen: React.FC = () => {
 
         // ✅ UI 상태 업데이트
         setIsMatching(false);
+        setModalType("start");
         setMatchMessage("매칭하기 또는 함께하기\n선택해 주세요!");
 
     };
@@ -333,8 +329,6 @@ const GameDetailScreen: React.FC = () => {
                     animationType="slide"
                     onRequestClose={() => {
                         setTogetherModalVisible(false);
-                        setFriendMode(false);
-                        setAuthCodeInput('');
                         setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
                         setModalType("start");
                     }}
@@ -347,28 +341,27 @@ const GameDetailScreen: React.FC = () => {
                         >
                             {/* 조건부로 모달 타입에 따라 다른 텍스트와 위치 렌더링 */}
                             {modalType === "start" && (
-                                <><Text style={styles.modalTitleStart}>게임 매칭 방식을 선택해주세요.</Text><TouchableOpacity
-                                    style={styles.modalButton}
-                                    onPress={() => {
-                                        // 랜덤 매칭 버튼: 배경 및 텍스트 타입 변경
-                                        setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
-                                        setModalType("random");
-                                        handleMatching();
-                                    } }
-                                >
-                                    <Text style={styles.modalButtonText}>랜덤 매칭</Text>
-                                </TouchableOpacity><TouchableOpacity
-                                    style={styles.modalButton}
-                                    onPress={() => {
-                                        // 친구와 함께 버튼: 배경 및 텍스트 타입 변경
-                                        // Alert.alert("현재 준비중입니다.");
-                                        setTogetherModalBackground(require('../assets/images/game_detail/together_join.png'));
-                                        setModalType("together");
-                                    } }
-                                >
+                                <>
+                                    <Text style={styles.modalTitleStart}>게임 매칭 방식을 선택해주세요.</Text>
+                                    <TouchableOpacity
+                                        style={styles.modalButton}
+                                        onPress={() => {
+                                            setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
+                                            setModalType("random");
+                                            handleMatching();
+                                        }}
+                                    >
+                                        <Text style={styles.modalButtonText}>랜덤 매칭</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={styles.modalButton}
+                                        onPress={() => {
+                                            setTogetherModalBackground(require('../assets/images/game_detail/together_join.png'));
+                                            setModalType("together");
+                                        }}
+                                    >
                                         <Text style={styles.modalButtonText}>친구와 함께</Text>
                                     </TouchableOpacity>
-                                    {/* 닫기 버튼 */}
                                     <TouchableOpacity
                                         style={styles.modalCloseIcon}
                                         onPress={() => {
@@ -391,7 +384,6 @@ const GameDetailScreen: React.FC = () => {
                                     <TouchableOpacity
                                         style={styles.modalCancelButton}
                                         onPress={() => {
-                                            // 매칭 취소 로직 실행 (예시)
                                             handleCancelMatching();
                                             setTogetherModalVisible(false);
                                             setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
@@ -404,23 +396,18 @@ const GameDetailScreen: React.FC = () => {
                             )}
                             {modalType === "together" && (
                                 <View style={{ alignItems: 'center', width: '100%' }}>
-                                    {/* 방만들기 버튼 */}
                                     <TouchableOpacity
                                         style={styles.createRoomButton}
                                         onPress={async () => {
                                             setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
                                             handleTogetherMatching();
-                                            const password = await gameService.getPassword();
-                                            setPassword(password || '');
+                                            const receivedPassword = await gameService.getPassword();
+                                            setPassword(receivedPassword || '');
                                         }}
                                     >
                                         <Text style={styles.createRoomButtonText}>방만들기 -1</Text>
                                     </TouchableOpacity>
-                                    {/* 참여코드 입력하기 텍스트 */}
                                     <Text style={styles.joinPromptText}>참여코드 입력하기</Text>
-
-
-                                    {/* 참여코드 입력칸 + 참가하기 버튼 */}
                                     <View style={styles.joinSection}>
                                         <TextInput
                                             style={styles.codeInput}
@@ -431,18 +418,13 @@ const GameDetailScreen: React.FC = () => {
                                         <TouchableOpacity
                                             style={styles.joinButton}
                                             onPress={async () => {
-                                                // 패스워드 저장
                                                 await gameService.setPassword(authCodeInput);
-                                                // 참가 로직 실행
                                                 handleJoinMatching();
                                             }}
                                         >
                                             <Text style={styles.joinButtonText}>참가하기</Text>
                                         </TouchableOpacity>
                                     </View>
-
-
-                                    {/* 닫기 버튼 */}
                                     <TouchableOpacity
                                         style={styles.modalCloseIcon}
                                         onPress={() => {
@@ -453,27 +435,25 @@ const GameDetailScreen: React.FC = () => {
                                     >
                                         <Image
                                             source={require('../assets/images/game_detail/close.png')}
-                                             style={styles.modalCloseIconImage}
+                                            style={styles.modalCloseIconImage}
                                         />
                                     </TouchableOpacity>
                                 </View>
                             )}
                             {modalType === "together_create" && (
                                 <View style={{ alignItems: 'center' }}>
-                                    
-                                    <Text style={styles.modalTitleRandom}>초대 코드 {password}</Text>
+                                    <Text style={styles.modalTitleRandom}>초대 코드: {password}</Text>
                                     <Text style={styles.modalSubtitleRandom}>친구를 기다리는 중...</Text>
                                     <TouchableOpacity
                                         style={styles.modalCancelButton}
                                         onPress={() => {
-                                            // 매칭 취소 로직 실행 (예시)
                                             handleCancelMatching();
                                             setTogetherModalVisible(false);
                                             setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
                                             setModalType("start");
                                         }}
                                     >
-                                        <Text style={styles.modalCancelButtonText}>취소</Text>
+                                        <Text style={styles.modalCancelButtonText}>매칭 취소</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
