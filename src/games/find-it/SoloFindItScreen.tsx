@@ -299,6 +299,11 @@ const SoloFindItScreen: React.FC = observer(() => {
     const handleImageClick = useCallback((event: any) => {
         'worklet';
 
+        // 게임이 클리어되거나 게임오버 상태일 때 클릭 무시
+        if (soloFindItViewModel.roundClearEffect || soloFindItViewModel.roundFailEffect) {
+            return;
+        }
+
         // 1초 이내의 연속 클릭이면 무시합니다.
         const now = Date.now();
         if (now - lastClickTimeSV.value < 1000) {
@@ -617,7 +622,10 @@ const SoloFindItScreen: React.FC = observer(() => {
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
                 <View style={importedStyles.normalImageContainer}>
                     <Animated.View style={[importedStyles.image, animatedStyle]}>
-                        <TouchableWithoutFeedback onPress={handleImageClick}>
+                        <TouchableWithoutFeedback 
+                            onPress={handleImageClick}
+                            disabled={soloFindItViewModel.roundClearEffect || soloFindItViewModel.roundFailEffect}
+                        >
                             <View>
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].normalUrl }}
@@ -690,7 +698,10 @@ const SoloFindItScreen: React.FC = observer(() => {
                     <View style={importedStyles.abnormalImageContainer}>
                     <Animated.View style={[importedStyles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
-                        <TouchableWithoutFeedback onPress={handleImageClick}>
+                        <TouchableWithoutFeedback 
+                            onPress={handleImageClick}
+                            disabled={soloFindItViewModel.roundClearEffect || soloFindItViewModel.roundFailEffect}
+                        >
                             <View>
                                 <Image
                                     source={{ uri: gameInfoList[currentRound - 1].abnormalUrl }}

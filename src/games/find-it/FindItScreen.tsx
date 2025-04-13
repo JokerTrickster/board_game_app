@@ -257,6 +257,12 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ 클릭 좌표 계산 (확대/이동 고려)
     const handleImageClick = useCallback((event: any) => {
         'worklet';
+        
+        // 게임이 클리어되거나 게임오버 상태일 때 클릭 무시
+        if (findItViewModel.roundClearEffect || findItViewModel.roundFailEffect) {
+            return;
+        }
+        
         // transform 보정 없이 원본 좌표 사용
         const { locationX, locationY } = event.nativeEvent;
         const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
@@ -423,7 +429,10 @@ const FindItScreen: React.FC = observer(() => {
                 <View style={[styles.normalImageContainer]}>
                         <Animated.View style={[styles.image, animatedStyle]}>
                         {normalImage ? (
-                            <TouchableWithoutFeedback onPress={handleImageClick}>
+                            <TouchableWithoutFeedback 
+                                onPress={handleImageClick}
+                                disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect}
+                            >
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
                                 <View ref={imageRef} >
                                     {normalImage ? (
@@ -480,7 +489,10 @@ const FindItScreen: React.FC = observer(() => {
                 <View style={[styles.abnormalImageContainer]}>
                         <Animated.View style={[styles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
-                        <TouchableWithoutFeedback onPress={handleImageClick}>
+                        <TouchableWithoutFeedback 
+                            onPress={handleImageClick}
+                            disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect}
+                        >
                             <View ref={imageRef} >
                                 {abnormalImage ? (
                                     <Image source={{ uri: abnormalImage }} style={styles.image} />
