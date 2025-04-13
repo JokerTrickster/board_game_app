@@ -85,8 +85,8 @@ android {
         applicationId "com.board_game_app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 26
-        versionName "2.6"
+        versionCode 28
+        versionName "2.8"
     }
     signingConfigs {
         debug {

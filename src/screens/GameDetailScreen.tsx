@@ -353,7 +353,7 @@ const GameDetailScreen: React.FC = () => {
                                             handleMatching();
                                         }}
                                     >
-                                        <Text style={styles.modalButtonText}>랜덤 매칭</Text>
+                                        <Text style={styles.modalRandomButtonText}>랜덤으로 매칭</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.modalButton}
@@ -362,7 +362,7 @@ const GameDetailScreen: React.FC = () => {
                                             setModalType("together");
                                         }}
                                     >
-                                        <Text style={styles.modalButtonText}>친구와 함께</Text>
+                                        <Text style={styles.modalTogetherButtonText}>친구와 함께</Text>
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         style={styles.modalCloseIcon}
@@ -392,7 +392,7 @@ const GameDetailScreen: React.FC = () => {
                                             setModalType("start");
                                         }}
                                     >
-                                        <Text style={styles.modalCancelButtonText}>매칭 취소</Text>
+                                        <Text style={styles.modalCancelButtonText}>취소</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -407,9 +407,9 @@ const GameDetailScreen: React.FC = () => {
                                             setPassword(receivedPassword || '');
                                         }}
                                     >
-                                        <Text style={styles.createRoomButtonText}>방만들기 -1</Text>
+                                        <Text style={styles.createRoomButtonText}>방만들기 100</Text>
                                     </TouchableOpacity>
-                                    <Text style={styles.joinPromptText}>참여코드 입력하기</Text>
+                                    <Text style={styles.joinPromptText}>코드를 전달 받아 입력하세요.</Text>
                                     <View style={styles.joinSection}>
                                         <TextInput
                                             style={styles.codeInput}
@@ -455,7 +455,7 @@ const GameDetailScreen: React.FC = () => {
                                             setModalType("start");
                                         }}
                                     >
-                                        <Text style={styles.modalCancelButtonText}>매칭 취소</Text>
+                                        <Text style={styles.modalCancelButtonText}>취소</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}

@@ -140,6 +140,7 @@ export default StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
         alignItems: 'center',
+
     },
     modalContent: {
         width: '90%',
@@ -167,7 +168,7 @@ export default StyleSheet.create({
         width: '100%',
     },
     gameTitleImage: {
-        width: scale(320),
+        width: scale(260),
         height: verticalScale(60),
         resizeMode: 'contain',
         alignSelf: 'center',
@@ -222,7 +223,7 @@ export default StyleSheet.create({
     togetherModalImage: {
         width: '100%',
         height: '100%',
-        resizeMode: 'cover',
+        resizeMode: 'contain',
     },
     modalTitle: {
         fontSize: scale(18),
@@ -231,14 +232,19 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
     modalButton: {
-        width: '65%',
+        width: '55%',
         borderRadius: scale(30),
-        marginLeft: scale(62),
+        marginLeft: scale(80),
         marginBottom: verticalScale(28),
-        paddingBottom: verticalScale(20),
+        paddingBottom: verticalScale(15),
         marginTop: verticalScale(15),
     },
-    modalButtonText: {
+    modalRandomButtonText: {
+        fontSize: scale(20),
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    modalTogetherButtonText: {
         fontSize: scale(20),
         fontWeight: '600',
         textAlign: 'center',
@@ -289,8 +295,9 @@ export default StyleSheet.create({
         paddingTop:  verticalScale(20),
     },
     modalTitleRandom: {
-        fontSize: scale(20),
-        paddingTop: verticalScale(86),
+        fontSize: scale(18),
+        fontWeight: 'bold',
+        marginTop: verticalScale(90),
 
     },
     modalTitleTogether: {
@@ -300,7 +307,7 @@ export default StyleSheet.create({
     },
 
     modalSubtitleRandom: {
-        fontSize: scale(16),
+        fontSize: scale(14),
         color: '#000',
         textAlign: 'center',
         marginTop: verticalScale(25),
@@ -310,7 +317,7 @@ export default StyleSheet.create({
         borderRadius: scale(8),
     },
     modalCancelButtonText: {
-        fontSize: scale(18),
+        fontSize: scale(14),
         fontWeight: 'bold',
         color: '#000',
         textAlign: 'center',
@@ -343,9 +350,10 @@ export default StyleSheet.create({
         marginRight: scale(10),
     },
     createRoomButtonText: {
-        fontSize: scale(24),
+        fontSize: scale(18),
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#000',
+        marginTop: verticalScale(5),
     },
     inviteCodeText: {
         fontSize: scale(18),
@@ -354,41 +362,41 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
     joinPromptText: {
-        fontSize: scale(16),
-        color: '#555',
+        fontSize: scale(12),
+        color: '#000',
         textAlign: 'center',
-        marginTop: verticalScale(-20),
+        marginTop: verticalScale(-10),
     },
     joinSection: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
+        marginTop: verticalScale(-10),
     },
     codeInput: {
         flex: 1,
         height: 40,
         borderRadius: scale(5),
-        marginLeft: scale(30),
+        marginLeft: scale(50),
         marginTop:scale(10),
     },
     joinButton: {
-        paddingVertical: verticalScale(10),
-        paddingHorizontal: scale(50),
+        paddingHorizontal: scale(20),
         borderRadius: scale(8),
-        marginRight: scale(30),
-        paddingLeft: scale(15),
+        marginRight: scale(55),
+        marginTop: scale(5),
     },
     joinButtonText: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        color: '#fff',
-        left: scale(18),
+        color: '#000',
+
     },
     modalCloseIcon: {
         position: 'absolute',
         top: verticalScale(10),
-        right: scale(20),
+        right: scale(40),
         width: scale(25),
         height: scale(25),
         zIndex: 10,
