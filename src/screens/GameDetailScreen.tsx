@@ -144,25 +144,42 @@ const GameDetailScreen: React.FC = () => {
         setIsMatching(true);
         setMatchMessage("매칭 중입니다...");
     };
-    const handleJoinMatching = () => {
-        switch (game.title) {
-            case '틀린그림찾기':
-                findItWebSocketService.joinConnect();
-                break;
-            case '????':
-                break;
-            case '????':
-                break;
-            case '????':
-                break;
-            default:
-                Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
+    const handleJoinMatching = async (authCode: string) => {
+        // 비밀번호 확인 API 호출
+        try {
+            const isValid = await findItService.verifyPassword(authCodeInput);
+            
+            if (!isValid) {
+                Alert.alert('오류', '인증코드가 잘못되었습니다.');
+                // 비밀번호가 틀린 경우에도 modalType은 "together"로 유지
                 return;
+            }
+            
+            // 비밀번호가 유효한 경우 웹소켓 연결
+            switch (game.title) {
+                case '틀린그림찾기':
+                    findItWebSocketService.joinConnect(authCode);
+                    break;
+                case '????':
+                    break;
+                case '????':
+                    break;
+                case '????':
+                    break;
+                default:
+                    Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
+                    return;
+            }
+            
+            // 모달 상태 업데이트 - 비밀번호가 유효한 경우에만 "random"으로 변경
+            setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
+            setModalType("random");
+            
+        } catch (error) {
+            console.error('게임 참가 중 오류 발생:', error);
+            Alert.alert('오류', '게임 참가 중 문제가 발생했습니다. 다시 시도해주세요.');
+            // 오류 발생 시에도 modalType은 "together"로 유지
         }
-        // ✅ 매칭 시작 UI 업데이트
-        setIsMatching(true);
-        setMatchMessage("매칭 중입니다...");
-
     };
 
     const handleSoloPlay = async () => {
@@ -420,8 +437,7 @@ const GameDetailScreen: React.FC = () => {
                                         <TouchableOpacity
                                             style={styles.joinButton}
                                             onPress={async () => {
-                                                await gameService.setPassword(authCodeInput);
-                                                handleJoinMatching();
+                                                handleJoinMatching(authCodeInput); // Pass authCodeInput as a parameter
                                             }}
                                         >
                                             <Text style={styles.joinButtonText}>참가하기</Text>

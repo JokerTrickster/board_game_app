@@ -92,6 +92,36 @@ class FindItService {
             throw error;
         }
     }
+
+    /**
+     * 비밀번호 확인 API를 호출하여 게임 참가 가능 여부를 확인합니다.
+     * @param password 확인할 비밀번호
+     * @returns Promise resolving to boolean (비밀번호 유효 여부)
+     */
+    async verifyPassword(password: string): Promise<boolean> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/find-it/v0.1/game/join/password-check`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+                body: JSON.stringify({ password }),
+            });
+            if (!response.ok) {
+                throw new Error(`서버 요청 실패: ${response.status}`);
+            }
+            const data = await response.json();
+            return data === true;
+        } catch (error) {
+            console.error('비밀번호 확인 중 오류 발생:', error);
+            return false;
+        }
+    }
 }
 
 export const findItService = new FindItService();

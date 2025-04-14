@@ -53,7 +53,7 @@ class FindItWebSocketService {
         webSocketService.connect(wsUrl, this.handleMessage);
         this.sendTogetherMatchEvent();
     }
-    async joinConnect() {
+    async joinConnect(password: string) {
         // ✅ 기존 상태 초기화
         this.gameStarted = false;
         this.roomID = null;
@@ -61,10 +61,10 @@ class FindItWebSocketService {
         this.round = null;
         const isInitialized = await this.initialize();
         if (!isInitialized) return;
-        const password = await gameService.getPassword();
         const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/play/join/ws?tkn=${this.accessToken}&password=${password}`;
         webSocketService.connect(wsUrl, this.handleMessage);
-        this.sendJoinMatchEvent();
+        console.log("password", password);
+        this.sendJoinMatchEvent(password);
     }
 
     handleMessage = async (eventType: string, data: any) => {
@@ -354,9 +354,8 @@ class FindItWebSocketService {
     sendTogetherMatchEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "TOGETHER", { userID: this.userID });
     }
-    sendJoinMatchEvent() {
-        const password = gameService.getPassword();
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { userID: this.userID,password: password });
+    sendJoinMatchEvent(password: string) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { password: password });
     }
 
     sendStartEvent() {
