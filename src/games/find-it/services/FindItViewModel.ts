@@ -75,6 +75,12 @@ class GameViewModel {
     addCorrectClick(x: number, y: number, userID: number) {
         if (this.isAlreadyClicked(x, y)) return; // 이미 클릭된 영역이면 무시
         this.correctClicks.push({ x, y, userID });
+        
+        // 정답 클릭 후 1초 동안 클릭 방지
+        this.isClickable = false;
+        setTimeout(() => {
+            this.isClickable = true;
+        }, 1000);
     }
 
     /** ✅ 오답 클릭 저장 (유저 ID 포함, 3초 후 삭제) */

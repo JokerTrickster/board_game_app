@@ -40,6 +40,9 @@ const FindItScreen: React.FC = observer(() => {
     const correctSoundRef = useRef<Sound | null>(null);
     const TOLERANCE = 20; // 클릭 허용 오차 (픽셀 단위)
     const imageSize = useRef({ width: IMAGE_FRAME_WIDTH, height: IMAGE_FRAME_HEIGHT });
+    // 클릭 간격 제한을 위한 ref 추가
+    const lastClickTime = useRef(0);
+    const CLICK_DELAY = 1000; // 1초 (밀리초 단위)
 
     // ✅ 확대 및 이동 관련 상태값
     const scale = useSharedValue(1);
@@ -263,6 +266,18 @@ const FindItScreen: React.FC = observer(() => {
             return;
         }
         
+        // 클릭 가능 상태가 아니면 무시
+        if (!findItViewModel.isClickable) {
+            return;
+        }
+        
+        // 1초 이내의 연속 클릭이면 무시합니다.
+        const now = Date.now();
+        if (now - lastClickTime.current < CLICK_DELAY) {
+            return;
+        }
+        lastClickTime.current = now;
+        
         // transform 보정 없이 원본 좌표 사용
         const { locationX, locationY } = event.nativeEvent;
         const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
@@ -431,7 +446,7 @@ const FindItScreen: React.FC = observer(() => {
                         {normalImage ? (
                             <TouchableWithoutFeedback 
                                 onPress={handleImageClick}
-                                disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect}
+                                disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect || !findItViewModel.isClickable}
                             >
                                 {/* 내부 View에 ref와 동일한 스타일을 적용하여 비정상 이미지와 동일하게 구성 */}
                                 <View ref={imageRef} >
@@ -491,7 +506,7 @@ const FindItScreen: React.FC = observer(() => {
                         {/* ✅ 틀린 그림 */}
                         <TouchableWithoutFeedback 
                             onPress={handleImageClick}
-                            disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect}
+                            disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect || !findItViewModel.isClickable}
                         >
                             <View ref={imageRef} >
                                 {abnormalImage ? (
