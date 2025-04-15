@@ -15,6 +15,7 @@ import MultiHeader from '../../components/MultiHeader';
 import ItemBar from '../../components/ItemBar';
 import {CommonAudioManager} from '../../services/CommonAudioManager';
 import Sound from 'react-native-sound';
+import AnimatedX from './AnimatedX';
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -459,10 +460,7 @@ const FindItScreen: React.FC = observer(() => {
                                         <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
                                     ))}
                                     {findItViewModel.wrongClicks.map((pos, index) => (
-                                        <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
-                                            <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                            <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                        </View>
+                                        <AnimatedX key={`wrong-${index}`} x={pos.x} y={pos.y} />
                                     ))}
                                     {findItViewModel.missedPositions.map((pos, index) => (
                                         <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
@@ -523,10 +521,7 @@ const FindItScreen: React.FC = observer(() => {
 
                                 {/* ✅ 오답 표시 */}
                                 {findItViewModel.wrongClicks.map((pos, index) => (
-                                    <View key={index} style={[styles.wrongXContainer, { left: pos.x - 15, top: pos.y - 15 }]}>
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate45]} />
-                                        <View style={[styles.wrongXLine, styles.wrongXRotate135]} />
-                                    </View>
+                                    <AnimatedX key={`wrong-abnormal-${index}`} x={pos.x} y={pos.y} />
                                 ))}
                                 {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
                                 {findItViewModel.missedPositions.map((pos, index) => (
