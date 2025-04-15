@@ -63,7 +63,7 @@ const CircleAnimation: React.FC<AnimatedCircleProps> = ({ x, y, startAngle = -27
                     cy={20}
                     r={18}
                     stroke="red"
-                    strokeWidth={3}
+                    strokeWidth={4}
                     fill="transparent"
                     strokeDasharray={`${CIRCLE_LENGTH}, ${CIRCLE_LENGTH}`}
                     animatedProps={animatedProps}

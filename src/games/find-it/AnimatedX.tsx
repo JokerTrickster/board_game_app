@@ -19,7 +19,7 @@ interface AnimatedXProps {
 }
 
 const AnimatedX: React.FC<AnimatedXProps> = ({ x, y }) => {
-    const SIZE = 30; // X 표시의 크기
+    const SIZE = 35; // X 표시의 크기
     const progress1 = useSharedValue(0);
     const progress2 = useSharedValue(0);
     const opacity = useSharedValue(0);
@@ -82,14 +82,14 @@ const AnimatedX: React.FC<AnimatedXProps> = ({ x, y }) => {
                     x2={0}
                     y2={0}
                     stroke="#4B8BFF"
-                    strokeWidth={3}
+                    strokeWidth={5}
                     strokeLinecap="round"
                     animatedProps={line1Props}
                 />
                 {/* 두 번째 선 (우상단 → 좌하단) */}
                 <AnimatedLine
                     stroke="#4B8BFF"
-                    strokeWidth={3}
+                    strokeWidth={5}
                     strokeLinecap="round"
                     animatedProps={line2Props}
                 />
@@ -101,8 +101,8 @@ const AnimatedX: React.FC<AnimatedXProps> = ({ x, y }) => {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        width: 30,
-        height: 30,
+        width: 35,
+        height: 35,
     },
 });
 
