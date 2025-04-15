@@ -41,6 +41,7 @@ const ActionCard: React.FC<ActionCardProps> = ({ podiumData }) => {
                             style={styles.goldProfileImage}
                         />
                         <Text style={styles.goldNickname}>{first.nickname}</Text>
+                        <Text style={styles.goldScore}>{first.score}</Text>
                     </View>
                 )}
 
@@ -52,6 +53,7 @@ const ActionCard: React.FC<ActionCardProps> = ({ podiumData }) => {
                             style={styles.silverProfileImage}
                         />
                         <Text style={styles.silverNickname}>{second.nickname}</Text>
+                        <Text style={styles.silverScore}>{second.score}</Text>
                     </View>
                 )}
 
@@ -63,6 +65,7 @@ const ActionCard: React.FC<ActionCardProps> = ({ podiumData }) => {
                             style={styles.bronzeProfileImage}
                         />
                         <Text style={styles.bronzeNickname}>{third.nickname}</Text>
+                        <Text style={styles.bronzeScore}>{third.score}</Text>
                     </View>
                 )}
                 </ImageBackground>

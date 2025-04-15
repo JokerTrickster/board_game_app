@@ -48,8 +48,14 @@ export default StyleSheet.create({
     goldNickname: {
         marginTop: verticalScale(2),
         fontSize: scale(10),
-        fontWeight: '600',
+        fontWeight: '900',
         color: '#000',
+    },
+    goldScore: {
+        marginTop: verticalScale(22),
+        fontSize: scale(16),
+        fontWeight: '900',
+        color: '#fff',
     },
     rankingText: {
         position: 'absolute',
@@ -81,8 +87,14 @@ export default StyleSheet.create({
     silverNickname: {
         marginTop: verticalScale(2),
         fontSize: scale(10),
-        fontWeight: '600',
+        fontWeight: '900',
         color: '#000',
+    },
+    silverScore: {
+        marginTop: verticalScale(12),
+        fontSize: scale(16),
+        fontWeight: '900',
+        color: '#fff',
     },
 
     // 3등 (브론즈) 컨테이너
@@ -107,7 +119,13 @@ export default StyleSheet.create({
     bronzeNickname: {
         marginTop: verticalScale(2),
         fontSize: scale(10),
-        fontWeight: '600',
+        fontWeight: '900',
         color: '#000',
+    },
+    bronzeScore: {
+        marginTop: verticalScale(12),
+        fontSize: scale(16),
+        fontWeight: '900',
+        color: '#fff',
     },
 });
