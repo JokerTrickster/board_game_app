@@ -1,55 +1,86 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, View, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    useAnimatedProps,
+    withTiming,
+    withSpring,
+    Easing
+} from 'react-native-reanimated';
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 interface AnimatedCircleProps {
     x: number;
     y: number;
+    startAngle?: number; // 시작 각도를 props로 받을 수 있도록 추가
 }
 
-const AnimatedCircle: React.FC<AnimatedCircleProps> = ({ x, y }) => {
-    const scale = useRef(new Animated.Value(0.5)).current; // 🔥 시작 크기 변경
-    const opacity = useRef(new Animated.Value(0)).current; // ✅ 투명도 애니메이션
+const CircleAnimation: React.FC<AnimatedCircleProps> = ({ x, y, startAngle = -270 }) => {
+    const CIRCLE_LENGTH = Math.PI * 40; // 원의 둘레 (반지름 20)
+    const progress = useSharedValue(0);
+    const strokeOffset = useSharedValue(CIRCLE_LENGTH);
 
     useEffect(() => {
-        Animated.parallel([
-            Animated.timing(scale, {
-                toValue: 1,
-                duration: 300, // ⏳ 더 빠른 애니메이션 (기존 500ms → 300ms)
-                useNativeDriver: true,
-            }),
-            Animated.timing(opacity, {
-                toValue: 1,
-                duration: 300,
-                useNativeDriver: true,
-            })
-        ]).start();
+        // 원이 그려지는 애니메이션
+        strokeOffset.value = withTiming(0, {
+            duration: 1000,
+            easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+        });
+
+        // 페이드인 애니메이션
+        progress.value = withSpring(1, {
+            damping: 10,
+            stiffness: 80,
+        });
     }, []);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: progress.value,
+        transform: [{ scale: progress.value }],
+    }));
+
+    const animatedProps = useAnimatedProps(() => ({
+        strokeDashoffset: strokeOffset.value,
+    }));
 
     return (
         <Animated.View
             style={[
-                styles.circle,
+                styles.container,
                 {
-                    left: x - 20, // 🔥 중심 정렬
+                    left: x - 20,
                     top: y - 20,
-                    transform: [{ scale }],
-                    opacity,
                 },
+                animatedStyle,
             ]}
-        />
+        >
+            <Svg width={40} height={40}>
+                <AnimatedCircle
+                    cx={20}
+                    cy={20}
+                    r={18}
+                    stroke="red"
+                    strokeWidth={3}
+                    fill="transparent"
+                    strokeDasharray={`${CIRCLE_LENGTH}, ${CIRCLE_LENGTH}`}
+                    animatedProps={animatedProps}
+                    strokeLinecap="round"
+                    transform={`rotate(${startAngle}, 20, 20)`} // 회전 중심점(20, 20)을 기준으로 회전
+                />
+            </Svg>
+        </Animated.View>
     );
 };
 
 const styles = StyleSheet.create({
-    circle: {
+    container: {
         position: 'absolute',
-        width: 40, // 🔥 더 커진 원
+        width: 40,
         height: 40,
-        borderRadius: 20,
-        backgroundColor: 'transparent', // 🔥 내부 투명
-        borderWidth: 3, // 🔥 더 두꺼운 테두리
-        borderColor: 'red', // 🔥 빨간색 테두리
     },
 });
 
-export default AnimatedCircle;
+export default CircleAnimation;
