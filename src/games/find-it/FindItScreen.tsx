@@ -16,6 +16,7 @@ import ItemBar from '../../components/ItemBar';
 import {CommonAudioManager} from '../../services/CommonAudioManager';
 import Sound from 'react-native-sound';
 import AnimatedX from './AnimatedX';
+import AnimatedHint from './AnimatedHint';
 
 
 const FindItScreen: React.FC = observer(() => {
@@ -466,7 +467,7 @@ const FindItScreen: React.FC = observer(() => {
                                         <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
                                     ))}
                                     {hintVisible && findItViewModel.hintPosition && (
-                                        <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
+                                        <AnimatedHint x={findItViewModel.hintPosition.x} y={findItViewModel.hintPosition.y} />
                                     )}
                                 </View>
                             </TouchableWithoutFeedback>
@@ -529,7 +530,7 @@ const FindItScreen: React.FC = observer(() => {
                                 ))}
                                 {/* ✅ 힌트 표시 */}
                                 {hintVisible && findItViewModel.hintPosition && (
-                                    <View style={[styles.hintCircle, { left: findItViewModel.hintPosition.x - 15, top: findItViewModel.hintPosition.y - 15 }]} />
+                                    <AnimatedHint x={findItViewModel.hintPosition.x} y={findItViewModel.hintPosition.y} />
                                 )}
                                 </View>
                         

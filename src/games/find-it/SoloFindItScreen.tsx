@@ -16,6 +16,7 @@ import {findItService} from '../../services/FindItService';
 import Sound from 'react-native-sound';
 import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
 import AnimatedX from './AnimatedX';
+import AnimatedHint from './AnimatedHint';
 import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants' 
 
 const SoloFindItScreen: React.FC = observer(() => {
@@ -655,15 +656,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                                     ))}
                                     {/* 힌트 표시 */}
                                     {hintVisible && soloFindItViewModel.hintPosition && (
-                                        <View
-                                            style={[
-                                                importedStyles.hintCircle,
-                                                {
-                                                    left: soloFindItViewModel.hintPosition.x - 15,
-                                                    top: soloFindItViewModel.hintPosition.y - 15,
-                                                }
-                                            ]}
-                                        />
+                                        <AnimatedHint x={soloFindItViewModel.hintPosition.x} y={soloFindItViewModel.hintPosition.y} />
                                     )}
                                 </View>
                             </View>
@@ -731,15 +724,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                                     ))}
                                     {/* 힌트 표시 */}
                                     {hintVisible && soloFindItViewModel.hintPosition && (
-                                        <View
-                                            style={[
-                                                importedStyles.hintCircle,
-                                                {
-                                                    left: soloFindItViewModel.hintPosition.x - 15,
-                                                    top: soloFindItViewModel.hintPosition.y - 15,
-                                                }
-                                            ]}
-                                        />
+                                        <AnimatedHint x={soloFindItViewModel.hintPosition.x} y={soloFindItViewModel.hintPosition.y} />
                                     )}
                                 </View>
                             </View>
