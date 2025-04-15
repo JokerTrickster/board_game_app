@@ -184,7 +184,7 @@ const GameDetailScreen: React.FC = () => {
 
     const handleSoloPlay = async () => {
         try {
-            const deductResult = await findItService.deductCoin(-1);
+            const deductResult = await findItService.deductCoin(-100);
             console.log("코인 차감 결과:", deductResult);
 
             soloGameViewModel.resetGameState();

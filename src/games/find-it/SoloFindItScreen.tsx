@@ -393,7 +393,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                 });
                 if (soloFindItViewModel.round === 10) {
                     setTimeout(() => {
-                        findItService.deductCoin(1);
+                        findItService.deductCoin(300);
                         navigation.navigate('SoloFindItResult', { isSuccess: true, gameInfoList: gameInfoList });
                         setModalVisible(false);
                     }, 3000);

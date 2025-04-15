@@ -191,7 +191,7 @@ class FindItWebSocketService {
                     }
                     break;
                 case "START":
-                    findItService.deductCoin(-1);
+                    findItService.deductCoin(-100);
                     if (navigation) {
                         navigation.navigate('Loading', { nextScreen: 'FindIt' });
                     }
@@ -292,7 +292,7 @@ class FindItWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        findItService.deductCoin(1);
+                        findItService.deductCoin(500);
                         navigation.navigate('MultiFindItResult', { isSuccess: true });
                     }
                     break;

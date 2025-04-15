@@ -40,7 +40,7 @@ class FindItService {
      * @param coin 차감할 코인 수 (기본값 1)
      * @returns Promise resolving to API 응답 결과
      */
-    async deductCoin(coin: number = 1): Promise<any> {
+    async deductCoin(coin: number = 100): Promise<any> {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) {
             throw new Error('Access token not found');
