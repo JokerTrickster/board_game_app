@@ -70,7 +70,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                                     source={require('../../assets/icons/find-it/coin.png')}
                                     style={styles.profileScoreIcon}
                                 />
-                                <Text style={styles.profileScore}>{isSuccess ? "+ 300" : "- 100"}</Text>
+                                <Text style={styles.profileScore}>{isSuccess ? "+300" : "-100"}</Text>
                             </View>
                         </View>
                     </View>

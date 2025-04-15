@@ -673,19 +673,22 @@ const SoloFindItScreen: React.FC = observer(() => {
                     source={require('../../assets/icons/find-it/timer_bar.png')}
                     style={importedStyles.timerImage}
                 />
-                {/* 타이머 바 */}
-                <RNAnimated.View
-                    style={[
-                        importedStyles.timerBar,
-                        {
-                            width: timerWidth.interpolate({
-                                inputRange: [0, 100],
-                                outputRange: ['0%', '100%'],
-                            }),
-                            backgroundColor: soloFindItViewModel.timerStopped ? 'red' : '#FC9D99',
-                        },
-                    ]}
-                />
+                {/* 타이머 바 컨테이너 */}
+                <View style={importedStyles.timerBarBorder}>
+                    {/* 타이머 바 */}
+                    <RNAnimated.View
+                        style={[
+                            importedStyles.timerBar,
+                            {
+                                width: timerWidth.interpolate({
+                                    inputRange: [0, 100],
+                                    outputRange: ['0%', '100%'],
+                                }),
+                                backgroundColor: soloFindItViewModel.timerStopped ? 'red' : '#FC9D99',
+                            },
+                        ]}
+                    />
+                </View>
             </View>
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
                     <View style={importedStyles.abnormalImageContainer}>

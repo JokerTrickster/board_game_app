@@ -61,20 +61,32 @@ export const styles = StyleSheet.create({
     timerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '94%',
+        width: '100.6%',
         marginTop: verticalScale(-5),
         marginBottom: verticalScale(10),
-        zIndex:1,
+        zIndex: 1,
     },
     timerImage: {
         width: scale(35),
         height: scale(35),
         marginLeft: scale(-10),
+        zIndex: 3,
+
+    },
+    timerBarBorder: {
+        flex: 1,
+        height: scale(20),
+        borderRadius: scale(10),
+        marginLeft: scale(-5),
+        borderWidth: scale(3),
+        borderColor: '#FFFFFF',
+        overflow: 'hidden',
+        zIndex: 2,
+
     },
     timerBar: {
-        height: scale(15),
+        height: '100%',
         borderRadius: scale(7.5),
-        marginLeft: scale(-5),
     },
     correctCircle: {
         position: 'absolute',

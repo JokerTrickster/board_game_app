@@ -85,7 +85,7 @@ const AnimatedHint: React.FC<AnimatedHintProps> = ({ x, y }) => {
                 styles.container,
                 {
                     left: x - SIZE/2,
-                    top: y - SIZE/2,
+                    top: y - SIZE/2 - 15,
                 },
                 animatedStyle,
             ]}
