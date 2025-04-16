@@ -17,7 +17,7 @@ import {CommonAudioManager} from '../../services/CommonAudioManager';
 import Sound from 'react-native-sound';
 import AnimatedX from './AnimatedX';
 import AnimatedHint from './AnimatedHint';
-
+import { BackHandler } from 'react-native';
 
 const FindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'FindIt'>>();
@@ -405,7 +405,22 @@ const FindItScreen: React.FC = observer(() => {
             setTimeout(() => setHintVisible(false), 5000);
         }
     }, [findItViewModel.hintPosition]);
+    useEffect(() => {
+        const backAction = () => {
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
+            return true;
+        };
 
+        // 백 버튼 이벤트 리스너 추가
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+
+        // 컴포넌트가 언마운트될 때 리스너 제거
+        return () => backHandler.remove();
+    }, []);
     useEffect(() => {
         setTimeout(() => {
             if (imageRef.current) {

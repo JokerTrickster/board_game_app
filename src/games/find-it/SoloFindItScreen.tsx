@@ -15,6 +15,7 @@ import ItemBar from '../../components/ItemBar';
 import {findItService} from '../../services/FindItService';
 import Sound from 'react-native-sound';
 import { CommonAudioManager } from '../../services/CommonAudioManager'; // Global Audio Manager import
+import { BackHandler } from 'react-native';
 import AnimatedX from './AnimatedX';
 import AnimatedHint from './AnimatedHint';
 import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants' 
@@ -263,6 +264,22 @@ const SoloFindItScreen: React.FC = observer(() => {
         }
     }, [soloFindItViewModel.timer]);
 
+    useEffect(() => {
+        const backAction = () => {
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
+            return true;
+        };
+
+        // 백 버튼 이벤트 리스너 추가
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+
+        // 컴포넌트가 언마운트될 때 리스너 제거
+        return () => backHandler.remove();
+    }, []);
     // Add modal state
     const [modalVisible, setModalVisible] = useState(false);
     const [modalMessage, setModalMessage] = useState('');

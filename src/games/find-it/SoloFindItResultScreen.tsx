@@ -6,6 +6,7 @@ import soloFindItViewModel from './services/SoloFindItViewModel';
 import styles from './styles/SoloFindItResultStyles'; // 스타일 임포트
 import SoloHeader from '../../components/SoloHeader'; // 헤더 컴포넌트 임포트
 import { RootStackParamList } from '../../navigation/navigationTypes';
+import { BackHandler } from 'react-native';
 
 const SoloFindItResultScreen: React.FC = observer(() => {
     const navigation = useNavigation(); // navigation 타입을 명확히 지정
@@ -16,7 +17,23 @@ const SoloFindItResultScreen: React.FC = observer(() => {
     const goToHome = () => {
         navigation.navigate('Home' as never); // 타입 오류를 피하기 위해 'Home'을 never로 캐스팅
     };
+    useEffect(() => {
+        const backAction = () => {
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
+            return true;
+        };
 
+        // 백 버튼 이벤트 리스너 추가
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            backAction
+        );
+
+        // 컴포넌트가 언마운트될 때 리스너 제거
+        return () => backHandler.remove();
+    }, []);
+    
     return (
         <ImageBackground
             source={require('../../assets/images/common/background_basic.png')}
