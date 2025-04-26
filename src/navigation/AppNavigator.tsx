@@ -15,7 +15,8 @@ import PasswordScreen from '../screens/PasswordScreen';
 import { RootStackParamList } from './navigationTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { webSocketService } from '../services/WebSocketService';
-
+import SlimeWarResultScreen from '../games/slime-war/screens/SlimeWarResultScreen';
+import SlimeWarScreen from '../games/slime-war/screens/SlimeWarScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 // ✅ NavigationContainerRef 생성 (React Navigation 공식 방법)
@@ -49,13 +50,14 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="Home" component={HomeScreen} />
                     <Stack.Screen name="FindIt" component={FindItScreen} />
                     <Stack.Screen name="SoloFindIt" component={SoloFindItScreen} />
+                    <Stack.Screen name="SlimeWar" component={SlimeWarScreen} />
                     <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
                     <Stack.Screen name="Password" component={PasswordScreen} />
                     <Stack.Screen name="GameDetail" component={GameDetailScreen} />
                     <Stack.Screen name="Loading" component={LoadingScreen} />
                     <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
                     <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
-
+                    <Stack.Screen name="SlimeWarResult" component={SlimeWarResultScreen} />
             </Stack.Navigator>
             </NavigationContainer>
 
