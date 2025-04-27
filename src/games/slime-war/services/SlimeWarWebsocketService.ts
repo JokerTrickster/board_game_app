@@ -6,7 +6,8 @@ import { NavigationRefType } from '../../../navigation/navigationTypes';
 import {WS_BASE_URL} from '../../../config';
 import GameDetailScreen from '../../../screens/GameDetailScreen';
 import { slimeWarService } from './SlimeWarService';
-import SlimeWarGameViewModel from './SlimeWarViewModel';
+import { slimeWarViewModel } from './SlimeWarViewModel';
+
 class SlimeWarWebSocketService {
     private accessToken: string | null = null;
     private userID: number | null = null;
@@ -76,6 +77,18 @@ class SlimeWarWebSocketService {
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
             if (data.users) {
                 gameService.setUsers(data.users);
+                // 카드 정보 저장
+                data.users.forEach((user: any) => {
+                  if (user.id === this.userID) {
+                    slimeWarViewModel.setCardList(user.ownedCardIDs || []);
+                  } else {
+                    slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
+                  }
+                });
+            }
+            if (data.slimeWarGameInfo) {
+                slimeWarViewModel.setKingIndex(data.slimeWarGameInfo.kingPosition);
+                slimeWarViewModel.setRemainingSlime(data.slimeWarGameInfo.slimeCount);
             }
 
 
@@ -90,12 +103,11 @@ class SlimeWarWebSocketService {
                     console.log("✅ 매칭 성공!", data.message);
 
                     // ✅ 게임 정보가 있는 경우 처리
-                    if (data.gameInfo) {
-                        await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                        await gameService.setRound(data.gameInfo.round);
+                    if (data.slimeWarGameInfo) {
+                        await gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(data.slimeWarGameInfo.round);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
-
+                        if (!this.gameStarted && data.slimeWarGameInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
@@ -111,13 +123,13 @@ class SlimeWarWebSocketService {
                     console.log("✅ 함께하기 매칭 성공!", data.message);
 
                     // ✅ 게임 정보가 있는 경우 처리
-                    if (data.gameInfo) {
-                        gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                        gameService.setRound(data.gameInfo.round);
-                        gameService.setPassword(data.gameInfo.password);
-                        console.log("함께하기 비밀번호 : ", data.gameInfo.password);
+                    if (data.slimeWarGameInfo) {
+                        gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        gameService.setRound(data.slimeWarGameInfo.round);
+                        gameService.setPassword(data.slimeWarGameInfo.password);
+                        console.log("함께하기 비밀번호 : ", data.slimeWarGameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
+                        if (!this.gameStarted && data.gameslimeWarGameInfoInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
 
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
@@ -133,11 +145,11 @@ class SlimeWarWebSocketService {
                 case "JOIN":
                     console.log("✅ 참여 매칭 성공!", data.message);
                     if (data.gameInfo) {
-                        await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
-                        await gameService.setRound(data.gameInfo.round);
-                        await gameService.setPassword(data.gameInfo.password);
+                        await gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(data.slimeWarGameInfo.round);
+                        await gameService.setPassword(data.slimeWarGameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
+                        if (!this.gameStarted && data.slimeWarGameInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
 
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
@@ -153,20 +165,29 @@ class SlimeWarWebSocketService {
                 case "START":
                     slimeWarService.deductCoin(-100);
                     if (navigation) {
-                        navigation.navigate('Loading', { nextScreen: 'FindIt' });
+                        navigation.navigate('Loading', { nextScreen: 'SlimeWar' });
                     }
                     this.handleGameStart(data);
                     // ✅ 게임 정보 저장
                     
                     break;
-                case "ROUND_START":
-                    this.handleGameStart(data);
-                    setTimeout(() => {
-                    }, 2000);
+                case "GET_CARD":
+                    console.log("🔑 카드 받았다. ", data.message);
                     break;
-                case "TIME_OUT":
+                case "HERO":
+                    console.log("🔑 영웅 카드 사용. ", data.message);
+                    break;
+                case "MOVE":
+                    console.log("🔑 이동. ", data.message);
                     break;
                 
+                case "TIME_OUT":
+                    console.log("🔑 시간 초과. ", data.message);
+                    break;
+                case "NEXT_ROUND":
+                    console.log("🔑 다음 라운드. ", data.message);
+                    break;
+               
                 case "GAME_OVER":
                     // ✅ 웹소켓 종료
                     this.disconnect();
@@ -202,6 +223,16 @@ class SlimeWarWebSocketService {
         this.gameStarted = true;
 
     }
+    sendGetCardEvent() {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "GET_CARD", { userID: this.userID });
+    }
+    sendHeroEvent(cardId: number) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "HERO", { userID: this.userID, cardID: cardId });
+    }
+    sendMoveEvent(cardId: number) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "MOVE", { userID: this.userID, cardID: cardId });
+    }
+    
     sendNextRoundEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round, imageID: this.imageID });
     }
@@ -227,28 +258,7 @@ class SlimeWarWebSocketService {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "MATCH_CANCEL", { userID: this.userID });
     }
 
-    sendSubmitPosition(xPosition: number, yPosition: number) {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "SUBMIT_POSITION", {
-            round: this.round,
-            imageId: this.imageID,
-            xPosition,
-            yPosition
-        });
-    }
-
-    sendHintItemEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "HINT_ITEM", {
-            round: this.round,
-            imageID: this.imageID
-        });
-    }
-
-    sendTimerItemEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIMER_ITEM", {
-            round: this.round,
-            imageID: this.imageID
-        });
-    }
+    
 
     disconnect() {
         webSocketService.disconnect();

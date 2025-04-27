@@ -13,12 +13,12 @@ export default StyleSheet.create({
     marginBottom: 10
   },
   boardContainer: {
-    flex: 1,
+    height: '50%',
     aspectRatio: 1, // 정사각형 격자
     backgroundColor: '#fff',
     borderWidth: 2,
     borderColor: '#000',
-    marginBottom: 10,
+    marginBottom: 4,
   },
   row: {
     flex: 1,
@@ -76,5 +76,23 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
     fontWeight: 'bold'
-  }
+  },
+  kingMark: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'gold',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  kingMarkText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  remainingSlimeText: {
+    fontSize: 14,
+    color: '#4CAF50',
+    fontWeight: 'bold',
+    marginRight: 8,
+  },
 });
