@@ -5,10 +5,12 @@ import styles from '../styles/ReactGameDetailStyles';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { findItWebSocketService } from '../services/FindItWebSocketService';
+import { slimeWarWebSocketService } from '../games/slime-war/services/SlimeWarWebsocketService';
 import { WebView } from 'react-native-webview';
 import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
 import { findItService } from '../services/FindItService';
+import { slimeWarService } from '../games/slime-war/services/SlimeWarService';
 import soloGameViewModel from '../games/find-it/services/SoloFindItViewModel';
 import Button from '../components/Button';
 import eventEmitter from '../services/EventEmitter';
@@ -61,7 +63,22 @@ const GameDetailScreen: React.FC = () => {
               console.error("Failed to fetch ranking data", error);
             }
           })();
-        } else {
+        }else if(game.title === '슬라임전쟁'){
+            (async () => {
+                try {
+                    const ranking = await slimeWarService.fetchRankings();
+                    const transformedData = ranking.map((item: any) => ({
+                        rank: item.rank,
+                        nickname: item.name,
+                        score: item.score,
+                        profileImage: require('../assets/images/home/default_profile.png'),
+                    }));
+                    setPodiumData(transformedData);
+                } catch (error) {
+                    console.error("Failed to fetch ranking data", error);
+                }
+            })();
+        }else {
           setPodiumData([]);
         }
       }, [game.title]);
@@ -110,7 +127,8 @@ const GameDetailScreen: React.FC = () => {
             case '틀린그림찾기':
                 findItWebSocketService.connect();
                 break;
-            case '????':
+            case '슬라임전쟁':
+                slimeWarWebSocketService.connect();
                 break;
             case '????':
                 break;
@@ -130,7 +148,8 @@ const GameDetailScreen: React.FC = () => {
             case '틀린그림찾기':
                 await findItWebSocketService.togetherConnect();
                 break;
-            case '????':
+            case '슬라임전쟁':
+                await slimeWarWebSocketService.togetherConnect();
                 break;
             case '????':
                 break;
@@ -160,7 +179,8 @@ const GameDetailScreen: React.FC = () => {
                 case '틀린그림찾기':
                     findItWebSocketService.joinConnect(authCode);
                     break;
-                case '????':
+                case '슬라임전쟁':
+                    slimeWarWebSocketService.joinConnect(authCode);
                     break;
                 case '????':
                     break;
@@ -238,7 +258,9 @@ const GameDetailScreen: React.FC = () => {
                                 source={
                                     game.title === '틀린그림찾기'
                                         ? require('../assets/images/common/find-it.png')
-                                        : require('../assets/images/common/default.png')
+                                        : game.title === '슬라임전쟁'
+                                            ? require('../assets/images/common/find-it.png')
+                                            : require('../assets/images/common/default.png')
                                 }
                                 style={styles.gameImage}
                             />

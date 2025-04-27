@@ -16,6 +16,8 @@ const SlimeWarResultScreen: React.FC = () => {
     const goToHome = () => {
         navigation.navigate('Loading', { nextScreen: 'Home' });
     };
+    const { isSuccess } = route.params || { isSuccess: false };
+
     const userName = '임시개굴맨'; // 임시 사용자 이름
     useEffect(() => {
         const backAction = () => {
@@ -36,7 +38,7 @@ const SlimeWarResultScreen: React.FC = () => {
     return (
         // 전체 배경 이미지
         <ImageBackground
-            source={require('../../assets/images/common/background_basic.png')}
+            source={require('../../../assets/images/common/background_basic.png')}
             style={styles.background}
             imageStyle={styles.backgroundImage}
         >
@@ -47,8 +49,8 @@ const SlimeWarResultScreen: React.FC = () => {
                     <View style={styles.clearConatiner}>
                         <Image
                             source={isSuccess ?
-                                require('../../assets/icons/find-it/clear_star.png') :
-                                require('../../assets/icons/find-it/fail_star.png')
+                                require('../../../assets/icons/find-it/clear_star.png') :
+                                require('../../../assets/icons/find-it/fail_star.png')
                             }
                             style={styles.clearIcon}
                         />
@@ -69,21 +71,21 @@ const SlimeWarResultScreen: React.FC = () => {
                         <View style={styles.profileRow}>
                             <View style={styles.profileIconContainer} >
                                 <Image
-                                    source={require('../../assets/icons/find-it/medal.png')}
+                                    source={require('../../../assets/icons/find-it/medal.png')}
                                     style={styles.medalIcon}
                                 />
                             </View>
 
                             <View style={styles.profileImageContainer} >
                                 <Image
-                                    source={require('../../assets/images/home/default_profile.png')}
+                                    source={require('../../../assets/images/home/default_profile.png')}
                                     style={styles.profileImage}
                                 />
                             </View>
                             <Text style={styles.profileName}>{userName}</Text>
                             <View style={styles.profileScoreContainer}>
                                 <Image
-                                    source={require('../../assets/icons/find-it/coin.png')}
+                                    source={require('../../../assets/icons/find-it/coin.png')}
                                     style={styles.profileScoreIcon}
                                 />
                                 <Text style={styles.profileScore}>{isSuccess ? "+ 1" : "- 1"}</Text>
@@ -94,21 +96,21 @@ const SlimeWarResultScreen: React.FC = () => {
                             <View style={styles.profileRow}>
                                 <View style={styles.profileTwoIconContainer} >
                                     <Image
-                                        source={require('../../assets/icons/find-it/medal2.png')}
+                                        source={require('../../../assets/icons/find-it/medal2.png')}
                                         style={styles.medalTwoIcon}
                                     />
                                 </View>
 
                                 <View style={styles.profileImageContainer} >
                                     <Image
-                                        source={require('../../assets/images/home/default_profile.png')}
+                                        source={require('../../../assets/images/home/default_profile.png')}
                                         style={styles.profileImage}
                                     />
                                 </View>
                                 <Text style={styles.profileName}>{userName}</Text>
                                 <View style={styles.profileTwoScoreContainer}>
                                     <Image
-                                        source={require('../../assets/icons/find-it/coin.png')}
+                                        source={require('../../../assets/icons/find-it/coin.png')}
                                         style={styles.profileScoreIcon}
                                     />
                                     <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
