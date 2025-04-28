@@ -9,8 +9,12 @@ class SlimeWarViewModel {
     timerColor = 'black';
     kingIndex = 0;
     remainingSlime = 0;
+    canMove = true;
     cardList: any[] = [];
     opponentCardList: any[] = [];
+    slimePositions: any[] = [];
+    opponentSlimePositions: any[] = [];
+    gameMap: number[][] = Array(9).fill(null).map(() => Array(9).fill(0));
 
     constructor() {
         makeAutoObservable(this, {
@@ -24,7 +28,21 @@ class SlimeWarViewModel {
             setCardList: action,
             setOpponentCardList: action,
             setRemainingSlime: action,
+            setCanMove: action,
+            setSlimePositions: action,
+            setOpponentSlimePositions: action,
+            setGameMap: action,
         });
+    }
+    setGameMap(gameMap: number[][]) {
+        this.gameMap = gameMap;
+    }
+
+    setSlimePositions(slimePositions: any[]) {
+        this.slimePositions = slimePositions;
+    }
+    setOpponentSlimePositions(opponentSlimePositions: any[]) {
+        this.opponentSlimePositions = opponentSlimePositions;
     }
     setRemainingSlime(remainingSlime: number) {
         this.remainingSlime = remainingSlime;
@@ -45,7 +63,18 @@ class SlimeWarViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
-
+    setCanMove() {
+        console.log("🔍 카드 리스트 길이:", this.cardList);
+        console.log("🔍 현재 슬라임 위치:", this.slimePositions);
+        console.log("🔍 상대 슬라임 위치:", this.opponentSlimePositions);
+        console.log("히어로 카드 ");
+        console.log("왕 위치 ", this.kingIndex);
+        if (this.cardList.length === 0) {
+            this.canMove = true;
+        } else {
+            this.canMove = false;
+        }
+    }
     /** 타이머 색상을 업데이트하는 함수 */
     updateTimerColor(color: string) {
         this.timerColor = color;

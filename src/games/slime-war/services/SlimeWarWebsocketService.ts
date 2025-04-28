@@ -73,16 +73,17 @@ class SlimeWarWebSocketService {
         const navigation = webSocketService.getNavigation();
 
         try {
-            
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
             if (data.users) {
                 gameService.setUsers(data.users);
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
                   if (user.id === this.userID) {
-                    slimeWarViewModel.setCardList(user.ownedCardIDs || []);
+                      slimeWarViewModel.setCardList(user.ownedCardIDs || []);
+                      slimeWarViewModel.setSlimePositions(user.slimePositions || []);
                   } else {
                     slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
+                    slimeWarViewModel.setOpponentSlimePositions(user.slimePositions || []);
                   }
                 });
             }
@@ -91,6 +92,12 @@ class SlimeWarWebSocketService {
                 slimeWarViewModel.setRemainingSlime(data.slimeWarGameInfo.slimeCount);
             }
 
+            slimeWarViewModel.setCanMove();
+            if (slimeWarViewModel.canMove) {
+                console.log("🔍 이동 가능");
+            } else {
+                console.log("🔍 이동 불가능");
+            }
 
             console.log("응답으로 온 타입 , ",eventType);
             // 게임이 시작한다. START 이벤트 
