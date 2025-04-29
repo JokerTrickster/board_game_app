@@ -1,12 +1,15 @@
 import SystemMessage from '../../../components/common/SystemMessage';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
 import styles from '../styles/SlimeWarStyles';
 import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
 import { observer } from 'mobx-react-lite';
 import { slimeWarViewModel } from '../services/SlimeWarViewModel';
+import MultiHeader from '../../../components/MultiHeader';
 const GRID_SIZE = 9;
+
+const TURN_TIME = 30; // 턴당 제한 시간(초)
 
 const SlimeWarScreen: React.FC = observer(() => {
   const [isCardSelectMode, setIsCardSelectMode] = React.useState<null | 'HERO' | 'MOVE'>(null);
@@ -19,6 +22,40 @@ const SlimeWarScreen: React.FC = observer(() => {
   // 본인/상대방 카드 mobx 상태에서 가져오기
   const playerHand = slimeWarViewModel.cardList;
   const opponentHand = slimeWarViewModel.opponentCardList;
+  const heroCount = slimeWarViewModel.hero ?? 0;
+  const [timer, setTimer] = useState(TURN_TIME);
+  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  // 매 턴마다 타이머 리셋 및 타임아웃 처리
+  useEffect(() => {
+    if (!slimeWarViewModel.isMyTurn) {
+      setTimer(TURN_TIME);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+    setTimer(TURN_TIME);
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          timerRef.current = null;
+          slimeWarWebSocketService.sendTimeoutEvent();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [slimeWarViewModel.isMyTurn]);
 
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
@@ -154,7 +191,16 @@ const SlimeWarScreen: React.FC = observer(() => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <MultiHeader />
       <Text style={styles.title}>슬라임 전쟁</Text>
+      
+      {/* 타이머 바 */}
+      <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+        <View style={{ height: 16, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
+          <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#e74c3c' : '#4CAF50' }} />
+        </View>
+        <Text style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', top: 0, fontSize: 12, color: '#333' }}>{timer}s</Text>
+      </View>
       
       {/* 9x9 격자 */}
       <View style={styles.boardContainer}>
@@ -179,16 +225,28 @@ const SlimeWarScreen: React.FC = observer(() => {
         </View>
         {/* 본인 패 */}
         <View style={styles.playerHandContainer}>
-          <Text style={styles.handTitle}>본인 패</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.handTitle}>본인 패</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={{ fontSize: 18, marginRight: 4 }}>🦸</Text>
+              <Text style={{ fontSize: 16 }}>{heroCount}</Text>
+            </View>
+          </View>
           <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
             {playerHand.map((item, index) => (
               <TouchableOpacity
                 key={`player-card-${item.id ?? index}`}
                 onPress={() => handleCardPress(item)}
-                disabled={!(isMoveMode || isCardSelectMode === 'HERO') || (item.isUsable !== undefined && !item.isUsable)}
+                disabled={!(slimeWarViewModel.isMyTurn && (isMoveMode || isCardSelectMode === 'HERO')) || (item.isUsable !== undefined && !item.isUsable)}
                 style={[styles.card, (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }]}
               >
-                <Text style={styles.cardText}>P{item.id ?? item}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={styles.cardText}>P{item.id ?? item}</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 16, marginLeft: 4, color: heroCount > 0 ? '#222' : '#aaa' }}>🦸</Text>
+                    <Text style={{ fontSize: 14, color: heroCount > 0 ? '#222' : '#aaa' }}>{heroCount}</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -197,16 +255,16 @@ const SlimeWarScreen: React.FC = observer(() => {
       
       {/* 버튼 영역 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleGetCard}>
+        <TouchableOpacity style={styles.button} onPress={handleGetCard} disabled={!slimeWarViewModel.isMyTurn}>
           <Text style={styles.buttonText}>더미</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleHero}>
+        <TouchableOpacity style={styles.button} onPress={handleHero} disabled={!slimeWarViewModel.isMyTurn}>
           <Text style={styles.buttonText}>흡수</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleMove}>
+        <TouchableOpacity style={styles.button} onPress={handleMove} disabled={!slimeWarViewModel.isMyTurn}>
           <Text style={styles.buttonText}>이동</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handlePass}>
+        <TouchableOpacity style={styles.button} onPress={handlePass} disabled={!slimeWarViewModel.isMyTurn}>
           <Text style={styles.buttonText}>패스</Text>
         </TouchableOpacity>
       </View>

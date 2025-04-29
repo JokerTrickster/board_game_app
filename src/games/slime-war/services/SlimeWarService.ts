@@ -91,6 +91,36 @@ class SlimeWarService {
             return false;
         }
     }
+
+    /**
+     * 슬라임 전쟁 게임 결과를 가져오는 함수
+     * @returns Promise resolving to result 배열 (각 원소: { score, userID })
+     */
+    async fetchGameResult(): Promise<Array<{ score: number; userID: number }>> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/slime-war/v0.1/game/result`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`서버 요청 실패: ${response.status}`);
+            }
+            const data = await response.json();
+            if (!data.result) {
+                throw new Error('Invalid response from server');
+            }
+            return data.result;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export const slimeWarService = new SlimeWarService();

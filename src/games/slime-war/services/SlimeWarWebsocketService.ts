@@ -82,6 +82,10 @@ class SlimeWarWebSocketService {
                 data.users.forEach((user: any) => {
                   if (user.id === this.userID) {
                       slimeWarViewModel.setCardList(user.ownedCardIDs || []);
+                      // 내 turn 정보 저장
+                      if (data.slimeWarGameInfo && typeof user.turn !== 'undefined') {
+                          slimeWarViewModel.updateTurn(data.slimeWarGameInfo.currentRound, user.turn);
+                      }
                   } else {
                     slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
                   }
@@ -196,11 +200,29 @@ class SlimeWarWebSocketService {
                     break;
                
                 case "GAME_OVER":
+                    // ✅ 게임 결과 정보 호출
+                    const result = await slimeWarService.fetchGameResult();
+                    let isSuccess = false;
+                    if (result[0].score > result[1].score){
+                        if(result[0].userID === this.userID){
+                            isSuccess = true;
+                        }else{
+                            isSuccess = false;
+                        }
+                    }else{
+                        if(result[0].userID === this.userID){
+                            isSuccess = false;
+                        }else{
+                            isSuccess = true;
+                        }
+                    }
+
                     // ✅ 웹소켓 종료
                     this.disconnect();
+                    //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('MultiFindItResult', { isSuccess: false });
+                        navigation.navigate('SlimeWarResult', { isSuccess: isSuccess });
                     }
                     break;
                 case "MATCH_CANCEL":
@@ -211,13 +233,27 @@ class SlimeWarWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('MultiFindItResult', { isSuccess: false });
+                        navigation.navigate('SlimeWarResult', { isSuccess: false });
                     }
                     break;
                 default:
                     console.warn("⚠️ 알 수 없는 이벤트:", data.event);
             }
             
+            // 게임 정보에 gameOver가 true인 경우에도 결과 호출
+            if (data.slimeWarGameInfo && data.slimeWarGameInfo.gameOver === true) {
+                try {
+                    const result = await slimeWarService.fetchGameResult();
+                    console.log('게임 결과:', result);
+                    // TODO: 결과를 화면에 전달하거나 상태에 저장
+                } catch (err) {
+                    console.error('게임 결과 조회 실패:', err);
+                }
+                this.disconnect();
+                if (navigation) {
+                    navigation.navigate('SlimeWarResult', { isSuccess: false });
+                }
+            }
         } catch (error) {
             console.error("❌ 데이터 처리 중 오류 발생:", error);
         }

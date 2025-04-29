@@ -88,7 +88,7 @@ const SlimeWarResultScreen: React.FC = () => {
                                     source={require('../../../assets/icons/find-it/coin.png')}
                                     style={styles.profileScoreIcon}
                                 />
-                                <Text style={styles.profileScore}>{isSuccess ? "+ 1" : "- 1"}</Text>
+                                <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
                             </View>
                         </View>
                         </View>

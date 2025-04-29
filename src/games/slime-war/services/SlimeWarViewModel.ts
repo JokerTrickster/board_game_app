@@ -17,6 +17,7 @@ class SlimeWarViewModel {
     opponentColorType = 0;
     userID = 0;
     opponentID = 0;
+    isMyTurn = false;
 
     constructor() {
         makeAutoObservable(this, {
@@ -33,6 +34,8 @@ class SlimeWarViewModel {
             setGameMap: action,
             setUserColorType: action,
             setOpponentColorType: action,
+            setIsMyTurn: action,
+            updateTurn: action,
         });
     }
     setUserColorType(colorType: number) {
@@ -131,6 +134,19 @@ class SlimeWarViewModel {
             this.timerInterval = null;
         }
         this.timerColor = 'black';
+    }
+
+    setIsMyTurn(value: boolean) {
+        this.isMyTurn = value;
+    }
+
+    /**
+     * 현재 라운드와 내 turn 정보를 받아 내 차례인지 여부를 갱신
+     * @param currentRound 서버에서 받은 currentRound
+     * @param turn 내 user turn 정보 (0: 선, 1: 후)
+     */
+    updateTurn(currentRound: number, turn: number) {
+        this.isMyTurn = (currentRound % 2 === turn);
     }
 }
 
