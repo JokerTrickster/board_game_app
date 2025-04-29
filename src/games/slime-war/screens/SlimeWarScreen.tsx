@@ -1,3 +1,4 @@
+import SystemMessage from '../../../components/common/SystemMessage';
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
 import styles from '../styles/SlimeWarStyles';
@@ -10,6 +11,7 @@ const GRID_SIZE = 9;
 const SlimeWarScreen: React.FC = observer(() => {
   const [isCardSelectMode, setIsCardSelectMode] = React.useState<null | 'HERO' | 'MOVE'>(null);
   const [isMoveMode, setIsMoveMode] = useState(false);
+  const [systemMessage, setSystemMessage] = useState<string>('');
   // kingIndex를 mobx 상태에서 가져옴
   const kingIndex = slimeWarViewModel.kingIndex;
   const kingRow = kingIndex !== null ? Math.floor(kingIndex /(GRID_SIZE-1)) : null;
@@ -119,13 +121,15 @@ const SlimeWarScreen: React.FC = observer(() => {
 
     // Check boundaries
     if (newX < 0 || newX >= GRID_SIZE || newY < 0 || newY >= GRID_SIZE) {
-      Alert.alert('이동 불가', '해당 카드로는 이동할 수 없습니다.');
+      setSystemMessage('사용 불가능한 카드입니다.');
+      return;
     } else {
       const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
       if (isMoveMode) {
         // Move mode: allow move only if target cell is empty (0)
         if (targetCellValue !== 0) {
-          Alert.alert('이동 불가', '빈 공간이 아닙니다.');
+          setSystemMessage('사용 불가능한 카드입니다.');
+          return;
         } else {
           const newIndex = newY * GRID_SIZE + newX;
           slimeWarWebSocketService.sendMoveEvent(card.id);
@@ -219,6 +223,9 @@ const SlimeWarScreen: React.FC = observer(() => {
           </TouchableOpacity>
         ))}
       </View>
+      {systemMessage ? (
+        <SystemMessage message={systemMessage} onHide={() => setSystemMessage('')} />
+      ) : null}
     </SafeAreaView>
   );
 });
