@@ -63,6 +63,9 @@ class SlimeWarViewModel {
             });
         });
     }
+    updateGameState( round: number) {
+        this.round = round;
+    }
 
     setRemainingSlime(remainingSlime: number) {
         this.remainingSlime = remainingSlime;

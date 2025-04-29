@@ -183,19 +183,24 @@ class SlimeWarWebSocketService {
                     
                     break;
                 case "GET_CARD":
+                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
                     console.log("🔑 카드 받았다. ", data.message);
                     break;
                 case "HERO":
+                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
                     console.log("🔑 영웅 카드 사용. ", data.message);
                     break;
                 case "MOVE":
+                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
                     console.log("🔑 이동. ", data.message);
                     break;
                 
                 case "TIME_OUT":
+                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
                     console.log("🔑 시간 초과. ", data.message);
                     break;
                 case "NEXT_ROUND":
+                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
                     console.log("🔑 다음 라운드. ", data.message);
                     break;
                

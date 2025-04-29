@@ -13,7 +13,7 @@ export default StyleSheet.create({
     marginBottom: 10
   },
   boardContainer: {
-    height: '50%',
+    height: '40%',
     aspectRatio: 1, // 정사각형 격자
     backgroundColor: '#fff',
     borderWidth: 2,
@@ -111,8 +111,21 @@ export default StyleSheet.create({
     justifyContent: 'center',
   },
   cardImage: {
-    width: 50,
-    height: 50,
+    width: '100%',
+    height: '100%',
     resizeMode: 'contain',
-  }
+  },
+  turnIndicator: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    padding: 8,
+    borderRadius: 5,
+  },
+  turnText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
 });

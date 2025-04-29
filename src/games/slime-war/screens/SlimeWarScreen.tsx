@@ -6,7 +6,8 @@ import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
 import { observer } from 'mobx-react-lite';
 import { slimeWarViewModel } from '../services/SlimeWarViewModel';
-import MultiHeader from '../../../components/MultiHeader';
+import SlimeWarMultiHeader from '../../../components/SlimeWarMultiHeader';
+import cardData from '../../../assets/data/cards.json';
 const GRID_SIZE = 9;
 
 const TURN_TIME = 30; // 턴당 제한 시간(초)
@@ -57,6 +58,14 @@ const SlimeWarScreen: React.FC = observer(() => {
     };
   }, [slimeWarViewModel.isMyTurn]);
 
+  //라운드가 변경될 떄마다 누구차례인지 체크
+  useEffect(() => {
+    if (slimeWarViewModel.round % 2 === 0) {
+      slimeWarViewModel.setIsMyTurn(true);
+    } else {
+      slimeWarViewModel.setIsMyTurn(false);
+    }
+  }, [slimeWarViewModel.round]);
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
     let rows = [];
@@ -84,13 +93,31 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
 
   const handleGetCard = () => {
-    if (slimeWarViewModel.cardList.length >= 5) {
-      Alert.alert('카드 제한', '카드가 5장 이상 있습니다.');
+    if (!slimeWarViewModel.isMyTurn) {
+      setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
     }
-    (slimeWarWebSocketService as any).sendGetCardEvent();
+    
+    if (slimeWarViewModel.cardList.length >= 5) {
+      setSystemMessage('카드가 5장 이상 있어 더 이상 카드를 가져올 수 없습니다.');
+      return;
+    }
+    
+    try {
+      (slimeWarWebSocketService as any).sendGetCardEvent();
+      setSystemMessage('카드를 가져오는 중입니다...');
+    } catch (error) {
+      setSystemMessage('카드를 가져오는데 실패했습니다.');
+      console.error('Error in handleGetCard:', error);
+    }
   };
+  
   const handleHero = () => {
+    if (!slimeWarViewModel.isMyTurn) {
+      setSystemMessage('지금은 당신의 턴이 아닙니다.');
+      return;
+    }
+    
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1],
       1: [0, -1],
@@ -115,21 +142,43 @@ const SlimeWarScreen: React.FC = observer(() => {
       return targetCellValue === slimeWarViewModel.opponentID;
     });
     if (validHeroCards.length < 1) {
-      Alert.alert('영웅 행동 불가', '영웅 행동을 할 수 있는 카드가 없습니다.');
+      setSystemMessage('영웅 행동을 할 수 있는 카드가 없습니다.');
       return;
     }
+    setSystemMessage('영웅 행동 모드가 활성화되었습니다. 카드를 선택하세요.');
     setIsCardSelectMode('HERO');
   };
+  
   const handleMove = () => {
+    if (!slimeWarViewModel.isMyTurn) {
+      setSystemMessage('지금은 당신의 턴이 아닙니다.');
+      return;
+    }
+    
+    setSystemMessage('이동 모드가 활성화되었습니다. 카드를 선택하세요.');
     setIsMoveMode(true);
   };
+  
   const handlePass = () => {
+    if (!slimeWarViewModel.isMyTurn) {
+      setSystemMessage('지금은 당신의 턴이 아닙니다.');
+      return;
+    }
+    
+    setSystemMessage('턴을 패스합니다.');
     slimeWarWebSocketService.sendNextRoundEvent();
   };
   // 카드 클릭 핸들러
-  const handleCardPress = (card: { id: number, direction: number; move: number; image: string }) => {
+  const handleCardPress = (card: number) => {
     // Proceed only if either move mode or hero mode is active
     if (!isMoveMode && isCardSelectMode !== 'HERO') return;
+
+    const cardInfo = cardData.find((c: { id: number }) => c.id === card);
+    if (!cardInfo) {
+      Alert.alert('오류', '유효하지 않은 카드입니다.');
+      return;
+    }
+    console.log('cardInfo', cardInfo);
 
     const GRID_SIZE = 9;
     const directionMap: { [key: number]: [number, number] } = {
@@ -142,7 +191,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       6: [0, 1],
       7: [1, 1],
     };
-    const vector = directionMap[card.direction];
+    const vector = directionMap[cardInfo.direction];
     if (!vector) {
       Alert.alert('오류', '유효하지 않은 방향입니다.');
       setIsMoveMode(false);
@@ -153,8 +202,8 @@ const SlimeWarScreen: React.FC = observer(() => {
     const currentIndex = slimeWarViewModel.kingIndex;
     const currentX = currentIndex % GRID_SIZE;
     const currentY = Math.floor(currentIndex / GRID_SIZE);
-    const newX = currentX + vector[0] * card.move;
-    const newY = currentY + vector[1] * card.move;
+    const newX = currentX + vector[0] * cardInfo.move;
+    const newY = currentY + vector[1] * cardInfo.move;
 
     // Check boundaries
     if (newX < 0 || newX >= GRID_SIZE || newY < 0 || newY >= GRID_SIZE) {
@@ -169,7 +218,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           return;
         } else {
           const newIndex = newY * GRID_SIZE + newX;
-          slimeWarWebSocketService.sendMoveEvent(card.id);
+          slimeWarWebSocketService.sendMoveEvent(cardInfo.id);
           slimeWarViewModel.setKingIndex(newIndex);
         }
         setIsMoveMode(false);
@@ -181,7 +230,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           // Remove the opponent slime and place player's slime
           slimeWarViewModel.gameMap[newY][newX] = slimeWarViewModel.userID;
           const newIndex = newY * GRID_SIZE + newX;
-          slimeWarWebSocketService.sendHeroEvent(card.id);
+          slimeWarWebSocketService.sendHeroEvent(cardInfo.id);
           slimeWarViewModel.setKingIndex(newIndex);
         }
         setIsCardSelectMode(null);
@@ -191,7 +240,7 @@ const SlimeWarScreen: React.FC = observer(() => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <MultiHeader />
+      <SlimeWarMultiHeader />
       <Text style={styles.title}>슬라임 전쟁</Text>
       
       {/* 타이머 바 */}
@@ -255,17 +304,33 @@ const SlimeWarScreen: React.FC = observer(() => {
       
       {/* 버튼 영역 */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleGetCard} disabled={!slimeWarViewModel.isMyTurn}>
-          <Text style={styles.buttonText}>더미</Text>
+        <TouchableOpacity 
+          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+          onPress={handleGetCard} 
+          disabled={!slimeWarViewModel.isMyTurn}
+        >
+          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>더미</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleHero} disabled={!slimeWarViewModel.isMyTurn}>
-          <Text style={styles.buttonText}>흡수</Text>
+        <TouchableOpacity 
+          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+          onPress={handleHero} 
+          disabled={!slimeWarViewModel.isMyTurn}
+        >
+          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>흡수</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleMove} disabled={!slimeWarViewModel.isMyTurn}>
-          <Text style={styles.buttonText}>이동</Text>
+        <TouchableOpacity 
+          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+          onPress={handleMove} 
+          disabled={!slimeWarViewModel.isMyTurn}
+        >
+          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>이동</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handlePass} disabled={!slimeWarViewModel.isMyTurn}>
-          <Text style={styles.buttonText}>패스</Text>
+        <TouchableOpacity 
+          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+          onPress={handlePass} 
+          disabled={!slimeWarViewModel.isMyTurn}
+        >
+          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>패스</Text>
         </TouchableOpacity>
       </View>
 
@@ -275,7 +340,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           <TouchableOpacity
             key={index}
             style={styles.cardItem}
-            onPress={() => handleCardPress(card)}
+            onPress={() => handleCardPress(card.id)}
           >
             <Image source={{ uri: card.image }} style={styles.cardImage} />
           </TouchableOpacity>
@@ -284,6 +349,13 @@ const SlimeWarScreen: React.FC = observer(() => {
       {systemMessage ? (
         <SystemMessage message={systemMessage} onHide={() => setSystemMessage('')} />
       ) : null}
+
+      {/* 턴 상태 표시 */}
+      <View style={styles.turnIndicator}>
+        <Text style={styles.turnText}>
+          {slimeWarViewModel.isMyTurn ? '내 턴입니다' : '상대방 턴입니다'}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 });
