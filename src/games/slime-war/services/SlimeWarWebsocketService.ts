@@ -76,14 +76,14 @@ class SlimeWarWebSocketService {
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
             if (data.users) {
                 gameService.setUsers(data.users);
+                // 맵 정보 저장
+                slimeWarViewModel.setGameMap(data.users);
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
                   if (user.id === this.userID) {
                       slimeWarViewModel.setCardList(user.ownedCardIDs || []);
-                      slimeWarViewModel.setSlimePositions(user.slimePositions || []);
                   } else {
                     slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
-                    slimeWarViewModel.setOpponentSlimePositions(user.slimePositions || []);
                   }
                 });
             }
@@ -92,11 +92,13 @@ class SlimeWarWebSocketService {
                 slimeWarViewModel.setRemainingSlime(data.slimeWarGameInfo.slimeCount);
             }
 
+
+            // 현재 유저가 이동이 가능한지 여부 저장
             slimeWarViewModel.setCanMove();
-            if (slimeWarViewModel.canMove) {
-                console.log("🔍 이동 가능");
+            if (slimeWarViewModel.canMoveCardList.length > 0) {
+                console.log("🔍 이동 가능한 카드 리스트 : ", slimeWarViewModel.canMoveCardList);
             } else {
-                console.log("🔍 이동 불가능");
+                console.log("🔍 이동 불가능한 카드 리스트 : ", slimeWarViewModel.canMoveCardList);
             }
 
             console.log("응답으로 온 타입 , ",eventType);

@@ -1,0 +1,16 @@
+[
+    {
+      "id": 1,
+      "dir": 0,
+      "move":1,
+      "description": "Burns the enemy.",
+      "image": "fire_card.png"
+    },
+    {
+      "id": 2,
+      "dir": 1,
+      "move":1,
+      "description": "Splashes water.",
+      "image": "water_card.png"
+    }
+  ]
