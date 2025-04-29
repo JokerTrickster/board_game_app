@@ -30,7 +30,6 @@ class SlimeWarViewModel {
             setCardList: action,
             setOpponentCardList: action,
             setRemainingSlime: action,
-            setCanMove: action,
             setGameMap: action,
             setUserColorType: action,
             setOpponentColorType: action,
@@ -81,17 +80,8 @@ class SlimeWarViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
-    setCanMove() {
-        console.log("🔍 카드 리스트 길이:", this.cardList);
-        console.log("왕 위치 ", this.kingIndex);
-        console.log("카드 데이터 ", cardData);
-        // 현재 소유하고 있는 카드 중 이동 가능한 카드가 있는지 체크
-        this.cardList.forEach((card) => {
-            if (card.dir === 0) {
-                this.canMoveCardList.push(card);
-            }
-        });
-    }
+    
+    
     /** 타이머 색상을 업데이트하는 함수 */
     updateTimerColor(color: string) {
         this.timerColor = color;

@@ -93,8 +93,6 @@ class SlimeWarWebSocketService {
             }
 
 
-            // 현재 유저가 이동이 가능한지 여부 저장
-            slimeWarViewModel.setCanMove();
             if (slimeWarViewModel.canMoveCardList.length > 0) {
                 console.log("🔍 이동 가능한 카드 리스트 : ", slimeWarViewModel.canMoveCardList);
             } else {
@@ -243,10 +241,10 @@ class SlimeWarWebSocketService {
     }
     
     sendNextRoundEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round, imageID: this.imageID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round });
     }
     sendTimeoutEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round, imageID: this.imageID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round });
     }
 
     sendMatchEvent() {

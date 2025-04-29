@@ -95,4 +95,24 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     marginRight: 8,
   },
+  cardContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginVertical: 10,
+  },
+  cardItem: {
+    margin: 5,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardImage: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+  }
 });
