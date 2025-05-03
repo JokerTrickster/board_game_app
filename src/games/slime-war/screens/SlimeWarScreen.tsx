@@ -218,7 +218,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           return;
         } else {
           const newIndex = newY * GRID_SIZE + newX;
-          slimeWarWebSocketService.sendMoveEvent(cardInfo.id);
+          slimeWarWebSocketService.sendMoveEvent(cardInfo.id, newIndex);
           slimeWarViewModel.setKingIndex(newIndex);
         }
         setIsMoveMode(false);
@@ -230,7 +230,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           // Remove the opponent slime and place player's slime
           slimeWarViewModel.gameMap[newY][newX] = slimeWarViewModel.userID;
           const newIndex = newY * GRID_SIZE + newX;
-          slimeWarWebSocketService.sendHeroEvent(cardInfo.id);
+          slimeWarWebSocketService.sendHeroEvent(cardInfo.id, newIndex);
           slimeWarViewModel.setKingIndex(newIndex);
         }
         setIsCardSelectMode(null);

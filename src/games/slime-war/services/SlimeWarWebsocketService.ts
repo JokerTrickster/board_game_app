@@ -274,11 +274,11 @@ class SlimeWarWebSocketService {
     sendGetCardEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "GET_CARD", { userID: this.userID });
     }
-    sendHeroEvent(cardId: number) {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "HERO", { userID: this.userID, cardID: cardId });
+    sendHeroEvent(cardId: number, newIndex: number) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "HERO", { userID: this.userID, cardID: cardId, kingIndex: newIndex });
     }
-    sendMoveEvent(cardId: number) {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "MOVE", { userID: this.userID, cardID: cardId });
+    sendMoveEvent(cardId: number, newIndex: number) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "MOVE", { userID: this.userID, cardID: cardId, kingIndex: newIndex });
     }
     
     sendNextRoundEvent() {
