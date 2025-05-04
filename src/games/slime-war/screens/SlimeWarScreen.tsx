@@ -136,11 +136,14 @@ const SlimeWarScreen: React.FC = observer(() => {
       let cells = [];
       for (let col = 1; col <= GRID_SIZE; col++) {
         // kingIndex를 (x, y)로 변환
-        const kingX = slimeWarViewModel.kingIndex % GRID_SIZE;
-        const kingY = Math.floor(slimeWarViewModel.kingIndex / GRID_SIZE );
+        let kingX = slimeWarViewModel.kingIndex % GRID_SIZE;
+        let kingY = Math.floor(slimeWarViewModel.kingIndex / GRID_SIZE);
+        if (kingX === 0) {
+          kingX = GRID_SIZE;
+          kingY -= 1;
+        }
         const isKing = kingX === col && kingY === row;
         const userId = slimeWarViewModel.gameMap[col][row];
-
         let slimeImage = null;
         let slimeColorType = null;
         if (userId === slimeWarViewModel.userID) {
@@ -150,8 +153,10 @@ const SlimeWarScreen: React.FC = observer(() => {
         }
 
         if (userId !== 0) {
+          console.log("userId", userId);
+          console.log(slimeWarViewModel.userID);
+          console.log("slimeColorType", slimeWarViewModel.userColorType);
           slimeImage = getSlimeImage(slimeColorType ?? 0);
-          console.log("slimeImage", row,col);
         }
         cells.push(
           <View key={`cell-${col}-${row}`} style={styles.cell}>
@@ -221,7 +226,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       const currentIndex = slimeWarViewModel.kingIndex;
       const currentX = currentIndex % GRID_SIZE ;
       const currentY = Math.floor(currentIndex / GRID_SIZE );
-      console.log("현재 왕 좌표 ,", currentX, currentY);
       const newX = currentX + vector[0] * move;
       const newY = currentY + vector[1] * move;
       if (newX < 1  || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
@@ -265,7 +269,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       Alert.alert('오류', '유효하지 않은 카드입니다.');
       return;
     }
-    console.log('cardInfo', cardInfo);
 
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1],
@@ -285,25 +288,29 @@ const SlimeWarScreen: React.FC = observer(() => {
       return;
     }
 
-    const currentIndex = slimeWarViewModel.kingIndex;
-    const currentX = currentIndex % GRID_SIZE;
-    const currentY = Math.floor(currentIndex / GRID_SIZE );
-    const newX = currentX + (vector[0] * cardInfo.move);
-    const newY = currentY + (vector[1] * cardInfo.move);
-
+    let currentIndex = slimeWarViewModel.kingIndex;
+    let currentX = currentIndex % GRID_SIZE;
+    let currentY = Math.floor(currentIndex / GRID_SIZE);
+    if (currentX === 0) {
+      currentX = GRID_SIZE;
+      currentY -= 1;
+    }
+    let newX = currentX + (vector[0] * cardInfo.move);
+    let newY = currentY + (vector[1] * cardInfo.move);
     // Check boundaries
     if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
       setSystemMessage('사용 불가능한 카드입니다.');
       return;
     } else {
-      const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
+      const newIndex = newY * GRID_SIZE + newX; // 왕 좌표
+      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
       if (isMoveMode) {
         // Move mode: allow move only if target cell is empty (0)
         if (targetCellValue !== 0) {
           setSystemMessage('사용 불가능한 카드입니다.');
           return;
         } else {
-          const newIndex = newY * GRID_SIZE  + newX;
+
           slimeWarWebSocketService.sendMoveEvent(cardInfo.id, newIndex);
           slimeWarViewModel.setKingIndex(newIndex);
         }
@@ -314,8 +321,7 @@ const SlimeWarScreen: React.FC = observer(() => {
           Alert.alert('영웅 행동 불가', '상대 슬라임이 존재하지 않습니다.');
         } else {
           // Remove the opponent slime and place player's slime
-          slimeWarViewModel.gameMap[newY][newX] = slimeWarViewModel.userID;
-          const newIndex = newY * GRID_SIZE  + newX;
+          slimeWarViewModel.gameMap[newX][newY] = slimeWarViewModel.userID;
           slimeWarWebSocketService.sendHeroEvent(cardInfo.id, newIndex);
           slimeWarViewModel.setKingIndex(newIndex);
         }

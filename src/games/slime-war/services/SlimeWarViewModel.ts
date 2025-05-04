@@ -40,7 +40,15 @@ class SlimeWarViewModel {
             updateTurn: action,
             setUserHeroCount: action,
             setOpponentHeroCount: action,
+            setUserID: action,
+            setOpponentID: action,
         });
+    }
+    setUserID(userID: number) {
+        this.userID = userID;
+    }
+    setOpponentID(opponentID: number) {
+        this.opponentID = opponentID;
     }
     setUserColorType(colorType: number) {
         this.userColorType = colorType;
@@ -58,7 +66,7 @@ class SlimeWarViewModel {
      * 슬라임 포지션을 이용하여 게임 맵을 초기화합니다.
      * @param users - 슬라임 정보를 포함하는 사용자 배열. 각 사용자는 userID와 0부터 80까지의 슬라임 위치 배열(slimePositions)을 가집니다.
      */
-    setGameMap(users: Array<{ userID: number; slimePositions: number[] }>) {
+    setGameMap(users: Array<{ id: number; slimePositions: number[] }>) {
         const GRID_SIZE = 9; // 그리드의 크기
 
         // 9x9 맵 생성: 모든 셀은 기본값 0으로 초기화
@@ -67,9 +75,13 @@ class SlimeWarViewModel {
         // 각 사용자 별로 슬라임 위치 적용
         users.forEach(user => {
             user.slimePositions.forEach(position => {
-                const x = position % GRID_SIZE;
-                const y = Math.floor(position / GRID_SIZE);
-                this.gameMap[x][y] = user.userID;
+                let x = position % GRID_SIZE;
+                let y = Math.floor(position / GRID_SIZE);
+                if (x === 0) {
+                    x = GRID_SIZE;
+                    y -= 1;
+                }
+                this.gameMap[x][y] = user.id;
             });
         });
     }
