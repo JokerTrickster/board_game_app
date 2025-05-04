@@ -351,7 +351,6 @@ const SlimeWarScreen: React.FC = observer(() => {
     >
       <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
         <SlimeWarMultiHeader />
-        <Text style={styles.title}>슬라임 전쟁</Text>
         
         {/* 타이머 바 */}
         <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
