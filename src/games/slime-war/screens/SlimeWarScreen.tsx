@@ -1,6 +1,6 @@
 import SystemMessage from '../../../components/common/SystemMessage';
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground } from 'react-native';
 import styles from '../styles/SlimeWarStyles';
 import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
@@ -301,117 +301,123 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <SlimeWarMultiHeader />
-      <Text style={styles.title}>슬라임 전쟁</Text>
-      
-      {/* 타이머 바 */}
-      <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
-        <View style={{ height: 16, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
-          <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#e74c3c' : '#4CAF50' }} />
-        </View>
-        <Text style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', top: 0, fontSize: 12, color: '#333' }}>{timer}s</Text>
-      </View>
-      
-      {/* 9x9 격자 */}
-      <View style={styles.boardContainer}>
-        {renderGrid()}
-      </View>
-      
-      {/* 패 영역 */}
-      <View style={styles.handsContainer}>
-        {/* 상대방 패 */}
-        <View style={styles.opponentHandContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={styles.remainingSlimeText}>남은 슬라임: {slimeWarViewModel.remainingSlime}</Text>
-            <Text style={styles.handTitle}>상대방 패</Text>
+    <ImageBackground
+      source={require('../../../assets/icons/slime-war/common/background.png')}
+      style={{ flex: 1, width: '100%', height: '100%' }}
+      resizeMode="cover"
+    >
+      <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
+        <SlimeWarMultiHeader />
+        <Text style={styles.title}>슬라임 전쟁</Text>
+        
+        {/* 타이머 바 */}
+        <View style={{ marginHorizontal: 16, marginBottom: 8 }}>
+          <View style={{ height: 16, backgroundColor: '#eee', borderRadius: 8, overflow: 'hidden' }}>
+            <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#e74c3c' : '#4CAF50' }} />
           </View>
-          <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
-            {opponentHand.map((item, index) => (
-              <View key={`opponent-card-${item.id ?? index}`} style={styles.card}>
-                <Image
-                  source={getCardImageSource(item.id ?? item)}
-                  style={styles.cardImage}
-                  resizeMode="contain"
-                />
-              </View>
-            ))}
-          </ScrollView>
+          <Text style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', top: 0, fontSize: 12, color: '#333' }}>{timer}s</Text>
         </View>
-        {/* 본인 패 */}
-        <View style={styles.playerHandContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.handTitle}>본인 패</Text>
+        
+        {/* 9x9 격자 */}
+        <View style={styles.boardContainer}>
+          {renderGrid()}
+        </View>
+        
+        {/* 패 영역 */}
+        <View style={styles.handsContainer}>
+          {/* 상대방 패 */}
+          <View style={styles.opponentHandContainer}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontSize: 18, marginRight: 4 }}>🦸</Text>
-              <Text style={{ fontSize: 16 }}>{heroCount}</Text>
+              <Text style={styles.remainingSlimeText}>남은 슬라임: {slimeWarViewModel.remainingSlime}</Text>
+              <Text style={styles.handTitle}>상대방 패</Text>
             </View>
+            <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
+              {opponentHand.map((item, index) => (
+                <View key={`opponent-card-${item.id ?? index}`} style={styles.card}>
+                  <Image
+                    source={getCardImageSource(item.id ?? item)}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              ))}
+            </ScrollView>
           </View>
-          <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
-            {playerHand.map((item, index) => (
-              <TouchableOpacity
-                key={`player-card-${item.id ?? index}`}
-                onPress={() => handleCardPress(item)}
-                disabled={!(slimeWarViewModel.isMyTurn && (isMoveMode || isCardSelectMode === 'HERO')) || (item.isUsable !== undefined && !item.isUsable)}
-                style={[
-                  styles.card,
-                  (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }
-                ]}
-              >
-                <Image
-                  source={getCardImageSource(item.id ?? item)}
-                  style={styles.cardImage}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {/* 본인 패 */}
+          <View style={styles.playerHandContainer}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={styles.handTitle}>본인 패</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ fontSize: 18, marginRight: 4 }}>🦸</Text>
+                <Text style={{ fontSize: 16 }}>{heroCount}</Text>
+              </View>
+            </View>
+            <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
+              {playerHand.map((item, index) => (
+                <TouchableOpacity
+                  key={`player-card-${item.id ?? index}`}
+                  onPress={() => handleCardPress(item)}
+                  disabled={!(slimeWarViewModel.isMyTurn && (isMoveMode || isCardSelectMode === 'HERO')) || (item.isUsable !== undefined && !item.isUsable)}
+                  style={[
+                    styles.card,
+                    (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }
+                  ]}
+                >
+                  <Image
+                    source={getCardImageSource(item.id ?? item)}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         </View>
-      </View>
-      
-      {/* 버튼 영역 */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
-          onPress={handleGetCard} 
-          disabled={!slimeWarViewModel.isMyTurn}
-        >
-          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>더미</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
-          onPress={handleHero} 
-          disabled={!slimeWarViewModel.isMyTurn}
-        >
-          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>흡수</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
-          onPress={handleMove} 
-          disabled={!slimeWarViewModel.isMyTurn}
-        >
-          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>이동</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
-          onPress={handlePass} 
-          disabled={!slimeWarViewModel.isMyTurn}
-        >
-          <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>패스</Text>
-        </TouchableOpacity>
-      </View>
+        
+        {/* 버튼 영역 */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity 
+            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            onPress={handleGetCard} 
+            disabled={!slimeWarViewModel.isMyTurn}
+          >
+            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>더미</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            onPress={handleHero} 
+            disabled={!slimeWarViewModel.isMyTurn}
+          >
+            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>흡수</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            onPress={handleMove} 
+            disabled={!slimeWarViewModel.isMyTurn}
+          >
+            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>이동</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            onPress={handlePass} 
+            disabled={!slimeWarViewModel.isMyTurn}
+          >
+            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>패스</Text>
+          </TouchableOpacity>
+        </View>
 
-      {systemMessage ? (
-        <SystemMessage message={systemMessage} onHide={() => setSystemMessage('')} />
-      ) : null}
+        {systemMessage ? (
+          <SystemMessage message={systemMessage} onHide={() => setSystemMessage('')} />
+        ) : null}
 
-      {/* 턴 상태 표시 */}
-      <View style={styles.turnIndicator}>
-        <Text style={styles.turnText}>
-          {slimeWarViewModel.isMyTurn ? '내 턴입니다' : '상대방 턴입니다'}
-        </Text>
-      </View>
-    </SafeAreaView>
+        {/* 턴 상태 표시 */}
+        <View style={styles.turnIndicator}>
+          <Text style={styles.turnText}>
+            {slimeWarViewModel.isMyTurn ? '내 턴입니다' : '상대방 턴입니다'}
+          </Text>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 });
 
