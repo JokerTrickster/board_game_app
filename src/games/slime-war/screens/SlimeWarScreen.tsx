@@ -139,7 +139,7 @@ const SlimeWarScreen: React.FC = observer(() => {
         const kingX = slimeWarViewModel.kingIndex % GRID_SIZE;
         const kingY = Math.floor(slimeWarViewModel.kingIndex / GRID_SIZE );
         const isKing = kingX === col && kingY === row;
-        const userId = slimeWarViewModel.gameMap[row][col];
+        const userId = slimeWarViewModel.gameMap[col][row];
 
         let slimeImage = null;
         let slimeColorType = null;
@@ -151,10 +151,10 @@ const SlimeWarScreen: React.FC = observer(() => {
 
         if (userId !== 0) {
           slimeImage = getSlimeImage(slimeColorType ?? 0);
+          console.log("slimeImage", row,col);
         }
-
         cells.push(
-          <View key={`cell-${row}-${col}`} style={styles.cell}>
+          <View key={`cell-${col}-${row}`} style={styles.cell}>
             {isKing && (
               <>
                 {slimeImage && (
@@ -286,13 +286,10 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
 
     const currentIndex = slimeWarViewModel.kingIndex;
-    console.log("현재 왕 인덱스 ,", currentIndex);
     const currentX = currentIndex % GRID_SIZE;
     const currentY = Math.floor(currentIndex / GRID_SIZE );
-    console.log("현재 왕 좌표 ,", currentX, currentY);
     const newX = currentX + (vector[0] * cardInfo.move);
     const newY = currentY + (vector[1] * cardInfo.move);
-    console.log("이동 좌표 ,", newX, newY);
 
     // Check boundaries
     if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
