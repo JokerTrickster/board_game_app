@@ -15,7 +15,7 @@ const GameCard: React.FC<GameCardProps> = ({ title, category, hashtag, image, on
         title === '틀린그림찾기'
             ? require('../assets/images/common/find-it.png')
             : title === '슬라임전쟁'
-                ? require('../assets/images/common/find-it.png')
+                ? require('../assets/images/common/slime-war.png')
             : require('../assets/images/common/default.png');
     
     return (

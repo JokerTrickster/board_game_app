@@ -349,13 +349,22 @@ const SlimeWarScreen: React.FC = observer(() => {
         
         {/* 패 영역 */}
         <View style={styles.handsContainer}>
-          {/* 상대방 패 */}
-          <View style={styles.opponentHandContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.remainingSlimeText}>남은 슬라임: {slimeWarViewModel.remainingSlime}</Text>
-              <Text style={styles.handTitle}>상대방 패</Text>
+          {/* 상단: 남은 슬라임, 상대방 카드, 상대방 히어로 */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 12 }}>
+            {/* 남은 슬라임수 */}
+            <View style={{ alignItems: 'center', marginRight: 12 }}>
+              <Image source={require('../../../assets/icons/slime-war/common/rest_slime.png')} style={{ width: 36, height: 36 }} />
+              <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#333', marginTop: 2 }}>
+                x {slimeWarViewModel.remainingSlime}
+              </Text>
             </View>
-            <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
+            {/* 상대방 카드 스크롤 */}
+            <ScrollView
+              horizontal
+              contentContainerStyle={[styles.handScrollView, { flexGrow: 1 }]}
+              showsHorizontalScrollIndicator={false}
+              style={{ flex: 1 }}
+            >
               {opponentHand.map((item, index) => (
                 <View key={`opponent-card-${item.id ?? index}`} style={styles.card}>
                   <Image
@@ -366,17 +375,38 @@ const SlimeWarScreen: React.FC = observer(() => {
                 </View>
               ))}
             </ScrollView>
-          </View>
-          {/* 본인 패 */}
-          <View style={styles.playerHandContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.handTitle}>본인 패</Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: 18, marginRight: 4 }}>🦸</Text>
-                <Text style={{ fontSize: 16 }}>{heroCount}</Text>
-              </View>
+            {/* 상대방 히어로 카드 */}
+            <View style={[styles.card, { marginLeft: 12, alignItems: 'center', justifyContent: 'center' }]}>
+              <Image
+                source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
+                style={styles.cardImage}
+                resizeMode="contain"
+              />
+              <Text style={{
+                position: 'absolute',
+                right: 8,
+                top: 4,
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#333',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                borderRadius: 8,
+                paddingHorizontal: 4,
+              }}>
+                {slimeWarViewModel.opponentHeroCount ?? 0}
+              </Text>
             </View>
-            <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
+          </View>
+
+          {/* 하단: 내 카드, 내 히어로 */}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 12 }}>
+            {/* 내 카드 스크롤 */}
+            <ScrollView
+              horizontal
+              contentContainerStyle={[styles.handScrollView, { flexGrow: 1 }]}
+              showsHorizontalScrollIndicator={false}
+              style={{ flex: 1 }}
+            >
               {playerHand.map((item, index) => (
                 <TouchableOpacity
                   key={`player-card-${item.id ?? index}`}
@@ -395,6 +425,27 @@ const SlimeWarScreen: React.FC = observer(() => {
                 </TouchableOpacity>
               ))}
             </ScrollView>
+            {/* 내 히어로 카드 */}
+            <View style={[styles.card, { marginLeft: 12, alignItems: 'center', justifyContent: 'center' }]}>
+              <Image
+                source={slimeWarViewModel.userColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
+                style={styles.cardImage}
+                resizeMode="contain"
+              />
+              <Text style={{
+                position: 'absolute',
+                right: 8,
+                top: 4,
+                fontSize: 16,
+                fontWeight: 'bold',
+                color: '#333',
+                backgroundColor: 'rgba(255,255,255,0.7)',
+                borderRadius: 8,
+                paddingHorizontal: 4,
+              }}>
+                {slimeWarViewModel.userHeroCount ?? 0}
+              </Text>
+            </View>
           </View>
         </View>
         

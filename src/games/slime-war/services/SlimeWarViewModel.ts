@@ -15,6 +15,8 @@ class SlimeWarViewModel {
     gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(0));
     userColorType = 0;
     opponentColorType = 0;
+    userHeroCount = 0;
+    opponentHeroCount = 0;
     userID = 0;
     opponentID = 0;
     isMyTurn = false;
@@ -36,6 +38,8 @@ class SlimeWarViewModel {
             setOpponentColorType: action,
             setIsMyTurn: action,
             updateTurn: action,
+            setUserHeroCount: action,
+            setOpponentHeroCount: action,
         });
     }
     setUserColorType(colorType: number) {
@@ -43,6 +47,12 @@ class SlimeWarViewModel {
     }
     setOpponentColorType(colorType: number) {
         this.opponentColorType = colorType;
+    }
+    setUserHeroCount(heroCount: number) {
+        this.userHeroCount = heroCount;
+    }
+    setOpponentHeroCount(heroCount: number) {
+        this.opponentHeroCount = heroCount;
     }
     /*
      * 슬라임 포지션을 이용하여 게임 맵을 초기화합니다.

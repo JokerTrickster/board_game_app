@@ -82,8 +82,14 @@ class SlimeWarWebSocketService {
                 // 컬러타입 저장
                 if (data.users[0].id === this.userID) {
                     slimeWarViewModel.setUserColorType(data.users[0].colorType);
-                } else {
+                    slimeWarViewModel.setUserHeroCount(data.users[0].heroCardCount);
                     slimeWarViewModel.setOpponentColorType(data.users[1].colorType);
+                    slimeWarViewModel.setOpponentHeroCount(data.users[1].heroCardCount);
+                } else {
+                    slimeWarViewModel.setOpponentColorType(data.users[0].colorType);
+                    slimeWarViewModel.setOpponentHeroCount(data.users[0].heroCardCount);
+                    slimeWarViewModel.setUserColorType(data.users[1].colorType);
+                    slimeWarViewModel.setUserHeroCount(data.users[1].heroCardCount);
                 }
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
