@@ -12,7 +12,7 @@ class SlimeWarViewModel {
     canMoveCardList: any[] = [];
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
     opponentCardList: any[] = []; // 상대방 카드 
-    gameMap: number[][] = Array(9).fill(null).map(() => Array(9).fill(0));
+    gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(0));
     userColorType = 0;
     opponentColorType = 0;
     userID = 0;
@@ -52,7 +52,7 @@ class SlimeWarViewModel {
         const GRID_SIZE = 9; // 그리드의 크기
 
         // 9x9 맵 생성: 모든 셀은 기본값 0으로 초기화
-        this.gameMap = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
+        this.gameMap = Array.from({ length: GRID_SIZE+1 }, () => Array(GRID_SIZE+1).fill(0));
 
         // 각 사용자 별로 슬라임 위치 적용
         users.forEach(user => {

@@ -78,6 +78,13 @@ class SlimeWarWebSocketService {
                 gameService.setUsers(data.users);
                 // 맵 정보 저장
                 slimeWarViewModel.setGameMap(data.users);
+
+                // 컬러타입 저장
+                if (data.users[0].id === this.userID) {
+                    slimeWarViewModel.setUserColorType(data.users[0].colorType);
+                } else {
+                    slimeWarViewModel.setOpponentColorType(data.users[1].colorType);
+                }
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
                   if (user.id === this.userID) {
