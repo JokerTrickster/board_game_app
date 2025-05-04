@@ -89,6 +89,7 @@ const SlimeWarScreen: React.FC = observer(() => {
   const heroCount = slimeWarViewModel.hero ?? 0;
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [buttonCooldown, setButtonCooldown] = useState(false);
 
   // 매 턴마다 타이머 리셋 및 타임아웃 처리
   useEffect(() => {
@@ -184,6 +185,9 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
 
   const handleGetCard = () => {
+    if (buttonCooldown) return;
+    setButtonCooldown(true);
+    setTimeout(() => setButtonCooldown(false), 1000);
     if (!slimeWarViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
@@ -204,6 +208,9 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
   
   const handleHero = () => {
+    if (buttonCooldown) return;
+    setButtonCooldown(true);
+    setTimeout(() => setButtonCooldown(false), 1000);
     if (!slimeWarViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
@@ -241,6 +248,9 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
   
   const handleMove = () => {
+    if (buttonCooldown) return;
+    setButtonCooldown(true);
+    setTimeout(() => setButtonCooldown(false), 1000);
     if (!slimeWarViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
@@ -251,6 +261,9 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
   
   const handlePass = () => {
+    if (buttonCooldown) return;
+    setButtonCooldown(true);
+    setTimeout(() => setButtonCooldown(false), 1000);
     if (!slimeWarViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
@@ -458,32 +471,32 @@ const SlimeWarScreen: React.FC = observer(() => {
         {/* 버튼 영역 */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity 
-            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handleGetCard} 
-            disabled={!slimeWarViewModel.isMyTurn}
+            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>더미</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>더미</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handleHero} 
-            disabled={!slimeWarViewModel.isMyTurn}
+            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>흡수</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>흡수</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handleMove} 
-            disabled={!slimeWarViewModel.isMyTurn}
+            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>이동</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>이동</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.button, !slimeWarViewModel.isMyTurn && { opacity: 0.5 }]} 
+            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handlePass} 
-            disabled={!slimeWarViewModel.isMyTurn}
+            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, !slimeWarViewModel.isMyTurn && { color: '#999999' }]}>패스</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>패스</Text>
           </TouchableOpacity>
         </View>
 
