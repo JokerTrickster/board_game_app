@@ -243,6 +243,11 @@ const GameDetailScreen: React.FC = () => {
                             source={require('../assets/images/game_detail/find_it_title.png')}
                             style={styles.gameTitleImage}
                         />
+                    ) : game.title === '슬라임전쟁' ? (
+                        <Image
+                            source={require('../assets/images/game_detail/slime_war_title.png')}
+                            style={styles.gameTitleImage}
+                        />
                     ) : (
                         <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
                     )}
