@@ -78,6 +78,25 @@ class SlimeWarWebSocketService {
                 gameService.setUsers(data.users);
                 // 맵 정보 저장
                 slimeWarViewModel.setGameMap(data.users);
+
+                // 컬러타입 저장
+                if (data.users.length === 2) {
+                    if (data.users[0].id === this.userID) {
+                        slimeWarViewModel.setUserColorType(data.users[0].colorType);
+                        slimeWarViewModel.setUserHeroCount(data.users[0].heroCardCount);
+                        slimeWarViewModel.setUserID(data.users[0].id);
+                        slimeWarViewModel.setOpponentColorType(data.users[1].colorType);
+                        slimeWarViewModel.setOpponentHeroCount(data.users[1].heroCardCount);
+                        slimeWarViewModel.setOpponentID(data.users[1].id);
+                    } else {
+                        slimeWarViewModel.setOpponentColorType(data.users[0].colorType);
+                        slimeWarViewModel.setOpponentHeroCount(data.users[0].heroCardCount);
+                        slimeWarViewModel.setOpponentID(data.users[0].id);
+                        slimeWarViewModel.setUserID(data.users[1].id);
+                        slimeWarViewModel.setUserColorType(data.users[1].colorType);
+                        slimeWarViewModel.setUserHeroCount(data.users[1].heroCardCount);
+                    }
+                }
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
                   if (user.id === this.userID) {
@@ -282,7 +301,7 @@ class SlimeWarWebSocketService {
     }
     
     sendNextRoundEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { userID: this.userID, round: this.round });
     }
     sendTimeoutEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round });

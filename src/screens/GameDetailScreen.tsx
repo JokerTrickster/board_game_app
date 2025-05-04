@@ -243,6 +243,11 @@ const GameDetailScreen: React.FC = () => {
                             source={require('../assets/images/game_detail/find_it_title.png')}
                             style={styles.gameTitleImage}
                         />
+                    ) : game.title === '슬라임전쟁' ? (
+                        <Image
+                            source={require('../assets/images/game_detail/slime_war_title.png')}
+                            style={styles.gameTitleImage}
+                        />
                     ) : (
                         <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
                     )}
@@ -259,7 +264,7 @@ const GameDetailScreen: React.FC = () => {
                                     game.title === '틀린그림찾기'
                                         ? require('../assets/images/common/find-it.png')
                                         : game.title === '슬라임전쟁'
-                                            ? require('../assets/images/common/find-it.png')
+                                            ? require('../assets/images/common/slime-war.png')
                                             : require('../assets/images/common/default.png')
                                 }
                                 style={styles.gameImage}
