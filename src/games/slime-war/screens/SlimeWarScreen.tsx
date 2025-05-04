@@ -8,9 +8,67 @@ import { observer } from 'mobx-react-lite';
 import { slimeWarViewModel } from '../services/SlimeWarViewModel';
 import SlimeWarMultiHeader from '../../../components/SlimeWarMultiHeader';
 import cardData from '../../../assets/data/cards.json';
+
 const GRID_SIZE = 9;
 
 const TURN_TIME = 30; // 턴당 제한 시간(초)
+
+// 카드 이미지 매핑 (id: require)
+const cardImageMap: { [key: number]: any } = {
+  1: require('../../../assets/icons/slime-war/card/card_0_1.png'),
+  2: require('../../../assets/icons/slime-war/card/card_0_1.png'),
+  3: require('../../../assets/icons/slime-war/card/card_0_2.png'),
+  4: require('../../../assets/icons/slime-war/card/card_0_2.png'),
+  5: require('../../../assets/icons/slime-war/card/card_0_3.png'),
+  6: require('../../../assets/icons/slime-war/card/card_0_3.png'),
+  7: require('../../../assets/icons/slime-war/card/card_1_1.png'),
+  8: require('../../../assets/icons/slime-war/card/card_1_1.png'),
+  9: require('../../../assets/icons/slime-war/card/card_1_2.png'),
+  10: require('../../../assets/icons/slime-war/card/card_1_2.png'),
+  11: require('../../../assets/icons/slime-war/card/card_1_3.png'),
+  12: require('../../../assets/icons/slime-war/card/card_1_3.png'),
+  13: require('../../../assets/icons/slime-war/card/card_2_1.png'),
+  14: require('../../../assets/icons/slime-war/card/card_2_1.png'),
+  15: require('../../../assets/icons/slime-war/card/card_2_2.png'),
+  16: require('../../../assets/icons/slime-war/card/card_2_2.png'),
+  17: require('../../../assets/icons/slime-war/card/card_2_3.png'),
+  18: require('../../../assets/icons/slime-war/card/card_2_3.png'),
+  19: require('../../../assets/icons/slime-war/card/card_3_1.png'),
+  20: require('../../../assets/icons/slime-war/card/card_3_1.png'),
+  21: require('../../../assets/icons/slime-war/card/card_3_2.png'),
+  22: require('../../../assets/icons/slime-war/card/card_3_2.png'),
+  23: require('../../../assets/icons/slime-war/card/card_3_3.png'),
+  24: require('../../../assets/icons/slime-war/card/card_3_3.png'),
+  25: require('../../../assets/icons/slime-war/card/card_4_1.png'),
+  26: require('../../../assets/icons/slime-war/card/card_4_1.png'),
+  27: require('../../../assets/icons/slime-war/card/card_4_2.png'),
+  28: require('../../../assets/icons/slime-war/card/card_4_2.png'),
+  29: require('../../../assets/icons/slime-war/card/card_4_3.png'),
+  30: require('../../../assets/icons/slime-war/card/card_4_3.png'),
+  31: require('../../../assets/icons/slime-war/card/card_5_1.png'),
+  32: require('../../../assets/icons/slime-war/card/card_5_1.png'),
+  33: require('../../../assets/icons/slime-war/card/card_5_2.png'),
+  34: require('../../../assets/icons/slime-war/card/card_5_2.png'),
+  35: require('../../../assets/icons/slime-war/card/card_5_3.png'),
+  36: require('../../../assets/icons/slime-war/card/card_5_3.png'),
+  37: require('../../../assets/icons/slime-war/card/card_6_1.png'),
+  38: require('../../../assets/icons/slime-war/card/card_6_1.png'),
+  39: require('../../../assets/icons/slime-war/card/card_6_2.png'),
+  40: require('../../../assets/icons/slime-war/card/card_6_2.png'),
+  41: require('../../../assets/icons/slime-war/card/card_6_3.png'),
+  42: require('../../../assets/icons/slime-war/card/card_6_3.png'),
+  43: require('../../../assets/icons/slime-war/card/card_7_1.png'),
+  44: require('../../../assets/icons/slime-war/card/card_7_1.png'),
+  45: require('../../../assets/icons/slime-war/card/card_7_2.png'),
+  46: require('../../../assets/icons/slime-war/card/card_7_2.png'),
+  47: require('../../../assets/icons/slime-war/card/card_7_3.png'),
+  48: require('../../../assets/icons/slime-war/card/card_7_3.png'),
+};
+
+// 카드 ID로 이미지 경로 반환
+const getCardImageSource = (cardId: number) => {
+  return cardImageMap[cardId] ?? null;
+};
 
 const SlimeWarScreen: React.FC = observer(() => {
   const [isCardSelectMode, setIsCardSelectMode] = React.useState<null | 'HERO' | 'MOVE'>(null);
@@ -135,6 +193,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       const currentIndex = slimeWarViewModel.kingIndex;
       const currentX = currentIndex % GRID_SIZE;
       const currentY = Math.floor(currentIndex / GRID_SIZE);
+      console.log("현재 왕 좌표 ,", currentX, currentY);
       const newX = currentX + vector[0] * move;
       const newY = currentY + vector[1] * move;
       if (newX < 0 || newX >= GRID_SIZE || newY < 0 || newY >= GRID_SIZE) return false;
@@ -180,7 +239,7 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
     console.log('cardInfo', cardInfo);
 
-    const GRID_SIZE = 9;
+    const GRID_SIZE = 8;
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1],
       1: [0, -1],
@@ -200,13 +259,16 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
 
     const currentIndex = slimeWarViewModel.kingIndex;
+    console.log("현재 왕 인덱스 ,", currentIndex);
     const currentX = currentIndex % GRID_SIZE;
     const currentY = Math.floor(currentIndex / GRID_SIZE);
-    const newX = currentX + vector[0] * cardInfo.move;
-    const newY = currentY + vector[1] * cardInfo.move;
+    console.log("현재 왕 좌표 ,", currentX, currentY);
+    const newX = currentX + (vector[0] * cardInfo.move);
+    const newY = currentY + (vector[1] * cardInfo.move);
+    console.log("이동 좌표 ,", newX, newY);
 
     // Check boundaries
-    if (newX < 0 || newX >= GRID_SIZE || newY < 0 || newY >= GRID_SIZE) {
+    if (newX < 0 || newX > GRID_SIZE || newY < 0 || newY > GRID_SIZE) {
       setSystemMessage('사용 불가능한 카드입니다.');
       return;
     } else {
@@ -267,7 +329,11 @@ const SlimeWarScreen: React.FC = observer(() => {
           <ScrollView horizontal contentContainerStyle={styles.handScrollView} showsHorizontalScrollIndicator={false}>
             {opponentHand.map((item, index) => (
               <View key={`opponent-card-${item.id ?? index}`} style={styles.card}>
-                <Text style={styles.cardText}>S{item.id ?? item}</Text>
+                <Image
+                  source={getCardImageSource(item.id ?? item)}
+                  style={styles.cardImage}
+                  resizeMode="contain"
+                />
               </View>
             ))}
           </ScrollView>
@@ -287,15 +353,16 @@ const SlimeWarScreen: React.FC = observer(() => {
                 key={`player-card-${item.id ?? index}`}
                 onPress={() => handleCardPress(item)}
                 disabled={!(slimeWarViewModel.isMyTurn && (isMoveMode || isCardSelectMode === 'HERO')) || (item.isUsable !== undefined && !item.isUsable)}
-                style={[styles.card, (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }]}
+                style={[
+                  styles.card,
+                  (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }
+                ]}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <Text style={styles.cardText}>P{item.id ?? item}</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 16, marginLeft: 4, color: heroCount > 0 ? '#222' : '#aaa' }}>🦸</Text>
-                    <Text style={{ fontSize: 14, color: heroCount > 0 ? '#222' : '#aaa' }}>{heroCount}</Text>
-                  </View>
-                </View>
+                <Image
+                  source={getCardImageSource(item.id ?? item)}
+                  style={styles.cardImage}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -334,18 +401,6 @@ const SlimeWarScreen: React.FC = observer(() => {
         </TouchableOpacity>
       </View>
 
-      {/* Render owned cards (assumed to be in slimeWarViewModel.cardList) */}
-      <View style={styles.cardContainer}>
-        {slimeWarViewModel.cardList.map((card: { id: number, direction: number; move: number; image: string }, index: number) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.cardItem}
-            onPress={() => handleCardPress(card.id)}
-          >
-            <Image source={{ uri: card.image }} style={styles.cardImage} />
-          </TouchableOpacity>
-        ))}
-      </View>
       {systemMessage ? (
         <SystemMessage message={systemMessage} onHide={() => setSystemMessage('')} />
       ) : null}
