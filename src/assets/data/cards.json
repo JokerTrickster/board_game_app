@@ -41,17 +41,17 @@
   { "id":35, "direction": 5, "move": 3, "image": "card_5_3.png", "description": "왼쪽 아래로 세칸 이동" },
   { "id":36, "direction": 5, "move": 3, "image": "card_5_3.png", "description": "왼쪽 아래로 세칸 이동" },
 
-  { "id":37, "direction": 6, "move": 1, "image": "card_6_1.png", "description": "오른쪽 아래로 한칸 이동" },
-  { "id":38, "direction": 6, "move": 1, "image": "card_6_1.png", "description": "오른쪽 아래로 한칸 이동" },
-  { "id":39, "direction": 6, "move": 2, "image": "card_6_2.png", "description": "오른쪽 아래로 두칸 이동" },
-  { "id":40, "direction": 6, "move": 2, "image": "card_6_2.png", "description": "오른쪽 아래로 두칸 이동" },
-  { "id":41, "direction": 6, "move": 3, "image": "card_6_3.png", "description": "오른쪽 아래로 세칸 이동" },
-  { "id":42, "direction": 6, "move": 3, "image": "card_6_3.png", "description": "오른쪽 아래로 세칸 이동" },
+  { "id":37, "direction": 6, "move": 1, "image": "card_6_1.png", "description": "아래로 한칸 이동" },
+  { "id":38, "direction": 6, "move": 1, "image": "card_6_1.png", "description": "아래로 한칸 이동" },
+  { "id":39, "direction": 6, "move": 2, "image": "card_6_2.png", "description": "아래로 두칸 이동" },
+  { "id":40, "direction": 6, "move": 2, "image": "card_6_2.png", "description": "아래로 두칸 이동" },
+  { "id":41, "direction": 6, "move": 3, "image": "card_6_3.png", "description": "아래로 세칸 이동" },
+  { "id":42, "direction": 6, "move": 3, "image": "card_6_3.png", "description": "아래로 세칸 이동" },
 
-  { "id":43, "direction": 7, "move": 1, "image": "card_7_1.png", "description": "왼쪽으로 한칸 이동" },
-  { "id":44, "direction": 7, "move": 1, "image": "card_7_1.png", "description": "왼쪽으로 한칸 이동" },
-  { "id":45, "direction": 7, "move": 2, "image": "card_7_2.png", "description": "왼쪽으로 두칸 이동" },
-  { "id":46, "direction": 7, "move": 2, "image": "card_7_2.png", "description": "왼쪽으로 두칸 이동" },
-  { "id":47, "direction": 7, "move": 3, "image": "card_7_3.png", "description": "왼쪽으로 세칸 이동" },
-  { "id":48, "direction": 7, "move": 3, "image": "card_7_3.png", "description": "왼쪽으로 세칸 이동" }
+  { "id":43, "direction": 7, "move": 1, "image": "card_7_1.png", "description": "오른쪽 아래로 한칸 이동" },
+  { "id":44, "direction": 7, "move": 1, "image": "card_7_1.png", "description": "오른쪽 아래로 한칸 이동" },
+  { "id":45, "direction": 7, "move": 2, "image": "card_7_2.png", "description": "오른쪽 아래로 두칸 이동" },
+  { "id":46, "direction": 7, "move": 2, "image": "card_7_2.png", "description": "오른쪽 아래로 두칸 이동" },
+  { "id":47, "direction": 7, "move": 3, "image": "card_7_3.png", "description": "오른쪽 아래로 세칸 이동" },
+  { "id":48, "direction": 7, "move": 3, "image": "card_7_3.png", "description": "오른쪽 아래로 세칸 이동" }
 ]
