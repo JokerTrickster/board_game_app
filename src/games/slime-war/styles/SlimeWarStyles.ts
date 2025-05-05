@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+const CELL_SIZE = 32; // 한 칸 크기(px), 필요에 따라 조정
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -13,21 +15,38 @@ export default StyleSheet.create({
     marginBottom: 10
   },
   boardContainer: {
-    height: '40%',
-    aspectRatio: 1, // 정사각형 격자
-    backgroundColor: '#fff',
+    width: CELL_SIZE * 9,
+    height: CELL_SIZE * 9,
+    alignSelf: 'center', // 화면 중앙 정렬
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 2,
     borderColor: '#000',
-    marginBottom: 4,
+    marginVertical: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
   },
   row: {
-    flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
-  cell: {
-    flex: 1,
+  cellEven: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    backgroundColor: 'rgba(200,255,150,0.45)', // 연한 연두+투명
     borderWidth: 0.5,
-    borderColor: '#ccc'
+    borderColor: 'rgba(0,0,0,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cellOdd: {
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    backgroundColor: 'rgba(0,0,0,0.10)', // 연한 검정+투명
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,0,0,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   handsContainer: {
     marginBottom: 10,

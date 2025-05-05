@@ -14,6 +14,8 @@ const GRID_SIZE = 9; // 0~8까지 9칸
 
 const TURN_TIME = 30; // 턴당 제한 시간(초)
 
+const CELL_SIZE = 32; // 스타일과 동일하게 맞춰주세요
+
 // 카드 이미지 매핑 (id: require)
 const cardImageMap: { [key: number]: any } = {
   1: require('../../../assets/icons/slime-war/card/card_0_1.png'),
@@ -136,6 +138,8 @@ const SlimeWarScreen: React.FC = observer(() => {
     for (let row = 1; row <= GRID_SIZE; row++) {
       let cells = [];
       for (let col = 1; col <= GRID_SIZE; col++) {
+        // 홀짝 판별
+        const isEven = (row + col) % 2 === 0;
         // kingIndex를 (x, y)로 변환
         let kingX = slimeWarViewModel.kingIndex % GRID_SIZE;
         let kingY = Math.floor(slimeWarViewModel.kingIndex / GRID_SIZE);
@@ -157,17 +161,26 @@ const SlimeWarScreen: React.FC = observer(() => {
           slimeImage = getSlimeImage(slimeColorType ?? 0);
         }
         cells.push(
-          <View key={`cell-${col}-${row}`} style={styles.cell}>
+          <View
+            key={`cell-${col}-${row}`}
+            style={isEven ? styles.cellEven : styles.cellOdd}
+          >
             {isKing && (
               <>
                 {slimeImage && (
-                  <Image source={slimeImage} style={{ width: 32, height: 32, position: 'absolute' }} />
+                  <Image
+                    source={slimeImage}
+                    style={{ width: 28, height: 28, position: 'absolute' }}
+                  />
                 )}
-                <Image source={require('../../../assets/icons/slime-war/common/crown.png')} style={{ width: 24, height: 16, position: 'absolute', top: -8, left: 4 }} />
+                <Image
+                  source={require('../../../assets/icons/slime-war/common/crown.png')}
+                  style={{ width: 20, height: 14, position: 'absolute', top: -6, left: 4 }}
+                />
               </>
             )}
             {!isKing && slimeImage && (
-              <Image source={slimeImage} style={{ width: 32, height: 32 }} />
+              <Image source={slimeImage} style={{ width: 28, height: 28 }} />
             )}
           </View>
         );
