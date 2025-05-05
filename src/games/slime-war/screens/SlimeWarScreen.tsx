@@ -170,17 +170,17 @@ const SlimeWarScreen: React.FC = observer(() => {
                 {slimeImage && (
                   <Image
                     source={slimeImage}
-                    style={{ width: 28, height: 28, position: 'absolute' }}
+                    style={{ width: 32, height: 32, position: 'absolute' }}
                   />
                 )}
                 <Image
                   source={require('../../../assets/icons/slime-war/common/crown.png')}
-                  style={{ width: 20, height: 14, position: 'absolute', top: -6, left: 4 }}
+                  style={{ width: 24, height: 18, position: 'absolute', top: -6, left: 6 }}
                 />
               </>
             )}
             {!isKing && slimeImage && (
-              <Image source={slimeImage} style={{ width: 28, height: 28 }} />
+              <Image source={slimeImage} style={{ width: 32, height: 32 }} />
             )}
           </View>
         );
@@ -359,23 +359,26 @@ const SlimeWarScreen: React.FC = observer(() => {
       style={{ flex: 1, width: '100%', height: '100%' }}
       resizeMode="cover"
     >
+
       <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
         <SlimeWarMultiHeader />
         
+
         {/* 타이머 바 */}
         <View style={styles.timerContainer}>
           <View style={styles.timerBar}>
-            <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#e74c3c' : '#4CAF50' }} />
+            <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#B0C1B1' : '#F47660' }} />
           </View>
           <Text style={styles.timerText}>{timer}s</Text>
         </View>
-        
         {/* 나무 + 격자 */}
-        <View style={{ alignItems: 'center' }}>
+        <View style={styles.topContainer}>
+          
           <Image
             source={require('../../../assets/icons/slime-war/common/background_tree.png')}
             style={styles.treeImage}
           />
+          
           <View style={styles.boardContainer}>
             {renderGrid()}
           </View>
@@ -384,7 +387,7 @@ const SlimeWarScreen: React.FC = observer(() => {
         {/* 패 영역 */}
         <View style={styles.handsContainer}>
           {/* 상단: 남은 슬라임, 상대방 카드, 상대방 히어로 */}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 12 }}>
+          <View style={styles.opponentHandContainer}>
             {/* 남은 슬라임수 */}
             <View style={{ alignItems: 'center', marginRight: 12 }}>
               <Image source={require('../../../assets/icons/slime-war/common/rest_slime.png')} style={{ width: 36, height: 36 }} />
@@ -400,30 +403,30 @@ const SlimeWarScreen: React.FC = observer(() => {
               style={{ flex: 1 }}
             >
               {opponentHand.map((item, index) => (
-                <View key={`opponent-card-${item.id ?? index}`} style={styles.card}>
+                <View key={`opponent-card-${item.id ?? index}`} style={styles.opponentCard}>
                   <Image
                     source={getCardImageSource(item.id ?? item)}
-                    style={styles.cardImage}
+                    style={styles.opponentCardImage}
                     resizeMode="contain"
                   />
                 </View>
               ))}
+              {/* 상대방 히어로 카드 */}
+              <View style={[styles.opponentCard, styles.heroCardContainer]}>
+                <Image
+                  source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
+                  style={styles.cardImage}
+                  resizeMode="contain"
+                />
+                <Text style={styles.heroCardText}>
+                  {slimeWarViewModel.opponentHeroCount ?? 0}
+                </Text>
+              </View>
             </ScrollView>
-            {/* 상대방 히어로 카드 */}
-            <View style={[styles.card, styles.heroCardContainer]}>
-              <Image
-                source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
-                style={styles.cardImage}
-                resizeMode="contain"
-              />
-              <Text style={styles.heroCardText}>
-                {slimeWarViewModel.opponentHeroCount ?? 0}
-              </Text>
-            </View>
           </View>
 
           {/* 하단: 내 카드, 내 히어로 */}
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 12 }}>
+          <View style={styles.userHandContainer}>
             {/* 내 카드 스크롤 */}
             <ScrollView
               horizontal
@@ -470,28 +473,28 @@ const SlimeWarScreen: React.FC = observer(() => {
             onPress={handleGetCard} 
             disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>더미</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>더미</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handleHero} 
             disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>흡수</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>흡수</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handleMove} 
             disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>이동</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>이동</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
             onPress={handlePass} 
             disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#999999' }]}>패스</Text>
+            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>패스</Text>
           </TouchableOpacity>
         </View>
 

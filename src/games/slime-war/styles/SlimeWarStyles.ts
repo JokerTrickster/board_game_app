@@ -1,19 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-const CELL_SIZE = 32; // 한 칸 크기(px), 필요에 따라 조정
+const CELL_SIZE = 36; // 한 칸 크기(px), 필요에 따라 조정
 
 export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    padding: 10
+    padding: 10,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10
-  },
+
   boardContainer: {
     width: CELL_SIZE * 9,
     height: CELL_SIZE * 9,
@@ -21,11 +16,9 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.2)',
-    borderWidth: 2,
-    borderColor: '#000',
-    marginVertical: 16,
-    borderRadius: 12,
+    marginVertical: 12,
     overflow: 'hidden',
+    marginTop: 0,
   },
   row: {
     flexDirection: 'row',
@@ -52,7 +45,14 @@ export default StyleSheet.create({
     marginBottom: 10,
   },
   opponentHandContainer: {
-    marginBottom: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 0, 0, 0.5)', // 빨간색에 50% 투명도 적용
+    borderRadius: 30,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginBottom: 12,
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   playerHandContainer: {
     marginBottom: 5,
@@ -65,12 +65,26 @@ export default StyleSheet.create({
   handScrollView: {
     alignItems: 'center',
   },
+  userHandContainer: {
+    borderWidth: 1,
+    borderColor: 'rgba(0, 0, 255, 0.5)', // 파란색에 50% 투명도 적용
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
   card: {
     width: 50,
     height: 70,
     backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#000',
+    marginRight: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  opponentCard: {
+    width: 40,
+    height: 60,
+    backgroundColor: '#fff',
     marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center'
@@ -87,9 +101,11 @@ export default StyleSheet.create({
   button: {
     flex: 1,
     marginHorizontal: 5,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#35C7C6',
     paddingVertical: 10,
-    borderRadius: 5
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ffffff',
   },
   buttonText: {
     textAlign: 'center',
@@ -134,6 +150,11 @@ export default StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+  opponentCardImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
   turnIndicator: {
     position: 'absolute',
     top: 10,
@@ -170,7 +191,12 @@ export default StyleSheet.create({
     marginTop: 2,
   },
   timerContainer: {
-    marginHorizontal: 16,
+    marginTop: -20,
+    marginHorizontal: 90,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    borderRadius: 8,
+    zIndex:1,
   },
   timerBar: {
     height: 16,
@@ -192,5 +218,9 @@ export default StyleSheet.create({
     height: 48, // 이미지 높이에 맞게 조정
     alignSelf: 'center',
     resizeMode: 'contain',
+  },
+  topContainer: {
+    alignItems: 'center',
+    marginTop:-20,
   },
 });
