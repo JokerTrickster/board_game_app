@@ -370,9 +370,15 @@ const SlimeWarScreen: React.FC = observer(() => {
           <Text style={styles.timerText}>{timer}s</Text>
         </View>
         
-        {/* 9x9 격자 */}
-        <View style={styles.boardContainer}>
-          {renderGrid()}
+        {/* 나무 + 격자 */}
+        <View style={{ alignItems: 'center' }}>
+          <Image
+            source={require('../../../assets/icons/slime-war/common/background_tree.png')}
+            style={styles.treeImage}
+          />
+          <View style={styles.boardContainer}>
+            {renderGrid()}
+          </View>
         </View>
         
         {/* 패 영역 */}

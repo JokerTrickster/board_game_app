@@ -171,7 +171,6 @@ export default StyleSheet.create({
   },
   timerContainer: {
     marginHorizontal: 16,
-    marginBottom: 8,
   },
   timerBar: {
     height: 16,
@@ -188,5 +187,10 @@ export default StyleSheet.create({
     fontSize: 12,
     color: '#333',
   },
-  
+  treeImage: {
+    width: CELL_SIZE * 9,
+    height: 48, // 이미지 높이에 맞게 조정
+    alignSelf: 'center',
+    resizeMode: 'contain',
+  },
 });
