@@ -128,4 +128,46 @@ export default StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  heroCardText: {
+    position: 'absolute',
+    right: 8,
+    top: 4,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderRadius: 8,
+    paddingHorizontal: 4,
+  },
+  heroCardContainer: {
+    marginLeft: 12,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  restSlimeText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 2,
+  },
+  timerContainer: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+  },
+  timerBar: {
+    height: 16,
+    backgroundColor: '#eee',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  timerText: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+    top: 0,
+    fontSize: 12,
+    color: '#333',
+  },
+  
 });
