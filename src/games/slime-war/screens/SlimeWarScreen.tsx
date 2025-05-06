@@ -235,7 +235,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       !hasHeroCard
     ) {
       setSystemMessage('할 수 있는 행동이 없습니다. 상대방에게 턴을 넘깁니다.');
-      slimeWarWebSocketService.sendNextRoundEvent();
+      slimeWarWebSocketService.sendNextRoundEvent(slimeWarViewModel.opponentCanMove);
     }
   }, [slimeWarViewModel.isMyTurn, canDrawCard, hasMovableCard, hasHeroCard]);
 
@@ -377,18 +377,6 @@ const SlimeWarScreen: React.FC = observer(() => {
     setIsMoveMode(true);
   };
   
-  const handlePass = () => {
-    if (buttonCooldown) return;
-    setButtonCooldown(true);
-    setTimeout(() => setButtonCooldown(false), 1000);
-    if (!slimeWarViewModel.isMyTurn) {
-      setSystemMessage('지금은 당신의 턴이 아닙니다.');
-      return;
-    }
-    
-    setSystemMessage('턴을 패스합니다.');
-    slimeWarWebSocketService.sendNextRoundEvent();
-  };
   // 카드 클릭 핸들러
   const handleCardPress = (card: number) => {
     // Proceed only if either move mode or hero mode is active

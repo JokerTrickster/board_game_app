@@ -88,14 +88,16 @@ class SlimeWarWebSocketService {
                         slimeWarViewModel.setOpponentColorType(data.users[1].colorType);
                         slimeWarViewModel.setOpponentHeroCount(data.users[1].heroCardCount);
                         slimeWarViewModel.setOpponentID(data.users[1].id);
+                        slimeWarViewModel.setOpponentCanMove(data.users[1].canMove);
                     } else {
                         slimeWarViewModel.setOpponentColorType(data.users[0].colorType);
                         slimeWarViewModel.setOpponentHeroCount(data.users[0].heroCardCount);
                         slimeWarViewModel.setOpponentID(data.users[0].id);
+                        slimeWarViewModel.setOpponentCanMove(data.users[0].canMove);
                         slimeWarViewModel.setUserID(data.users[1].id);
                         slimeWarViewModel.setUserColorType(data.users[1].colorType);
                         slimeWarViewModel.setUserHeroCount(data.users[1].heroCardCount);
-                    }
+                    }   
                 }
                 // 카드 정보 저장
                 data.users.forEach((user: any) => {
@@ -300,8 +302,8 @@ class SlimeWarWebSocketService {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "MOVE", { userID: this.userID, cardID: cardId, kingIndex: newIndex });
     }
     
-    sendNextRoundEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { userID: this.userID, round: this.round });
+    sendNextRoundEvent(opponentCanMove: boolean) {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { userID: this.userID, round: this.round, opponentCanMove: opponentCanMove });
     }
     sendTimeoutEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round });

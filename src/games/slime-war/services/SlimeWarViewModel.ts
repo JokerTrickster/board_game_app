@@ -19,6 +19,7 @@ class SlimeWarViewModel {
     opponentHeroCount = 0;
     userID = 0;
     opponentID = 0;
+    opponentCanMove = false;
     isMyTurn = false;
 
     constructor() {
@@ -42,7 +43,11 @@ class SlimeWarViewModel {
             setOpponentHeroCount: action,
             setUserID: action,
             setOpponentID: action,
+            setOpponentCanMove: action,
         });
+    }
+    setOpponentCanMove(canMove: boolean) {
+        this.opponentCanMove = canMove;
     }
     setUserID(userID: number) {
         this.userID = userID;
