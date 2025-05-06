@@ -298,17 +298,17 @@ const GameDetailScreen: React.FC = () => {
                     {/* 혼자하기 버튼 (이미지 + 텍스트) */}
                     <Button
                         onPress={handleSoloPlay}
-                        disabled={false} // 또는 필요한 조건
+                        disabled={game.title === '슬라임전쟁'} // 슬라임전쟁이면 비활성화
                         text="혼자하기"
-                        containerStyle={styles.aloneButton} // 필요 시 개별 스타일 추가
+                        containerStyle={styles.aloneButton}
                         textStyle={styles.soloButtonText}
                     />
                     {/* 함께하기 버튼 (이미지 + 텍스트) */}
                     <Button
                         onPress={() => setTogetherModalVisible(true)}
-                        disabled={false} // 매칭 중일 때 비활성화
+                        disabled={false} // 항상 활성화
                         text="함께하기"
-                        containerStyle={styles.togetherButton} // 필요 시 개별 스타일 추가
+                        containerStyle={styles.togetherButton}
                         textStyle={styles.togetherButtonText}
                     />
                 </View>
