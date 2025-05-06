@@ -144,6 +144,101 @@ const SlimeWarScreen: React.FC = observer(() => {
       slimeWarViewModel.setIsMyTurn(false);
     }
   }, [slimeWarViewModel.round]);
+
+  // 카드 id로 cards.json에서 카드 정보 찾기
+  const getCardInfoById = (id: number) => {
+    return cardData.find((c: any) => c.id === id);
+  };
+
+  // 이동 가능한 카드가 있는지 판별
+  const hasMovableCard = React.useMemo(() => {
+    if (!slimeWarViewModel.isMyTurn) return false;
+    const directionMap: { [key: number]: [number, number] } = {
+      0: [-1, -1],
+      1: [0, -1],
+      2: [1, -1],
+      3: [-1, 0],
+      4: [1, 0],
+      5: [-1, 1],
+      6: [0, 1],
+      7: [1, 1],
+    };
+    let currentIndex = slimeWarViewModel.kingIndex;
+    let currentX = currentIndex % GRID_SIZE;
+    let currentY = Math.floor(currentIndex / GRID_SIZE);
+    if (currentX === 0) {
+      currentX = GRID_SIZE;
+      currentY -= 1;
+    }
+    return playerHand.some((card: any) => {
+      const cardInfo = getCardInfoById(card.id ?? card);
+      if (!cardInfo) return false;
+      const vector = directionMap[cardInfo.direction];
+      if (!vector) return false;
+      const newX = currentX + vector[0] * cardInfo.move;
+      const newY = currentY + vector[1] * cardInfo.move;
+      // 맵 범위 내 & 타겟 셀이 비어있는지 확인
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
+      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
+      // 내 슬라임을 놓을 수 있는 빈 칸만 허용 (상대방 슬라임X, 내 슬라임X, 빈칸만)
+      return targetCellValue === 0;
+    });
+  }, [playerHand, slimeWarViewModel.isMyTurn, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap]);
+
+  // 흡수(영웅) 가능한 카드가 있는지 판별
+  const hasHeroCard = React.useMemo(() => {
+    if (!slimeWarViewModel.isMyTurn) return false;
+    if ((slimeWarViewModel.userHeroCount ?? 0) < 1) return false;
+    if (playerHand.length < 1) return false;
+    const directionMap: { [key: number]: [number, number] } = {
+      0: [-1, -1],
+      1: [0, -1],
+      2: [1, -1],
+      3: [-1, 0],
+      4: [1, 0],
+      5: [-1, 1],
+      6: [0, 1],
+      7: [1, 1],
+    };
+    let currentIndex = slimeWarViewModel.kingIndex;
+    let currentX = currentIndex % GRID_SIZE;
+    let currentY = Math.floor(currentIndex / GRID_SIZE);
+    if (currentX === 0) {
+      currentX = GRID_SIZE;
+      currentY -= 1;
+    }
+    return playerHand.some((card: any) => {
+      const cardInfo = getCardInfoById(card.id ?? card);
+      if (!cardInfo) return false;
+      const vector = directionMap[cardInfo.direction];
+      if (!vector) return false;
+      const newX = currentX + vector[0] * cardInfo.move;
+      const newY = currentY + vector[1] * cardInfo.move;
+      // 맵 범위 내 & 타겟 셀이 상대방 슬라임인지 확인
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
+      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
+      return targetCellValue === slimeWarViewModel.opponentID;
+    });
+  }, [playerHand, slimeWarViewModel.userHeroCount, slimeWarViewModel.isMyTurn, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap, slimeWarViewModel.opponentID]);
+
+  // 더미(카드 뽑기) 가능 여부
+  const canDrawCard = React.useMemo(() => {
+    return slimeWarViewModel.isMyTurn && playerHand.length < 5;
+  }, [playerHand.length, slimeWarViewModel.isMyTurn]);
+
+  // 자기 턴에 모든 버튼이 비활성화라면 자동 턴 넘김
+  useEffect(() => {
+    if (
+      slimeWarViewModel.isMyTurn &&
+      !canDrawCard &&
+      !hasMovableCard &&
+      !hasHeroCard
+    ) {
+      setSystemMessage('할 수 있는 행동이 없습니다. 상대방에게 턴을 넘깁니다.');
+      slimeWarWebSocketService.sendNextRoundEvent();
+    }
+  }, [slimeWarViewModel.isMyTurn, canDrawCard, hasMovableCard, hasHeroCard]);
+
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
     let rows = [];
@@ -478,33 +573,26 @@ const SlimeWarScreen: React.FC = observer(() => {
         
         {/* 버튼 영역 */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
-            onPress={handleGetCard} 
-            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
+          <TouchableOpacity
+            style={[styles.button, !canDrawCard && { opacity: 0.5 }]}
+            onPress={handleGetCard}
+            disabled={!canDrawCard}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>더미</Text>
+            <Text style={[styles.buttonText, !canDrawCard && { color: '#999999' }]}>더미</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
-            onPress={handleHero} 
-            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
+          <TouchableOpacity
+            style={[styles.button, !hasHeroCard && { opacity: 0.5 }]}
+            onPress={handleHero}
+            disabled={!hasHeroCard}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>흡수</Text>
+            <Text style={[styles.buttonText, !hasHeroCard && { color: '#999999' }]}>흡수</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
-            onPress={handleMove} 
-            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
+          <TouchableOpacity
+            style={[styles.button, !hasMovableCard && { opacity: 0.5 }]}
+            onPress={handleMove}
+            disabled={!hasMovableCard}
           >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>이동</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.button, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { opacity: 0.5 }]} 
-            onPress={handlePass} 
-            disabled={!slimeWarViewModel.isMyTurn || buttonCooldown}
-          >
-            <Text style={[styles.buttonText, (!slimeWarViewModel.isMyTurn || buttonCooldown) && { color: '#ffffff' }]}>패스</Text>
+            <Text style={[styles.buttonText, !hasMovableCard && { color: '#999999' }]}>이동</Text>
           </TouchableOpacity>
         </View>
 
