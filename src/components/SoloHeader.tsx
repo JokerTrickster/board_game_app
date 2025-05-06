@@ -64,16 +64,15 @@ const SoloHeader: React.FC<SoloHeaderProps> = ({ userData, showRound = true }) =
     return (
         <View style={styles.soloHeader}>
             <View style={styles.profileContainer}>
-                {/* 프로필 테두리 이미지를 배경처럼 사용 (ImageBackground) */}
-            
-                    <Image
-                        source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
-                        style={styles.profileImage}
-                    />
-                    <View style={styles.profileInfo}>
-                        <Text style={styles.nickname}>{user?.name || '보린이'}</Text>
-                    </View>
-
+                {/* 프로필 이미지 */}
+                <Image
+                    source={profileImage ? { uri: profileImage } : require('../assets/images/home/default_profile.png')}
+                    style={styles.profileImage}
+                />
+                {/* 닉네임 */}
+                <View style={styles.profileInfo}>
+                    <Text style={styles.nickname}>{user?.name || '보린이'}</Text>
+                </View>
             </View>
 
             {/* 가운데에 Round 값 표시 */}

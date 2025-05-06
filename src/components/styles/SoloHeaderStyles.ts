@@ -30,6 +30,9 @@ export default StyleSheet.create({
     // 프로필
     profileContainer: {
         marginTop: verticalScale(60),
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
     },
     profileBorder: {
         width: scale(200),
@@ -52,11 +55,13 @@ export default StyleSheet.create({
     },
     profileInfo: {
         justifyContent: 'center',
+        alignItems: 'center',
     },
     nickname: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        paddingBottom: verticalScale(5),
+        marginLeft: -10,
+        textAlign: 'center',
     },
     title: {
         fontSize: scale(16),

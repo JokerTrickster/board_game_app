@@ -170,14 +170,15 @@ export default StyleSheet.create({
   },
   heroCardText: {
     position: 'absolute',
-    right: 8,
-    top: 4,
-    fontSize: 16,
+    right: 0,
+    bottom:0,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#333',
     backgroundColor: 'rgba(255,255,255,0.7)',
     borderRadius: 8,
     paddingHorizontal: 4,
+    paddingVertical: 2,
   },
   heroCardContainer: {
     marginLeft: 12,
