@@ -91,6 +91,7 @@ class SlimeWarService {
             return false;
         }
     }
+    
 
     /**
      * 슬라임 전쟁 게임 결과를 가져오는 함수
@@ -117,6 +118,39 @@ class SlimeWarService {
                 throw new Error('Invalid response from server');
             }
             return data.result;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    /**
+     * 슬라임전쟁 게임 종료 API 호출
+     * @param winner 승리 여부 (true: 승리, false: 패배)
+     * @param roomID 방 번호
+     * @returns Promise<boolean> 성공 시 true 반환
+     */
+    async sendGameOver(winner: boolean, roomID: number): Promise<boolean> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/board-game/v0.1/game-over`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+                body: JSON.stringify({
+                    winner,
+                    gameType: 2,
+                    roomID,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`서버 요청 실패: ${response.status}`);
+            }
+            return true;
         } catch (error) {
             throw error;
         }

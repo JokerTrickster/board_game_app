@@ -242,6 +242,7 @@ class SlimeWarWebSocketService {
                             isSuccess = true;
                         }
                     }
+                    await slimeWarService.sendGameOver(isSuccess, this.roomID as number);
 
                     // ✅ 웹소켓 종료
                     this.disconnect();
