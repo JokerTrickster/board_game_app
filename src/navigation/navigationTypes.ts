@@ -14,6 +14,8 @@ export type RootStackParamList = {
     SoloFindItResult: { isSuccess: boolean ,gameInfoList: any[]}; 
     MultiFindItResult: { isSuccess: boolean };  
     SlimeWarResult: { isSuccess: boolean };  
+    Sequence: undefined;
+    SequenceResult: { isSuccess: boolean };
 };
 
 // ✅ 네비게이션 참조 타입 추가

@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { webSocketService } from '../services/WebSocketService';
 import SlimeWarResultScreen from '../games/slime-war/screens/SlimeWarResultScreen';
 import SlimeWarScreen from '../games/slime-war/screens/SlimeWarScreen';
+import SequenceScreen from '../games/sequence/screens/SequenceScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 // ✅ NavigationContainerRef 생성 (React Navigation 공식 방법)
@@ -58,6 +59,7 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
                     <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
                     <Stack.Screen name="SlimeWarResult" component={SlimeWarResultScreen} />
+                    <Stack.Screen name="Sequence" component={SequenceScreen} />
             </Stack.Navigator>
             </NavigationContainer>
 
