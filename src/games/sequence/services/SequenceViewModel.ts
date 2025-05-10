@@ -1,25 +1,18 @@
 import { makeAutoObservable, action } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SequenceViewModel {
-    hero = 4;
     timer = 60; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerColor = 'black';
-    kingIndex = 0;
-    remainingSlime = 0;
-    canMoveCardList: any[] = [];
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
     opponentCardList: any[] = []; // 상대방 카드 
     gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(0));
     userColorType = 0;
     opponentColorType = 0;
-    userHeroCount = 0;
-    opponentHeroCount = 0;
     userID = 0;
     opponentID = 0;
-    opponentCanMove = false;
     isMyTurn = false;
 
     constructor() {
@@ -29,25 +22,17 @@ class SequenceViewModel {
             updateTimerColor: action,
             stopTimer: action,
             startTimer: action,
-            setKingIndex: action,
             resetGameState: action,
             setCardList: action,
             setOpponentCardList: action,
-            setRemainingSlime: action,
             setGameMap: action,
             setUserColorType: action,
             setOpponentColorType: action,
             setIsMyTurn: action,
             updateTurn: action,
-            setUserHeroCount: action,
-            setOpponentHeroCount: action,
             setUserID: action,
             setOpponentID: action,
-            setOpponentCanMove: action,
         });
-    }
-    setOpponentCanMove(canMove: boolean) {
-        this.opponentCanMove = canMove;
     }
     setUserID(userID: number) {
         this.userID = userID;
@@ -60,12 +45,6 @@ class SequenceViewModel {
     }
     setOpponentColorType(colorType: number) {
         this.opponentColorType = colorType;
-    }
-    setUserHeroCount(heroCount: number) {
-        this.userHeroCount = heroCount;
-    }
-    setOpponentHeroCount(heroCount: number) {
-        this.opponentHeroCount = heroCount;
     }
     /*
      * 슬라임 포지션을 이용하여 게임 맵을 초기화합니다.
@@ -92,10 +71,6 @@ class SequenceViewModel {
     }
     updateGameState( round: number) {
         this.round = round;
-    }
-
-    setRemainingSlime(remainingSlime: number) {
-        this.remainingSlime = remainingSlime;
     }
 
     setCardList(cardList: any[]) {
@@ -149,11 +124,6 @@ class SequenceViewModel {
         }, 1000);
     }
 
-    setKingIndex(index: number) {
-        this.kingIndex = index;
-    }
-   
-
     /** 게임 상태 초기화 함수 */
     resetGameState() {
         this.timer = 60;
@@ -180,5 +150,4 @@ class SequenceViewModel {
     }
 }
 
-export default SequenceViewModel;
-export const SequenceViewModel = new SequenceViewModel();
+export const sequenceViewModel = new SequenceViewModel();
