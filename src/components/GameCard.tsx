@@ -16,14 +16,16 @@ const GameCard: React.FC<GameCardProps> = ({ title, category, hashtag, image, on
             ? require('../assets/images/common/find-it.png')
             : title === '슬라임전쟁'
                 ? require('../assets/images/common/slime-war.png')
-            : require('../assets/images/common/default.png');
+                : title === '시퀀스'
+                    ? require('../assets/images/common/sequence.png')
+                    : require('../assets/images/common/default.png');
     
     return (
         <TouchableOpacity style={styles.gameCard} onPress={onPress}>
             <View style={styles.imageWrapper}>
                 <Image source={cardImage} style={styles.gameImage} />
-                {/* default.png일 때 오버레이 텍스트 표시 */}
-                {title !== '틀린그림찾기' && title !== '슬라임전쟁' && (
+                {/* default.png일 때 오버레이 텍스트 표시 - 시퀀스 게임 추가 */}
+                {title !== '틀린그림찾기' && title !== '슬라임전쟁' && title !== '시퀀스' && (
                     <View style={styles.overlay}>
                         <Text style={styles.overlayText}>출시 준비 중</Text>
                     </View>

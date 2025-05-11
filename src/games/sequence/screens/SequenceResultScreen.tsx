@@ -4,7 +4,6 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import styles from '../styles/SequenceResultStyles';
 import MultiHeader from '../../../components/MultiHeader';
 import { RootStackParamList } from '../../../navigation/navigationTypes';
-import SequenceGameViewModel from '../services/SequenceViewModel';
 import { BackHandler } from 'react-native';
 type SequenceResultRouteProp = RouteProp<RootStackParamList, 'SequenceResult'>;
 

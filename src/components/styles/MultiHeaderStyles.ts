@@ -13,19 +13,15 @@ export default StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: scale(10),
-    },
+
     multiHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        width: '90%',
+        width: '100%',
         height: '20%',
         paddingBottom: verticalScale(50),
+        paddingLeft: scale(30),
+        paddingRight: scale(30),
     },
     profileContainer: {
         marginTop: verticalScale(50),
@@ -60,8 +56,8 @@ export default StyleSheet.create({
     // 가운데 영역 스타일
     centerContainer: {
         flex: 1,
-        paddingLeft: scale(30),
-        paddingTop: verticalScale(20),
+        paddingLeft: scale(35),
+        paddingTop: verticalScale(35),
     },
     roundText: {
         fontSize: scale(24),

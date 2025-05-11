@@ -1,19 +1,22 @@
 import { makeAutoObservable, action } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SequenceViewModel {
-    timer = 60; // 초 단위 타이머
+    timer = 6000; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerColor = 'black';
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
     opponentCardList: any[] = []; // 상대방 카드 
-    gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(0));
+    gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(1));
     userColorType = 0;
     opponentColorType = 0;
+    ownedMapIDs: number[] = [];
+    opponentOwnedMapIDs: number[] = [];
     userID = 0;
     opponentID = 0;
     isMyTurn = false;
+    selectedCard = 0;
 
     constructor() {
         makeAutoObservable(this, {
@@ -26,14 +29,28 @@ class SequenceViewModel {
             setCardList: action,
             setOpponentCardList: action,
             setGameMap: action,
+            setSelectedCard: action,
             setUserColorType: action,
             setOpponentColorType: action,
             setIsMyTurn: action,
             updateTurn: action,
             setUserID: action,
             setOpponentID: action,
+            setOwnedMapIDs: action,
+            setOpponentOwnedMapIDs: action,
         });
     }
+    setOwnedMapIDs(ownedMapIDs: number[]) {
+        this.ownedMapIDs = ownedMapIDs;
+    }
+    setOpponentOwnedMapIDs(opponentOwnedMapIDs: number[]) {
+        this.opponentOwnedMapIDs = opponentOwnedMapIDs;
+    }
+    
+    setSelectedCard(card: number) {
+        this.selectedCard = card;
+    }
+
     setUserID(userID: number) {
         this.userID = userID;
     }
@@ -50,24 +67,26 @@ class SequenceViewModel {
      * 슬라임 포지션을 이용하여 게임 맵을 초기화합니다.
      * @param users - 슬라임 정보를 포함하는 사용자 배열. 각 사용자는 userID와 0부터 80까지의 슬라임 위치 배열(slimePositions)을 가집니다.
      */
-    setGameMap(users: Array<{ id: number; slimePositions: number[] }>) {
-        const GRID_SIZE = 9; // 그리드의 크기
-
-        // 9x9 맵 생성: 모든 셀은 기본값 0으로 초기화
-        this.gameMap = Array.from({ length: GRID_SIZE+1 }, () => Array(GRID_SIZE+1).fill(0));
-
-        // 각 사용자 별로 슬라임 위치 적용
-        users.forEach(user => {
-            user.slimePositions.forEach(position => {
-                let x = position % GRID_SIZE;
-                let y = Math.floor(position / GRID_SIZE);
-                if (x === 0) {
-                    x = GRID_SIZE;
-                    y -= 1;
+    setGameMap(users: any[]) {
+        // 게임 맵 초기화
+        const initialMap = Array(10).fill(null).map(() => Array(10).fill(null));
+        
+        // users 배열이 있는 경우에만 처리
+        if (Array.isArray(users)) {
+            users.forEach(user => {
+                if (user.ownedMapIDs && Array.isArray(user.ownedMapIDs)) {
+                    user.ownedMapIDs.forEach((mapID: number) => {
+                        const row = Math.floor(mapID / 10);
+                        const col = mapID % 10;
+                        if (row >= 0 && row < 10 && col >= 0 && col < 10) {
+                            initialMap[row][col] = user.colorType;
+                        }
+                    });
                 }
-                this.gameMap[x][y] = user.id;
             });
-        });
+        }
+        
+        this.gameMap = initialMap;
     }
     updateGameState( round: number) {
         this.round = round;

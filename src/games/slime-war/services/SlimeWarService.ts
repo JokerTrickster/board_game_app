@@ -15,7 +15,7 @@ class SlimeWarService {
             throw new Error('Access token not found');
         }
         try {
-            const response = await fetch(`${API_BASE_URL}/slime-war/v0.1/game/coin`, {
+            const response = await fetch(`${API_BASE_URL}/board-game/v0.1/game/coin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

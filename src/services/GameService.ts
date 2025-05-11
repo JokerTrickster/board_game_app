@@ -16,6 +16,7 @@ class GameService {
 
     async setGameList(games: any[]) {
         this.gameList = games;
+        console.log("게임 목록 저장", this.gameList);
         await AsyncStorage.setItem('gameList', JSON.stringify(games));
     }
 
