@@ -72,7 +72,7 @@ export default StyleSheet.create({
   chipImage: {
     width: 30,
     height: 30,
-    zIndex: 5,
+    zIndex: 10,
     position: 'absolute',
   },
   handContainer: {
@@ -95,11 +95,11 @@ export default StyleSheet.create({
   selectedCard: {
     borderWidth: 2,
     borderColor: '#007AFF',
-    transform: [{ translateY: -10 }],
   },
   cardImage: {
-    width: '100%',
-    height: '100%',
+    width: '80%',
+    height: '80%',
+    resizeMode: 'contain',
   },
   turnIndicator: {
     position: 'absolute',
@@ -114,10 +114,11 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   validCell: {
-    backgroundColor: 'rgba(0, 255, 0, 0.2)',
-    borderColor: '#00ff00',
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    borderColor: 'rgba(255, 0, 0, 1)',
     borderWidth: 2,
     zIndex: 10,
-    position: 'absolute',
+    width: 35,
+    height: 50,
   },
 }); 

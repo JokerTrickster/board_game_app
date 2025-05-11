@@ -90,12 +90,20 @@ const SequenceScreen: React.FC = observer(() => {
     };
   }, [sequenceViewModel.isMyTurn]);
 
+  // 내 턴이 끝나면 validMapIDs 초기화
+  useEffect(() => {
+    if (!sequenceViewModel.isMyTurn) {
+      setValidMapIDs([]);
+      sequenceViewModel.setSelectedCard(0);
+    }
+  }, [sequenceViewModel.isMyTurn]);
+
   // 칩 이미지 반환 함수
   const getChipImage = (colorType: number) => {
     switch (colorType) {
-      case 1:
+      case 0:
         return require('../../../assets/icons/sequence/common/blue_chip.png');
-      case 2:
+      case 1:
         return require('../../../assets/icons/sequence/common/red_chip.png');
       default:
         return null;
@@ -188,20 +196,12 @@ const SequenceScreen: React.FC = observer(() => {
       for (let col = 0; col < GRID_SIZE; col++) {
         let chip = null;
         const mapID = coordToMapId(row, col);
-
-        if (
-          sequenceViewModel.userColorType &&
-          sequenceViewModel.ownedMapIDs.includes(mapID)
-        ) {
+        if (sequenceViewModel.ownedMapIDs.includes(mapID)) {
           chip = getChipImage(sequenceViewModel.userColorType);
         }
-        if (
-          sequenceViewModel.opponentColorType &&
-          sequenceViewModel.opponentOwnedMapIDs.includes(mapID)
-        ) {
+        if (sequenceViewModel.opponentOwnedMapIDs.includes(mapID)) {
           chip = getChipImage(sequenceViewModel.opponentColorType);
         }
-
         if (chip) {
           chips.push(
             <Image
@@ -211,8 +211,8 @@ const SequenceScreen: React.FC = observer(() => {
                 styles.chipImage,
                 {
                   position: 'absolute',
-                  left: col * cellWidth,
-                  top: row * cellHeight,
+                  left: (col * cellWidth)+ 15,
+                  top: (row * cellHeight)+10,
                 },
               ]}
               resizeMode="contain"

@@ -96,17 +96,17 @@ class SequenceWebSocketService {
                 if (parsedData.users[0].id === this.userID) {
                     sequenceViewModel.setUserColorType(parsedData.users[0].colorType);
                     sequenceViewModel.setUserID(parsedData.users[0].id);
+                    sequenceViewModel.setOwnedMapIDs(parsedData.users[0].ownedMapIDs);
                     sequenceViewModel.setOpponentColorType(parsedData.users[1].colorType);
-                  sequenceViewModel.setOpponentID(parsedData.users[1].id);
-                  sequenceViewModel.setOwnedMapIDs(parsedData.users[0].ownedMapIDs);
-                  sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[1].ownedMapIDs);
+                    sequenceViewModel.setOpponentID(parsedData.users[1].id);
+                    sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[1].ownedMapIDs);
                 } else {
                     sequenceViewModel.setOpponentColorType(parsedData.users[0].colorType);
                     sequenceViewModel.setOpponentID(parsedData.users[0].id);
+                    sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[0].ownedMapIDs);
                     sequenceViewModel.setUserID(parsedData.users[1].id);
                     sequenceViewModel.setUserColorType(parsedData.users[1].colorType);
                     sequenceViewModel.setOwnedMapIDs(parsedData.users[1].ownedMapIDs);
-                    sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[0].ownedMapIDs);
                 }
             }
             
