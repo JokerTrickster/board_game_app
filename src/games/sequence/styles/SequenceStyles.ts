@@ -62,16 +62,11 @@ export default StyleSheet.create({
   cell: {
     width: 35,
     height: 50,
-    borderWidth: 1,
-    borderColor: '#666',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
     margin: 1,
   },
   chipImage: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
     zIndex: 10,
     position: 'absolute',
   },
@@ -97,9 +92,9 @@ export default StyleSheet.create({
     borderColor: '#007AFF',
   },
   cardImage: {
-    width: '80%',
-    height: '80%',
-    resizeMode: 'contain',
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   turnIndicator: {
     position: 'absolute',

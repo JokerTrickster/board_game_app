@@ -164,7 +164,7 @@ const SequenceScreen: React.FC = observer(() => {
     return cardImageMap[cardInfo.image] || null;
   };
 
-  // 카드 선택 핸들러
+  // 카드 선택 핸들러 수정
   const handleCardSelect = (cardID: number) => {
     if (!sequenceViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
@@ -177,15 +177,19 @@ const SequenceScreen: React.FC = observer(() => {
       setValidMapIDs([]);
       return;
     }
-    // 이미 점령된 칸이 아니면 validMapIDs에 추가
-    if (
-      !sequenceViewModel.ownedMapIDs.includes(cardInfo.mapID) &&
-      !sequenceViewModel.opponentOwnedMapIDs.includes(cardInfo.mapID)
-    ) {
-      setValidMapIDs([cardInfo.mapID]);
-    } else {
-      setValidMapIDs([]);
-    }
+
+    // 해당 카드의 모든 mapID 찾기 (2장)
+    const allMapIDs = sequenceCards
+      .filter(card => card.type === cardInfo.type && card.count === cardInfo.count)
+      .map(card => card.mapID);
+
+    // 이미 점령된 칸 제외
+    const validMapIDs = allMapIDs.filter(mapID => 
+      !sequenceViewModel.ownedMapIDs.includes(mapID) &&
+      !sequenceViewModel.opponentOwnedMapIDs.includes(mapID)
+    );
+
+    setValidMapIDs(validMapIDs);
   };
 
   // 셀 클릭 핸들러
@@ -265,7 +269,7 @@ const SequenceScreen: React.FC = observer(() => {
                 styles.chipImage,
                 {
                   position: 'absolute',
-                  left: (col * cellWidth)+ 15,
+                  left: (col * cellWidth)+20,
                   top: (row * cellHeight)+10,
                 },
               ]}
