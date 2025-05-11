@@ -1,674 +1,702 @@
 [
     {
         "id": 1,
-        "type": "space",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 2
+        "type": "all",
+        "count": "all",
+        "image": "all.png",
+        "mapID": 1
     },
     {
         "id": 2,
         "type": "space",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 3
+        "count": "a",
+        "image": "spacea.png",
+        "mapID": 2
     },
     {
         "id": 3,
         "type": "space",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 4
+        "count": "a",
+        "image": "spacea.png",
+        "mapID": 3
     },
     {
         "id": 4,
         "type": "space",
         "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 5
+        "image": "space2.png",
+        "mapID": 4
     },
     {
         "id": 5,
         "type": "space",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 6
+        "count": "2",
+        "image": "space2.png",
+        "mapID": 5
     },
     {
         "id": 6,
         "type": "space",
         "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 7
+        "image": "space3.png",
+        "mapID": 6
     },
     {
         "id": 7,
         "type": "space",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 8
+        "count": "3",
+        "image": "space3.png",
+        "mapID": 7
     },
     {
         "id": 8,
         "type": "space",
         "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 9
+        "image": "space4.png",
+        "mapID": 8
     },
     {
         "id": 9,
         "type": "space",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 11
+        "count": "4",
+        "image": "space4.png",
+        "mapID": 9
     },
     {
         "id": 10,
-        "type": "space",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 12
+        "type": "all",
+        "count": "all",
+        "image": "all.png",
+        "mapID": 10
     },
     {
         "id": 11,
         "type": "space",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 13
+        "count": "5",
+        "image": "space5.png",
+        "mapID": 11
     },
     {
         "id": 12,
         "type": "space",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 14
+        "count": "5",
+        "image": "space5.png",
+        "mapID": 12
     },
     {
         "id": 13,
         "type": "space",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 15
+        "count": "6",
+        "image": "space6.png",
+        "mapID": 13
     },
     {
         "id": 14,
         "type": "space",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 16
+        "count": "6",
+        "image": "space6.png",
+        "mapID": 14
     },
     {
         "id": 15,
         "type": "space",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 17
+        "count": "7",
+        "image": "space7.png",
+        "mapID": 15
     },
     {
         "id": 16,
         "type": "space",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 18
+        "count": "7",
+        "image": "space7.png",
+        "mapID": 16
     },
     {
         "id": 17,
         "type": "space",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 19
+        "count": "8",
+        "image": "space8.png",
+        "mapID": 17
     },
     {
         "id": 18,
         "type": "space",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 20
+        "count": "8",
+        "image": "space8.png",
+        "mapID": 18
     },
     {
         "id": 19,
         "type": "space",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 21
+        "count": "9",
+        "image": "space9.png",
+        "mapID": 19
     },
     {
         "id": 20,
         "type": "space",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 22
+        "count": "9",
+        "image": "space9.png",
+        "mapID": 20
     },
     {
         "id": 21,
         "type": "space",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 23
+        "count": "10",
+        "image": "space10.png",
+        "mapID": 21
     },
     {
         "id": 22,
         "type": "space",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 24
+        "count": "10",
+        "image": "space10.png",
+        "mapID": 22
     },
     {
         "id": 23,
         "type": "space",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 25
+        "count": "k",
+        "image": "spacek.png",
+        "mapID": 23
     },
     {
         "id": 24,
         "type": "space",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 26
+        "count": "k",
+        "image": "spacek.png",
+        "mapID": 24
     },
     {
         "id": 25,
-        "type": "heart",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 27
+        "type": "space",
+        "count": "q",
+        "image": "spaceq.png",
+        "mapID": 25
     },
     {
         "id": 26,
-        "type": "heart",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 28
+        "type": "space",
+        "count": "q",
+        "image": "spaceq.png",
+        "mapID": 26
     },
     {
         "id": 27,
         "type": "heart",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 29
+        "count": "a",
+        "image": "hearta.png",
+        "mapID": 27
     },
     {
         "id": 28,
         "type": "heart",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 30
+        "count": "a",
+        "image": "hearta.png",
+        "mapID": 28
     },
     {
         "id": 29,
         "type": "heart",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 31
+        "count": "2",
+        "image": "heart2.png",
+        "mapID": 29
     },
     {
         "id": 30,
         "type": "heart",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 32
+        "count": "2",
+        "image": "heart2.png",
+        "mapID": 30
     },
     {
         "id": 31,
         "type": "heart",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 33
+        "count": "3",
+        "image": "heart3.png",
+        "mapID": 31
     },
     {
         "id": 32,
         "type": "heart",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 34
+        "count": "3",
+        "image": "heart3.png",
+        "mapID": 32
     },
     {
         "id": 33,
         "type": "heart",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 35
+        "count": "4",
+        "image": "heart4.png",
+        "mapID": 33
     },
     {
         "id": 34,
         "type": "heart",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 36
+        "count": "4",
+        "image": "heart4.png",
+        "mapID": 34
     },
     {
         "id": 35,
         "type": "heart",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 37
+        "count": "5",
+        "image": "heart5.png",
+        "mapID": 35
     },
     {
         "id": 36,
         "type": "heart",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 38
+        "count": "5",
+        "image": "heart5.png",
+        "mapID": 36
     },
     {
         "id": 37,
         "type": "heart",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 39
+        "count": "6",
+        "image": "heart6.png",
+        "mapID": 37
     },
     {
         "id": 38,
         "type": "heart",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 40
+        "count": "6",
+        "image": "heart6.png",
+        "mapID": 38
     },
     {
         "id": 39,
         "type": "heart",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 41
+        "count": "7",
+        "image": "heart7.png",
+        "mapID": 39
     },
     {
         "id": 40,
         "type": "heart",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 42
+        "count": "7",
+        "image": "heart7.png",
+        "mapID": 40
     },
     {
         "id": 41,
         "type": "heart",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 43
+        "count": "8",
+        "image": "heart8.png",
+        "mapID": 41
     },
     {
         "id": 42,
         "type": "heart",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 44
+        "count": "8",
+        "image": "heart8.png",
+        "mapID": 42
     },
     {
         "id": 43,
         "type": "heart",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 45
+        "count": "9",
+        "image": "heart9.png",
+        "mapID": 43
     },
     {
         "id": 44,
         "type": "heart",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 46
+        "count": "9",
+        "image": "heart9.png",
+        "mapID": 44
     },
     {
         "id": 45,
         "type": "heart",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 47
+        "count": "10",
+        "image": "heart10.png",
+        "mapID": 45
     },
     {
         "id": 46,
         "type": "heart",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 48
+        "count": "10",
+        "image": "heart10.png",
+        "mapID": 46
     },
     {
         "id": 47,
         "type": "heart",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 49
+        "count": "k",
+        "image": "heartk.png",
+        "mapID": 47
     },
     {
         "id": 48,
         "type": "heart",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 50
+        "count": "k",
+        "image": "heartk.png",
+        "mapID": 48
     },
     {
         "id": 49,
-        "type": "clova",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 51
+        "type": "heart",
+        "count": "q",
+        "image": "heartq.png",
+        "mapID": 49
     },
     {
         "id": 50,
-        "type": "clova",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 52
+        "type": "heart",
+        "count": "q",
+        "image": "heartq.png",
+        "mapID": 50
     },
     {
         "id": 51,
         "type": "clova",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 53
+        "count": "a",
+        "image": "clovaa.png",
+        "mapID": 51
     },
     {
         "id": 52,
         "type": "clova",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 54
+        "count": "a",
+        "image": "clovaa.png",
+        "mapID": 52
     },
     {
         "id": 53,
         "type": "clova",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 55
+        "count": "2",
+        "image": "clova2.png",
+        "mapID": 53
     },
     {
         "id": 54,
         "type": "clova",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 56
+        "count": "2",
+        "image": "clova2.png",
+        "mapID": 54
     },
     {
         "id": 55,
         "type": "clova",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 57
+        "count": "3",
+        "image": "clova3.png",
+        "mapID": 55
     },
     {
         "id": 56,
         "type": "clova",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 58
+        "count": "3",
+        "image": "clova3.png",
+        "mapID": 56
     },
     {
         "id": 57,
         "type": "clova",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 59
+        "count": "4",
+        "image": "clova4.png",
+        "mapID": 57
     },
     {
         "id": 58,
         "type": "clova",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 60
+        "count": "4",
+        "image": "clova4.png",
+        "mapID": 58
     },
     {
         "id": 59,
         "type": "clova",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 61
+        "count": "5",
+        "image": "clova5.png",
+        "mapID": 59
     },
     {
         "id": 60,
         "type": "clova",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 62
+        "count": "5",
+        "image": "clova5.png",
+        "mapID": 60
     },
     {
         "id": 61,
         "type": "clova",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 63
+        "count": "6",
+        "image": "clova6.png",
+        "mapID": 61
     },
     {
         "id": 62,
         "type": "clova",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 64
+        "count": "6",
+        "image": "clova6.png",
+        "mapID": 62
     },
     {
         "id": 63,
         "type": "clova",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 65
+        "count": "7",
+        "image": "clova7.png",
+        "mapID": 63
     },
     {
         "id": 64,
         "type": "clova",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 66
+        "count": "7",
+        "image": "clova7.png",
+        "mapID": 64
     },
     {
         "id": 65,
         "type": "clova",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 67
+        "count": "8",
+        "image": "clova8.png",
+        "mapID": 65
     },
     {
         "id": 66,
         "type": "clova",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 68
+        "count": "8",
+        "image": "clova8.png",
+        "mapID": 66
     },
     {
         "id": 67,
         "type": "clova",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 69
+        "count": "9",
+        "image": "clova9.png",
+        "mapID": 67
     },
     {
         "id": 68,
         "type": "clova",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 70
+        "count": "9",
+        "image": "clova9.png",
+        "mapID": 68
     },
     {
         "id": 69,
         "type": "clova",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 71
+        "count": "10",
+        "image": "clova10.png",
+        "mapID": 69
     },
     {
         "id": 70,
         "type": "clova",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 72
+        "count": "10",
+        "image": "clova10.png",
+        "mapID": 70
     },
     {
         "id": 71,
         "type": "clova",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 73
+        "count": "k",
+        "image": "clovak.png",
+        "mapID": 71
     },
     {
         "id": 72,
         "type": "clova",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 74
+        "count": "k",
+        "image": "clovak.png",
+        "mapID": 72
     },
     {
         "id": 73,
-        "type": "diamond",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 75
+        "type": "clova",
+        "count": "q",
+        "image": "clovaq.png",
+        "mapID": 73
     },
     {
         "id": 74,
-        "type": "diamond",
-        "count": "1",
-        "image": "ace_hearts.png",
-        "mapID": 76
+        "type": "clova",
+        "count": "q",
+        "image": "clovaq.png",
+        "mapID": 74
     },
     {
         "id": 75,
         "type": "diamond",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 77
+        "count": "a",
+        "image": "diamonda.png",
+        "mapID": 75
     },
     {
         "id": 76,
         "type": "diamond",
-        "count": "2",
-        "image": "ace_hearts.png",
-        "mapID": 78
+        "count": "a",
+        "image": "diamonda.png",
+        "mapID": 76
     },
     {
         "id": 77,
         "type": "diamond",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 79
+        "count": "2",
+        "image": "diamond2.png",
+        "mapID": 77
     },
     {
         "id": 78,
         "type": "diamond",
-        "count": "3",
-        "image": "ace_hearts.png",
-        "mapID": 80
+        "count": "2",
+        "image": "diamond2.png",
+        "mapID": 78
     },
     {
         "id": 79,
         "type": "diamond",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 81
+        "count": "3",
+        "image": "diamond3.png",
+        "mapID": 79
     },
     {
         "id": 80,
         "type": "diamond",
-        "count": "4",
-        "image": "ace_hearts.png",
-        "mapID": 82
+        "count": "3",
+        "image": "diamond3.png",
+        "mapID": 80
     },
     {
         "id": 81,
         "type": "diamond",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 83
+        "count": "4",
+        "image": "diamond4.png",
+        "mapID": 81
     },
     {
         "id": 82,
         "type": "diamond",
-        "count": "5",
-        "image": "ace_hearts.png",
-        "mapID": 84
+        "count": "4",
+        "image": "diamond4.png",
+        "mapID": 82
     },
     {
         "id": 83,
         "type": "diamond",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 85
+        "count": "5",
+        "image": "diamond5.png",
+        "mapID": 83
     },
     {
         "id": 84,
         "type": "diamond",
-        "count": "6",
-        "image": "ace_hearts.png",
-        "mapID": 86
+        "count": "5",
+        "image": "diamond5.png",
+        "mapID": 84
     },
     {
         "id": 85,
         "type": "diamond",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 87
+        "count": "6",
+        "image": "diamond6.png",
+        "mapID": 85
     },
     {
         "id": 86,
         "type": "diamond",
-        "count": "7",
-        "image": "ace_hearts.png",
-        "mapID": 88
+        "count": "6",
+        "image": "diamond6.png",
+        "mapID": 86
     },
     {
         "id": 87,
         "type": "diamond",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 89
+        "count": "7",
+        "image": "diamond7.png",
+        "mapID": 87
     },
     {
         "id": 88,
         "type": "diamond",
-        "count": "8",
-        "image": "ace_hearts.png",
-        "mapID": 90
+        "count": "7",
+        "image": "diamond7.png",
+        "mapID": 88
     },
     {
         "id": 89,
         "type": "diamond",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 92
+        "count": "8",
+        "image": "diamond8.png",
+        "mapID": 89
     },
     {
         "id": 90,
         "type": "diamond",
-        "count": "9",
-        "image": "ace_hearts.png",
-        "mapID": 93
+        "count": "8",
+        "image": "diamond8.png",
+        "mapID": 90
     },
     {
         "id": 91,
-        "type": "diamond",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 94
+        "type": "all",
+        "count": "all",
+        "image": "all.png",
+        "mapID": 91
     },
     {
         "id": 92,
         "type": "diamond",
-        "count": "jack",
-        "image": "ace_hearts.png",
-        "mapID": 95
+        "count": "9",
+        "image": "diamond9.png",
+        "mapID": 92
     },
     {
         "id": 93,
         "type": "diamond",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 96
+        "count": "9",
+        "image": "diamond9.png",
+        "mapID": 93
     },
     {
         "id": 94,
         "type": "diamond",
-        "count": "queen",
-        "image": "ace_hearts.png",
-        "mapID": 97
+        "count": "10",
+        "image": "diamond10.png",
+        "mapID": 94
     },
     {
         "id": 95,
         "type": "diamond",
-        "count": "king",
-        "image": "ace_hearts.png",
-        "mapID": 98
+        "count": "10",
+        "image": "diamond10.png",
+        "mapID": 95
     },
     {
         "id": 96,
         "type": "diamond",
-        "count": "king",
-        "image": "ace_hearts.png",
+        "count": "k",
+        "image": "diamondk.png",
+        "mapID": 96
+    },
+    {
+        "id": 97,
+        "type": "diamond",
+        "count": "k",
+        "image": "diamondk.png",
+        "mapID": 97
+    },
+    {
+        "id": 98,
+        "type": "diamond",
+        "count": "q",
+        "image": "diamondq.png",
+        "mapID": 98
+    },
+    {
+        "id": 99,
+        "type": "diamond",
+        "count": "q",
+        "image": "diamondq.png",
         "mapID": 99
+    },
+    {
+        "id": 100,
+        "type": "all",
+        "count": "all",
+        "image": "all.png",
+        "mapID": 100
     }
 ]

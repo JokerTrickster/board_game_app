@@ -11,11 +11,6 @@ import sequenceCards from '../../../assets/data/sequnce_cards.json';
 const GRID_SIZE = 10; // 10x10 격자
 const TURN_TIME = 30; // 턴당 제한 시간(초)
 
-// 카드 이미지 매핑 (예시)
-const cardImageMap: { [key: string]: any } = {
-  'AH': require('../../../assets/icons/sequence/cards/ace_hearts.png'),
-  // ... 다른 카드들도 추가
-};
 
 // 카드ID로 카드 정보 조회
 const getCardInfoById = (cardID: number) => {
@@ -41,6 +36,59 @@ const mapGrid: { mapID: number; row: number; col: number }[][] = Array.from({ le
     col,
   }))
 );
+
+// 이미지 매핑 객체 추가
+const cardImageMap: { [key: string]: any } = {
+  'all.png': require('../../../assets/icons/sequence/cards/all.png'),
+  'clovaa.png': require('../../../assets/icons/sequence/cards/clovaa.png'),
+  'clova2.png': require('../../../assets/icons/sequence/cards/clova2.png'),
+  'clova3.png': require('../../../assets/icons/sequence/cards/clova3.png'),
+  'clova4.png': require('../../../assets/icons/sequence/cards/clova4.png'),
+  'clova5.png': require('../../../assets/icons/sequence/cards/clova5.png'),
+  'clova6.png': require('../../../assets/icons/sequence/cards/clova6.png'),
+  'clova7.png': require('../../../assets/icons/sequence/cards/clova7.png'),
+  'clova8.png': require('../../../assets/icons/sequence/cards/clova8.png'),
+  'clova9.png': require('../../../assets/icons/sequence/cards/clova9.png'),
+  'clova10.png': require('../../../assets/icons/sequence/cards/clova10.png'),
+  'clovak.png': require('../../../assets/icons/sequence/cards/clovak.png'),
+  'clovaq.png': require('../../../assets/icons/sequence/cards/clovaq.png'),
+  'diamonda.png': require('../../../assets/icons/sequence/cards/diamonda.png'),
+  'diamond2.png': require('../../../assets/icons/sequence/cards/diamond2.png'),
+  'diamond3.png': require('../../../assets/icons/sequence/cards/diamond3.png'),
+  'diamond4.png': require('../../../assets/icons/sequence/cards/diamond4.png'),
+  'diamond5.png': require('../../../assets/icons/sequence/cards/diamond5.png'),
+  'diamond6.png': require('../../../assets/icons/sequence/cards/diamond6.png'),
+  'diamond7.png': require('../../../assets/icons/sequence/cards/diamond7.png'),
+  'diamond8.png': require('../../../assets/icons/sequence/cards/diamond8.png'),
+  'diamond9.png': require('../../../assets/icons/sequence/cards/diamond9.png'),
+  'diamond10.png': require('../../../assets/icons/sequence/cards/diamond10.png'),
+  'diamondk.png': require('../../../assets/icons/sequence/cards/diamondk.png'),
+  'diamondq.png': require('../../../assets/icons/sequence/cards/diamondq.png'),
+  'hearta.png': require('../../../assets/icons/sequence/cards/hearta.png'),
+  'heart2.png': require('../../../assets/icons/sequence/cards/heart2.png'),
+  'heart3.png': require('../../../assets/icons/sequence/cards/heart3.png'),
+  'heart4.png': require('../../../assets/icons/sequence/cards/heart4.png'),
+  'heart5.png': require('../../../assets/icons/sequence/cards/heart5.png'),
+  'heart6.png': require('../../../assets/icons/sequence/cards/heart6.png'),
+  'heart7.png': require('../../../assets/icons/sequence/cards/heart7.png'),
+  'heart8.png': require('../../../assets/icons/sequence/cards/heart8.png'),
+  'heart9.png': require('../../../assets/icons/sequence/cards/heart9.png'),
+  'heart10.png': require('../../../assets/icons/sequence/cards/heart10.png'),
+  'heartk.png': require('../../../assets/icons/sequence/cards/heartk.png'),
+  'heartq.png': require('../../../assets/icons/sequence/cards/heartq.png'),
+  'spacea.png': require('../../../assets/icons/sequence/cards/spacea.png'),
+  'space2.png': require('../../../assets/icons/sequence/cards/space2.png'),
+  'space3.png': require('../../../assets/icons/sequence/cards/space3.png'),
+  'space4.png': require('../../../assets/icons/sequence/cards/space4.png'),
+  'space5.png': require('../../../assets/icons/sequence/cards/space5.png'),
+  'space6.png': require('../../../assets/icons/sequence/cards/space6.png'),
+  'space7.png': require('../../../assets/icons/sequence/cards/space7.png'),
+  'space8.png': require('../../../assets/icons/sequence/cards/space8.png'),
+  'space9.png': require('../../../assets/icons/sequence/cards/space9.png'),
+  'space10.png': require('../../../assets/icons/sequence/cards/space10.png'),
+  'spacek.png': require('../../../assets/icons/sequence/cards/spacek.png'),
+  'spaceq.png': require('../../../assets/icons/sequence/cards/spaceq.png'),
+};
 
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
@@ -110,6 +158,12 @@ const SequenceScreen: React.FC = observer(() => {
     }
   };
 
+  // getCardImage 함수 수정
+  const getCardImage = (cardInfo: any) => {
+    if (!cardInfo || !cardInfo.image) return null;
+    return cardImageMap[cardInfo.image] || null;
+  };
+
   // 카드 선택 핸들러
   const handleCardSelect = (cardID: number) => {
     if (!sequenceViewModel.isMyTurn) {
@@ -177,7 +231,7 @@ const SequenceScreen: React.FC = observer(() => {
             >
               {cardInfo && (
                 <Image
-                  source={require('../../../assets/icons/sequence/cards/ace_hearts.png')}
+                  source={getCardImage(cardInfo)}
                   style={styles.cardImage}
                   resizeMode="contain"
                 />
@@ -255,22 +309,27 @@ const SequenceScreen: React.FC = observer(() => {
         {/* 플레이어 카드 영역 */}
         <View style={styles.handContainer}>
           <View style={styles.handScrollView}>
-            {playerHand.map((cardID: number, index: number) => (
-              <TouchableOpacity
-                key={`card-${index}`}
-                style={[
-                  styles.card,
-                  sequenceViewModel.selectedCard === cardID && styles.selectedCard
-                ]}
-                onPress={() => handleCardSelect(cardID)}
-              >
-                <Image
-                  source={require('../../../assets/icons/sequence/cards/ace_hearts.png')}
-                  style={styles.cardImage}
-                  resizeMode="contain"
-                />
-              </TouchableOpacity>
-            ))}
+            {playerHand.map((cardID: number, index: number) => {
+              const cardInfo = getCardInfoById(cardID);
+              return (
+                <TouchableOpacity
+                  key={`card-${index}`}
+                  style={[
+                    styles.card,
+                    sequenceViewModel.selectedCard === cardID && styles.selectedCard
+                  ]}
+                  onPress={() => handleCardSelect(cardID)}
+                >
+                  {cardInfo && (
+                    <Image
+                      source={getCardImage(cardInfo)}
+                      style={styles.cardImage}
+                      resizeMode="contain"
+                    />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
