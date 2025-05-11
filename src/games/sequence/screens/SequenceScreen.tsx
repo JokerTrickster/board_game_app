@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground } from 'react-native';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, StyleSheet } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import SystemMessage from '../../../components/common/SystemMessage';
 import styles from '../styles/SequenceStyles';
@@ -11,6 +11,7 @@ import sequenceCards from '../../../assets/data/sequnce_cards.json';
 const GRID_SIZE = 10; // 10x10 격자
 const TURN_TIME = 30; // 턴당 제한 시간(초)
 
+const SPECIAL_MAP_IDS = [1, 10, 91, 100];
 
 // 카드ID로 카드 정보 조회
 const getCardInfoById = (cardID: number) => {
@@ -90,11 +91,138 @@ const cardImageMap: { [key: string]: any } = {
   'spaceq.png': require('../../../assets/icons/sequence/cards/spaceq.png'),
 };
 
+// 연속된 칩 체크를 위한 방향 배열 (상하좌우, 대각선)
+const DIRECTIONS = [
+  { row: -1, col: 0 },  // 상
+  { row: 1, col: 0 },   // 하
+  { row: 0, col: -1 },  // 좌
+  { row: 0, col: 1 },   // 우
+  { row: -1, col: -1 }, // 좌상
+  { row: -1, col: 1 },  // 우상
+  { row: 1, col: -1 },  // 좌하
+  { row: 1, col: 1 },   // 우하
+];
+
+// 특정 방향으로 연속된 칩 개수 체크 (특수칩 포함)
+const checkConsecutiveChipsWithSpecial = (
+  startRow: number,
+  startCol: number,
+  direction: { row: number; col: number },
+  ownedMapIDs: number[]
+): { count: number, sequence: number[], specialIncluded: boolean } => {
+  let count = 1;
+  let sequence = [coordToMapId(startRow, startCol)];
+  let specialIncluded = SPECIAL_MAP_IDS.includes(sequence[0]);
+  let currentRow = startRow + direction.row;
+  let currentCol = startCol + direction.col;
+
+  while (
+    currentRow >= 0 && currentRow < GRID_SIZE &&
+    currentCol >= 0 && currentCol < GRID_SIZE
+  ) {
+    const mapID = coordToMapId(currentRow, currentCol);
+    if (ownedMapIDs.includes(mapID) || SPECIAL_MAP_IDS.includes(mapID)) {
+      sequence.push(mapID);
+      if (SPECIAL_MAP_IDS.includes(mapID)) specialIncluded = true;
+      count++;
+      currentRow += direction.row;
+      currentCol += direction.col;
+    } else {
+      break;
+    }
+  }
+
+  return { count, sequence, specialIncluded };
+};
+
+// 내 칩만으로 시퀀스 찾기
+const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
+  const sequences: number[][] = [];
+  const checked = new Set<string>();
+
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const mapID = coordToMapId(row, col);
+      if (!ownedMapIDs.includes(mapID) && !SPECIAL_MAP_IDS.includes(mapID)) continue;
+
+      const key = `${row}-${col}`;
+      if (checked.has(key)) continue;
+
+      for (const direction of DIRECTIONS) {
+        const { count, sequence, specialIncluded } = checkConsecutiveChipsWithSpecial(
+          row, col, direction, ownedMapIDs
+        );
+
+        // 특수칩 포함: 4+1(특수) = 5개, 특수칩 미포함: 5개 이상
+        if (
+          (specialIncluded && count >= 5) ||
+          (!specialIncluded && count >= 5)
+        ) {
+          // 표시할 때는 특수칩(mapID) 제외
+          const displaySequence = sequence.filter(id => !SPECIAL_MAP_IDS.includes(id));
+          // 특수칩 포함이면 4개 이상, 아니면 5개 이상
+          if (
+            (specialIncluded && displaySequence.length >= 4) ||
+            (!specialIncluded && displaySequence.length >= 5)
+          ) {
+            displaySequence.forEach(id => checked.add(`${mapIdToCoord(id).row}-${mapIdToCoord(id).col}`));
+            sequences.push(displaySequence);
+          }
+        }
+      }
+    }
+  }
+
+  return sequences;
+};
+
+// 일반 5개 연속 체크 함수 (특수칩 무시)
+const findNormalConsecutiveSequences = useCallback((ownedMapIDs: number[]): number[][] => {
+  const sequences: number[][] = [];
+  const checked = new Set<string>();
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const mapID = coordToMapId(row, col);
+      if (!ownedMapIDs.includes(mapID)) continue;
+      const key = `${row}-${col}`;
+      if (checked.has(key)) continue;
+      for (const direction of DIRECTIONS) {
+        let count = 1;
+        let sequence = [mapID];
+        let currentRow = row + direction.row;
+        let currentCol = col + direction.col;
+        while (
+          currentRow >= 0 && currentRow < GRID_SIZE &&
+          currentCol >= 0 && currentCol < GRID_SIZE
+        ) {
+          const nextMapID = coordToMapId(currentRow, currentCol);
+          if (ownedMapIDs.includes(nextMapID)) {
+            sequence.push(nextMapID);
+            count++;
+            currentRow += direction.row;
+            currentCol += direction.col;
+          } else {
+            break;
+          }
+        }
+        if (count >= 5) {
+          sequence.forEach(id => checked.add(`${mapIdToCoord(id).row}-${mapIdToCoord(id).col}`));
+          sequences.push(sequence);
+        }
+      }
+    }
+  }
+  return sequences;
+}, []);
+
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
+  const [consecutiveSequences, setConsecutiveSequences] = useState<number[][]>([]);
+  const [useSpecialRule, setUseSpecialRule] = useState(true); // 5개 연속 체크 룰 토글
+  const [mySequences, setMySequences] = useState<number[][]>([]);
 
   // 플레이어의 카드 목록
   const playerHand = sequenceViewModel.cardList;
@@ -145,6 +273,17 @@ const SequenceScreen: React.FC = observer(() => {
       sequenceViewModel.setSelectedCard(0);
     }
   }, [sequenceViewModel.isMyTurn]);
+
+  // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
+  useEffect(() => {
+    const mySeqs = findConsecutiveSequences(sequenceViewModel.ownedMapIDs);
+    setMySequences(mySeqs);
+
+    // 내가 만든 시퀀스가 2개 이상일 때만 게임 종료
+    if (mySeqs.length >= 2) {
+      sequenceWebSocketService.sendGameOverEvent();
+    }
+  }, [sequenceViewModel.ownedMapIDs]);
 
   // 칩 이미지 반환 함수
   const getChipImage = (colorType: number) => {
@@ -215,20 +354,23 @@ const SequenceScreen: React.FC = observer(() => {
 
   // 맵 렌더링
   const renderGrid = () => {
+    // 시퀀스에 포함된 mapID를 Set으로 만들어 빠른 체크
+    const mySequenceMapIDs = new Set(mySequences.flat());
+
     return mapGrid.map((rowArr, rowIdx) => (
       <View key={`row-${rowIdx}`} style={styles.row}>
         {rowArr.map(({ mapID, row, col }) => {
-          // 카드 정보
           const cardInfo = sequenceCards.find(card => card.mapID === mapID);
-          // valid 스타일
           const isValid = validMapIDs.includes(mapID);
+          const isInMySequence = mySequenceMapIDs.has(mapID);
 
           return (
             <TouchableOpacity
               key={`cell-${row}-${col}`}
               style={[
                 styles.cell,
-                isValid && styles.validCell
+                isValid && styles.validCell,
+                isInMySequence && styles.mySequenceCell // 반투명 레드 배경 스타일
               ]}
               onPress={() => handleCellPress(row, col)}
               activeOpacity={0.8}
@@ -290,6 +432,23 @@ const SequenceScreen: React.FC = observer(() => {
     >
       <SafeAreaView style={styles.safeArea}>
         <SequenceMultiHeader />
+
+        {/* 룰 토글 버튼 */}
+        <View style={{ alignItems: 'center', marginVertical: 8 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: useSpecialRule ? '#007AFF' : '#888',
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 8,
+            }}
+            onPress={() => setUseSpecialRule(v => !v)}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>
+              {useSpecialRule ? '특수칩 4+1 룰 적용 중' : '일반 5개 연속 룰 적용 중'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* 타이머: 맵 상단에 고정 */}
         <View style={styles.timerWrapper}>

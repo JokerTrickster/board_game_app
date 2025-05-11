@@ -116,4 +116,19 @@ export default StyleSheet.create({
     width: 35,
     height: 50,
   },
+  sequenceCell: {
+    borderColor: 'rgb(255, 0, 0)',
+    borderWidth: 4,
+    zIndex: 10,
+    width: 35,
+    height: 50,
+  },
+  mySequenceCell: {
+    backgroundColor: 'rgba(255,0,0,0.35)',
+    borderColor: '#FF0000',
+    borderWidth: 2,
+    zIndex: 10,
+    width: 35,
+    height: 50,
+  },
 }); 

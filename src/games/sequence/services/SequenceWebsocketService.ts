@@ -237,6 +237,9 @@ class SequenceWebSocketService {
         this.gameStarted = true;
     }
   }
+  sendGameOverEvent() {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", { userID: this.userID, round: this.round });
+  }
   sendUseCardEvent(cardID: number, mapID: number) {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "USE_CARD", { cardID: cardID, mapID: mapID });
   }
