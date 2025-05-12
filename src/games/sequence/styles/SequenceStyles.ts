@@ -158,4 +158,23 @@ export default StyleSheet.create({
     borderColor: '#fff',
     backgroundColor: '#222',
   },
+  turnIndicatorFixed: {
+    position: 'absolute',
+    top: 10,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 18,
+    paddingVertical: 7,
+    borderRadius: 18,
+    zIndex: 100,
+    alignSelf: 'center',
+  },
+  turnTextFixed: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
 }); 

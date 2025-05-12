@@ -399,6 +399,13 @@ const SequenceScreen: React.FC = observer(() => {
       <SafeAreaView style={styles.safeArea}>
         <SequenceMultiHeader />
 
+        {/* 가운데 상단 고정 턴 안내 */}
+        <View style={styles.turnIndicatorFixed}>
+          <Text style={styles.turnTextFixed}>
+            {sequenceViewModel.isMyTurn ? '내 턴' : '상대방 턴'}
+          </Text>
+        </View>
+
         {/* 타이머 + 마지막 카드 UI */}
         <View style={styles.timerRowWrapper}>
           {/* 내 마지막 카드(왼쪽) */}
@@ -474,13 +481,6 @@ const SequenceScreen: React.FC = observer(() => {
             onHide={() => setSystemMessage('')} 
           />
         ) : null}
-
-        {/* 턴 상태 표시 */}
-        <View style={styles.turnIndicator}>
-          <Text style={styles.turnText}>
-            {sequenceViewModel.isMyTurn ? '내 턴입니다' : '상대방 턴입니다'}
-          </Text>
-        </View>
       </SafeAreaView>
     </ImageBackground>
   );
