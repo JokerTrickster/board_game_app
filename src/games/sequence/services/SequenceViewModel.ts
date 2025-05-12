@@ -1,7 +1,7 @@
 import { makeAutoObservable, action } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SequenceViewModel {
-    timer = 6000; // 초 단위 타이머
+    timer = 30; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
@@ -17,6 +17,8 @@ class SequenceViewModel {
     opponentID = 0;
     isMyTurn = false;
     selectedCard = 0;
+    userOneLastPlacedCard = null;
+    userTwoLastPlacedCard = null;
 
     constructor() {
         makeAutoObservable(this, {
@@ -38,7 +40,15 @@ class SequenceViewModel {
             setOpponentID: action,
             setOwnedMapIDs: action,
             setOpponentOwnedMapIDs: action,
+            setUserOneLastPlacedCard: action,
+            setUserTwoLastPlacedCard: action,
         });
+    }
+    setUserOneLastPlacedCard(card: any) {
+        this.userOneLastPlacedCard = card;
+    }
+    setUserTwoLastPlacedCard(card: any) {
+        this.userTwoLastPlacedCard = card;
     }
     setOwnedMapIDs(ownedMapIDs: number[]) {
         this.ownedMapIDs = ownedMapIDs;
@@ -168,17 +178,7 @@ class SequenceViewModel {
         this.isMyTurn = (currentRound % 2 === turn);
     }
 
-    /**
-     * 소유한 mapID 배열에서 마지막에 놓은 카드 정보를 반환
-     * @param ownedMapIDs - 소유한 mapID 배열
-     * @param cardList - 카드 정보 배열 (예: sequenceCards)
-     * @returns 카드 정보 객체 또는 null
-     */
-    getLastPlacedCardInfo(ownedMapIDs: number[], cardList: any[]): any | null {
-        if (!ownedMapIDs || ownedMapIDs.length === 0) return null;
-        const lastMapID = ownedMapIDs[ownedMapIDs.length - 1];
-        return cardList.find(card => card.mapID === lastMapID) || null;
-    }
+    
 }
 
 export const sequenceViewModel = new SequenceViewModel();

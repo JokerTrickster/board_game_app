@@ -191,15 +191,11 @@ const SequenceScreen: React.FC = observer(() => {
   // validPositions 대신 validMapIDs로 관리 (mapID 배열)
   const [validMapIDs, setValidMapIDs] = useState<number[]>([]);
 
-  // 마지막에 놓은 카드 정보
-  const myLastCardInfo = sequenceViewModel.getLastPlacedCardInfo(
-    sequenceViewModel.ownedMapIDs,
-    sequenceCards
-  );
-  const opponentLastCardInfo = sequenceViewModel.getLastPlacedCardInfo(
-    sequenceViewModel.opponentOwnedMapIDs,
-    sequenceCards
-  );
+  // 마지막으로 사용한 카드들을 저장할 상태 추가
+  const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
+  const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
+
+
 
   // 타이머 설정
   useEffect(() => {
@@ -252,6 +248,34 @@ const SequenceScreen: React.FC = observer(() => {
     // 내가 만든 시퀀스가 2개 이상일 때만 게임 종료
     if (mySeqs.length >= 2) {
       sequenceWebSocketService.sendGameOverEvent();
+    }
+  }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
+
+  // 카드 사용 추적을 위한 useEffect
+  useEffect(() => {
+    // 내 카드 사용 추적
+    if (sequenceViewModel.ownedMapIDs.length > 0) {
+      const lastMapID = sequenceViewModel.ownedMapIDs[sequenceViewModel.ownedMapIDs.length - 1];
+      const cardInfo = sequenceCards.find(card => card.mapID === lastMapID);
+      if (cardInfo) {
+        // 같은 타입과 숫자를 가진 카드들 찾기
+        const sameCards = sequenceCards
+          .filter(card => card.type === cardInfo.type && card.count === cardInfo.count)
+          .map(card => card.id);
+        setMyLastUsedCards(sameCards);
+      }
+    }
+
+    // 상대방 카드 사용 추적
+    if (sequenceViewModel.opponentOwnedMapIDs.length > 0) {
+      const lastMapID = sequenceViewModel.opponentOwnedMapIDs[sequenceViewModel.opponentOwnedMapIDs.length - 1];
+      const cardInfo = sequenceCards.find(card => card.mapID === lastMapID);
+      if (cardInfo) {
+        const sameCards = sequenceCards
+          .filter(card => card.type === cardInfo.type && card.count === cardInfo.count)
+          .map(card => card.id);
+        setOpponentLastUsedCards(sameCards);
+      }
     }
   }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
 
@@ -385,7 +409,7 @@ const SequenceScreen: React.FC = observer(() => {
                 {
                   position: 'absolute',
                   left: (col * cellWidth)+20,
-                  top: (row * cellHeight)+23,
+                  top: (row * cellHeight)+10,
                 },
               ]}
               resizeMode="contain"
@@ -414,17 +438,7 @@ const SequenceScreen: React.FC = observer(() => {
         </View>
 
         {/* 타이머 + 마지막 카드 UI */}
-        <View style={styles.timerRowWrapper}>
-          {/* 내 마지막 카드(왼쪽) */}
-          <View style={styles.lastCardWrapper}>
-            {myLastCardInfo && (
-              <Image
-                source={getCardImage(myLastCardInfo)}
-                style={styles.lastCardImage}
-                resizeMode="contain"
-              />
-            )}
-          </View>
+         
           {/* 타이머(가운데) */}
           <View style={styles.timerWrapper}>
             <View style={styles.timerBar}>
@@ -436,17 +450,7 @@ const SequenceScreen: React.FC = observer(() => {
               />
             </View>
           </View>
-          {/* 상대 마지막 카드(오른쪽) */}
-          <View style={styles.lastCardWrapper}>
-            {opponentLastCardInfo && (
-              <Image
-                source={getCardImage(opponentLastCardInfo)}
-                style={styles.lastCardImage}
-                resizeMode="contain"
-              />
-            )}
-          </View>
-        </View>
+         
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>

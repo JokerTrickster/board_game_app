@@ -161,12 +161,16 @@ class SequenceWebSocketService {
                 break;
             case "USE_CARD":
                 if (parsedData.sequenceGameInfo) {
-                    sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
+                  sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
+                  sequenceViewModel.setUserOneLastPlacedCard(parsedData.users[0].lastCardID);
+                  sequenceViewModel.setUserTwoLastPlacedCard(parsedData.users[1].lastCardID);
                 }
                 break;
             case "TIME_OUT":
                 if (parsedData.sequenceGameInfo) {
-                    sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
+                  sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
+                  sequenceViewModel.setUserOneLastPlacedCard(parsedData.users[0].lastCardID);
+                  sequenceViewModel.setUserTwoLastPlacedCard(parsedData.users[1].lastCardID);
                 }
                 console.log("🔑 시간 초과. ", data.message);
                 break;
