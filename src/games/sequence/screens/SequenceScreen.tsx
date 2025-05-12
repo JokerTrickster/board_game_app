@@ -182,6 +182,7 @@ const SequenceScreen: React.FC = observer(() => {
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
   const [mySequences, setMySequences] = useState<number[][]>([]);
+  const [opponentSequences, setOpponentSequences] = useState<number[][]>([]);
 
   // 플레이어의 카드 목록
   const playerHand = sequenceViewModel.cardList;
@@ -243,13 +244,16 @@ const SequenceScreen: React.FC = observer(() => {
   // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
   useEffect(() => {
     const mySeqs = findConsecutiveSequences(sequenceViewModel.ownedMapIDs);
+    const opponentSeqs = findConsecutiveSequences(sequenceViewModel.opponentOwnedMapIDs);
+    
     setMySequences(mySeqs);
+    setOpponentSequences(opponentSeqs);
 
     // 내가 만든 시퀀스가 2개 이상일 때만 게임 종료
     if (mySeqs.length >= 2) {
       sequenceWebSocketService.sendGameOverEvent();
     }
-  }, [sequenceViewModel.ownedMapIDs]);
+  }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
 
   // 칩 이미지 반환 함수
   const getChipImage = (colorType: number) => {
@@ -322,6 +326,7 @@ const SequenceScreen: React.FC = observer(() => {
   const renderGrid = () => {
     // 시퀀스에 포함된 mapID를 Set으로 만들어 빠른 체크
     const mySequenceMapIDs = new Set(mySequences.flat());
+    const opponentSequenceMapIDs = new Set(opponentSequences.flat());
 
     return mapGrid.map((rowArr, rowIdx) => (
       <View key={`row-${rowIdx}`} style={styles.row}>
@@ -329,6 +334,7 @@ const SequenceScreen: React.FC = observer(() => {
           const cardInfo = sequenceCards.find(card => card.mapID === mapID);
           const isValid = validMapIDs.includes(mapID);
           const isInMySequence = mySequenceMapIDs.has(mapID);
+          const isInOpponentSequence = opponentSequenceMapIDs.has(mapID);
 
           return (
             <TouchableOpacity
@@ -336,7 +342,8 @@ const SequenceScreen: React.FC = observer(() => {
               style={[
                 styles.cell,
                 isValid && styles.validCell,
-                isInMySequence && styles.mySequenceCell // 반투명 레드 배경 스타일
+                isInMySequence && styles.mySequenceCell,
+                isInOpponentSequence && styles.opponentSequenceCell
               ]}
               onPress={() => handleCellPress(row, col)}
               activeOpacity={0.8}
