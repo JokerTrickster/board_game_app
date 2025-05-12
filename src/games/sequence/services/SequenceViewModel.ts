@@ -167,6 +167,18 @@ class SequenceViewModel {
     updateTurn(currentRound: number, turn: number) {
         this.isMyTurn = (currentRound % 2 === turn);
     }
+
+    /**
+     * 소유한 mapID 배열에서 마지막에 놓은 카드 정보를 반환
+     * @param ownedMapIDs - 소유한 mapID 배열
+     * @param cardList - 카드 정보 배열 (예: sequenceCards)
+     * @returns 카드 정보 객체 또는 null
+     */
+    getLastPlacedCardInfo(ownedMapIDs: number[], cardList: any[]): any | null {
+        if (!ownedMapIDs || ownedMapIDs.length === 0) return null;
+        const lastMapID = ownedMapIDs[ownedMapIDs.length - 1];
+        return cardList.find(card => card.mapID === lastMapID) || null;
+    }
 }
 
 export const sequenceViewModel = new SequenceViewModel();

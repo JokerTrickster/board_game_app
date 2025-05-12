@@ -28,7 +28,7 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     zIndex: 20,
-    marginTop:-20,
+    marginTop:-50,
   },
   timerBar: {
     width: '50%',
@@ -53,6 +53,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
+    marginTop:-40,
   },
   row: {
     flexDirection: 'row',
@@ -71,9 +72,12 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   handContainer: {
-    position: 'relative',
-    bottom: 0,
-    height: 100,
+    width: '70%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginBottom: 5,
   },
   handScrollView: {
     flexDirection: 'row',
@@ -130,5 +134,28 @@ export default StyleSheet.create({
     zIndex: 10,
     width: 35,
     height: 50,
+  },
+  timerRowWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginTop: -20,
+    marginBottom: 8,
+    zIndex: 20,
+  },
+  lastCardWrapper: {
+    width: 40,
+    height: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lastCardImage: {
+    width: 32,
+    height: 45,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#fff',
+    backgroundColor: '#222',
   },
 }); 

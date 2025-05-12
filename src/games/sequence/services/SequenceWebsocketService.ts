@@ -11,6 +11,7 @@ import { sequenceViewModel } from './SequenceViewModel';
 class SequenceWebSocketService {
   private accessToken: string | null = null;
   private userID: number | null = null;
+  private opponentID: number | null = null;
   private roomID: number | null = null;
   private imageID: number | null = null;
   private round: number | null = null;
@@ -238,7 +239,7 @@ class SequenceWebSocketService {
     }
   }
   sendGameOverEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", { userID: this.userID, round: this.round });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", { winnerID: this.userID, loserID: sequenceViewModel.opponentID });
   }
   sendUseCardEvent(cardID: number, mapID: number) {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "USE_CARD", { cardID: cardID, mapID: mapID });

@@ -176,52 +176,11 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
   return sequences;
 };
 
-// 일반 5개 연속 체크 함수 (특수칩 무시)
-const findNormalConsecutiveSequences = useCallback((ownedMapIDs: number[]): number[][] => {
-  const sequences: number[][] = [];
-  const checked = new Set<string>();
-  for (let row = 0; row < GRID_SIZE; row++) {
-    for (let col = 0; col < GRID_SIZE; col++) {
-      const mapID = coordToMapId(row, col);
-      if (!ownedMapIDs.includes(mapID)) continue;
-      const key = `${row}-${col}`;
-      if (checked.has(key)) continue;
-      for (const direction of DIRECTIONS) {
-        let count = 1;
-        let sequence = [mapID];
-        let currentRow = row + direction.row;
-        let currentCol = col + direction.col;
-        while (
-          currentRow >= 0 && currentRow < GRID_SIZE &&
-          currentCol >= 0 && currentCol < GRID_SIZE
-        ) {
-          const nextMapID = coordToMapId(currentRow, currentCol);
-          if (ownedMapIDs.includes(nextMapID)) {
-            sequence.push(nextMapID);
-            count++;
-            currentRow += direction.row;
-            currentCol += direction.col;
-          } else {
-            break;
-          }
-        }
-        if (count >= 5) {
-          sequence.forEach(id => checked.add(`${mapIdToCoord(id).row}-${mapIdToCoord(id).col}`));
-          sequences.push(sequence);
-        }
-      }
-    }
-  }
-  return sequences;
-}, []);
-
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
-  const [consecutiveSequences, setConsecutiveSequences] = useState<number[][]>([]);
-  const [useSpecialRule, setUseSpecialRule] = useState(true); // 5개 연속 체크 룰 토글
   const [mySequences, setMySequences] = useState<number[][]>([]);
 
   // 플레이어의 카드 목록
@@ -231,23 +190,30 @@ const SequenceScreen: React.FC = observer(() => {
   // validPositions 대신 validMapIDs로 관리 (mapID 배열)
   const [validMapIDs, setValidMapIDs] = useState<number[]>([]);
 
+  // 마지막에 놓은 카드 정보
+  const myLastCardInfo = sequenceViewModel.getLastPlacedCardInfo(
+    sequenceViewModel.ownedMapIDs,
+    sequenceCards
+  );
+  const opponentLastCardInfo = sequenceViewModel.getLastPlacedCardInfo(
+    sequenceViewModel.opponentOwnedMapIDs,
+    sequenceCards
+  );
+
   // 타이머 설정
   useEffect(() => {
-    // 턴이 바뀔 때마다 타이머 초기화
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
     setTimer(TURN_TIME);
 
-    // 내 턴일 때만 타이머 동작 및 TIME_OUT 이벤트 호출
     if (sequenceViewModel.isMyTurn) {
       timerRef.current = setInterval(() => {
         setTimer(prev => {
           if (prev <= 1) {
             clearInterval(timerRef.current!);
             timerRef.current = null;
-            // 내 턴일 때만 TIME_OUT 이벤트 호출
             if (sequenceViewModel.isMyTurn) {
               sequenceWebSocketService.sendTimeoutEvent();
             }
@@ -289,7 +255,7 @@ const SequenceScreen: React.FC = observer(() => {
   const getChipImage = (colorType: number) => {
     switch (colorType) {
       case 0:
-        return require('../../../assets/icons/sequence/common/blue_chip.png');
+        return require('../../../assets/icons/sequence/common/green_chip.png');
       case 1:
         return require('../../../assets/icons/sequence/common/red_chip.png');
       default:
@@ -412,7 +378,7 @@ const SequenceScreen: React.FC = observer(() => {
                 {
                   position: 'absolute',
                   left: (col * cellWidth)+20,
-                  top: (row * cellHeight)+10,
+                  top: (row * cellHeight)+23,
                 },
               ]}
               resizeMode="contain"
@@ -433,34 +399,39 @@ const SequenceScreen: React.FC = observer(() => {
       <SafeAreaView style={styles.safeArea}>
         <SequenceMultiHeader />
 
-        {/* 룰 토글 버튼 */}
-        <View style={{ alignItems: 'center', marginVertical: 8 }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: useSpecialRule ? '#007AFF' : '#888',
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 8,
-            }}
-            onPress={() => setUseSpecialRule(v => !v)}
-          >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              {useSpecialRule ? '특수칩 4+1 룰 적용 중' : '일반 5개 연속 룰 적용 중'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* 타이머: 맵 상단에 고정 */}
-        <View style={styles.timerWrapper}>
-          <View style={styles.timerBar}>
-            <View
-              style={[
-                styles.timerProgress,
-                { width: `${(timer / TURN_TIME) * 100}%` }
-              ]}
-            />
+        {/* 타이머 + 마지막 카드 UI */}
+        <View style={styles.timerRowWrapper}>
+          {/* 내 마지막 카드(왼쪽) */}
+          <View style={styles.lastCardWrapper}>
+            {myLastCardInfo && (
+              <Image
+                source={getCardImage(myLastCardInfo)}
+                style={styles.lastCardImage}
+                resizeMode="contain"
+              />
+            )}
           </View>
-          <Text style={styles.timerText}>{timer}s</Text>
+          {/* 타이머(가운데) */}
+          <View style={styles.timerWrapper}>
+            <View style={styles.timerBar}>
+              <View
+                style={[
+                  styles.timerProgress,
+                  { width: `${(timer / TURN_TIME) * 100}%` }
+                ]}
+              />
+            </View>
+          </View>
+          {/* 상대 마지막 카드(오른쪽) */}
+          <View style={styles.lastCardWrapper}>
+            {opponentLastCardInfo && (
+              <Image
+                source={getCardImage(opponentLastCardInfo)}
+                style={styles.lastCardImage}
+                resizeMode="contain"
+              />
+            )}
+          </View>
         </View>
 
         {/* 게임 보드 */}
