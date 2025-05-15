@@ -16,6 +16,8 @@ export type RootStackParamList = {
     SlimeWarResult: { isSuccess: boolean };  
     Sequence: undefined;
     SequenceResult: { isSuccess: boolean };
+    Frog: undefined;
+    FrogResult: { isSuccess: boolean };
 };
 
 // ✅ 네비게이션 참조 타입 추가
