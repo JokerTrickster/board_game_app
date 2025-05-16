@@ -409,7 +409,7 @@ const SequenceScreen: React.FC = observer(() => {
                 {
                   position: 'absolute',
                   left: (col * cellWidth)+20,
-                  top: (row * cellHeight)+10,
+                  top: (row * cellHeight)+26,
                 },
               ]}
               resizeMode="contain"

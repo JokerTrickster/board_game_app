@@ -28,7 +28,7 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     zIndex: 20,
-    marginTop:-50,
+    marginTop:-20,
   },
   timerBar: {
     width: '50%',
@@ -53,7 +53,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    marginTop:-40,
   },
   row: {
     flexDirection: 'row',

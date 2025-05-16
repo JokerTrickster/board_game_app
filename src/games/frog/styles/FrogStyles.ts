@@ -26,7 +26,6 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     zIndex: 20,
-    marginTop:-50,
   },
   timerBar: {
     width: '50%',
