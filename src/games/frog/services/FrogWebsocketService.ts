@@ -40,7 +40,7 @@ class FrogWebSocketService {
     if (!isInitialized) return;
 
     // URL 변경: 참새작 랜덤 매칭
-    const wsUrl = WS_BASE_URL + `/sparrow/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
+    const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
     webSocketService.connect(wsUrl, this.handleMessage);
     this.sendMatchEvent();
   }
@@ -54,7 +54,7 @@ class FrogWebSocketService {
     if (!isInitialized) return;
 
     // URL 변경: 참새작 함께하기 방 생성
-    const wsUrl = WS_BASE_URL + `/sparrow/v0.1/rooms/play/together/ws?tkn=${this.accessToken}`;
+    const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/play/together/ws?tkn=${this.accessToken}`;
     webSocketService.connect(wsUrl, this.handleMessage);
     this.sendPlayTogetherEvent();
   }
@@ -67,7 +67,7 @@ class FrogWebSocketService {
     const isInitialized = await this.initialize();
     if (!isInitialized) return;
     // URL 변경: 참새작 방 참여
-    const wsUrl = WS_BASE_URL + `/sparrow/v0.1/rooms/join/play/ws?tkn=${this.accessToken}&password=${password}`;
+    const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/join/play/ws?tkn=${this.accessToken}&password=${password}`;
     webSocketService.connect(wsUrl, this.handleMessage);
     this.sendJoinPlayEvent(password);
   }

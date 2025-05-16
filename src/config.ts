@@ -1,7 +1,7 @@
-// export const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com';
-export const API_BASE_URL = 'http://10.0.2.2:8080';
-// export const WS_BASE_URL = 'wss://dev-frog-api.jokertrickster.com';
-export const WS_BASE_URL = 'ws://10.0.2.2:8080';
+export const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com';
+// export const API_BASE_URL = 'http://10.0.2.2:8080';
+export const WS_BASE_URL = 'wss://dev-frog-api.jokertrickster.com';
+// export const WS_BASE_URL = 'ws://10.0.2.2:8080';
 
 export const GOOGLE_SIGNIN_CONFIG = {
     webClientId: '486518371116-p5fbtprg2n283c6dt9gcv1glnmebcbn4.apps.googleusercontent.com', // ✅ Google Web Client ID

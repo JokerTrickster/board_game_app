@@ -10,15 +10,13 @@ export default StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 60,
-    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    marginVertical: 12,
   },
   headerText: {
-    color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#333',
   },
   timerContainer: {
     padding: 10,
@@ -48,22 +46,22 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   boardContainer: {
-    flex: 1,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-    marginTop:-40,
+    alignSelf: 'center',
+    marginVertical: 8,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
   },
   cell: {
-    width: 35,
-    height: 50,
-    margin: 1,
+    width: 38,
+    height: 54,
+    margin: 2,
+    backgroundColor: '#fff',
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   chipImage: {
     width: 20,
@@ -96,9 +94,8 @@ export default StyleSheet.create({
     borderColor: '#007AFF',
   },
   cardImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: 34,
+    height: 50,
   },
   turnIndicator: {
     position: 'absolute',
@@ -203,5 +200,56 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     letterSpacing: 1,
+  },
+  doraHandContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 8,
+    justifyContent: 'center',
+  },
+  doraWrapper: {
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  doraLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 2,
+  },
+  doraImage: {
+    width: 36,
+    height: 52,
+  },
+  handWrapper: {
+    flex: 1,
+  },
+  handRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  handCardWrapper: {
+    marginHorizontal: 2,
+  },
+  handCardImage: {
+    width: 34,
+    height: 50,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  actionButton: {
+    backgroundColor: '#4A90E2',
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 }); 
