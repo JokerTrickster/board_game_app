@@ -127,6 +127,7 @@ class FrogWebSocketService {
             await gameService.setRoomID(parsedData.gameInfo.roomID);
             await gameService.setRound(parsedData.gameInfo.round);
             
+            
             if (!this.gameStarted && parsedData.gameInfo.allReady && 
                 parsedData.gameInfo.isFull && parsedData.users) {
                 const isOwner = parsedData.users.some((user: any) => 
@@ -270,8 +271,8 @@ class FrogWebSocketService {
   sendStartEvent() {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "START", { userID: this.userID, roomID: this.roomID });
   }
-  sendDoraEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DORA", {});
+  sendDoraEvent(dora: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DORA", { cardID: dora });
   }
   sendImportCardsEvent() {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_CARDS", {});

@@ -2,7 +2,7 @@ import { makeAutoObservable, action } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class FrogViewModel {
     timer = 30; // 초 단위 타이머
-    round = 1; // 현재 라운드
+    round = 0; // 현재 라운드
     gameOver = false; // 게임 종료 여부
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerColor = 'black';

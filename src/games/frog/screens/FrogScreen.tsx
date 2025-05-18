@@ -48,6 +48,7 @@ const FrogScreen: React.FC = observer(() => {
   const [buttonCooldown, setButtonCooldown] = useState(false);
   const [myFrogs, setMyFrogs] = useState<number[][]>([]);
   const [opponentFrogs, setOpponentFrogs] = useState<number[][]>([]);
+  const [doraCard, setDoraCard] = useState<number | null>(null);
 
   // 플레이어의 카드 목록
   const playerHand = frogViewModel.cardList;
@@ -124,30 +125,63 @@ const FrogScreen: React.FC = observer(() => {
     };
   }, [frogViewModel.isMyTurn]);
 
-  // 8x6 맵 생성 (44장만 표시)
+  // dora 선택 핸들러
+  const handleSelectDora = (cardId: number) => {
+    if (frogViewModel.round === 0 && doraCard === null) {
+      setDoraCard(cardId);
+      frogWebSocketService.sendDoraEvent(cardId); // dora 이벤트 전송
+    }
+  };
+
+  // 게임 맵에서 카드 클릭 시
   const renderGrid = () => {
     let cardCount = 0;
     return Array.from({ length: GRID_ROWS }).map((_, rowIdx) => (
       <View key={`row-${rowIdx}`} style={styles.row}>
         {Array.from({ length: GRID_COLS }).map((_, colIdx) => {
           cardCount++;
+          const cardId = cardCount <= TOTAL_CARDS ? cardCount : null;
           return (
-            <View 
-              key={`cell-${rowIdx}-${colIdx}`} 
+            <TouchableOpacity
+              key={`cell-${rowIdx}-${colIdx}`}
               style={[
                 styles.cell,
-                cardCount > TOTAL_CARDS && styles.emptyCell // 빈 셀 스타일 적용
+                cardCount > TOTAL_CARDS && styles.emptyCell
               ]}
+              disabled={
+                !(frogViewModel.round === 0 && doraCard === null && cardId)
+              }
+              onPress={() => cardId && handleSelectDora(cardId)}
             >
-              {cardCount <= TOTAL_CARDS ? (
+              {cardId ? (
                 <Image source={dummyCard} style={styles.cardImage} resizeMode="contain" />
               ) : null}
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
     ));
   };
+
+  // 도라 카드 UI
+  const renderDora = () => (
+    <View style={styles.doraArea}>
+      {doraCard ? (
+        <Image
+          source={dummyCard}
+          style={styles.doraImage}
+          resizeMode="contain"
+        />
+      ) : (
+        <View
+          style={[
+            styles.doraImage,
+            { backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 6 }
+          ]}
+        />
+      )}
+    </View>
+  );
 
   // 버려진 패 정보를 표시하는 컴포넌트
   const DiscardInfo = ({ count, discardCounts }: { count: number, discardCounts: { green: number, red: number, normal: number } }) => {
@@ -204,6 +238,15 @@ const FrogScreen: React.FC = observer(() => {
     </View>
   );
 
+  // 라운드별 카드 가져오기
+  useEffect(() => {
+    if (frogViewModel.round === 1 || frogViewModel.round === 2) {
+      frogWebSocketService.sendImportCardsEvent();
+    } else if (frogViewModel.round >= 3) {
+      frogWebSocketService.sendImportSingleCardEvent();
+    }
+  }, [frogViewModel.round]);
+
   return (
     <ImageBackground
       source={require('../../../assets/icons/frog/common/background.png')}
@@ -247,9 +290,7 @@ const FrogScreen: React.FC = observer(() => {
 
         {/* 도라 + 내 카드(핸드) 한 행에 배치 */}
         <View style={styles.doraHandRow}>
-          <View style={styles.doraArea}>
-            <Image source={dummyDora} style={styles.doraImage} resizeMode="contain" />
-          </View>
+          {renderDora()}
           <View style={styles.handArea}>
             {renderHand()}
           </View>
