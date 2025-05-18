@@ -7,7 +7,6 @@ class FrogViewModel {
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerColor = 'black';
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
-    opponentCardList: any[] = []; // 상대방 카드 
     gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(1));
     userID = 0;
     opponentID = 0;
@@ -15,6 +14,7 @@ class FrogViewModel {
     discardCardList: any[] = [];
     opponentDiscardCardList: any[] = [];
     score = 0;
+    dora = 0;
 
 
     constructor() {
@@ -26,7 +26,6 @@ class FrogViewModel {
             startTimer: action,
             resetGameState: action,
             setCardList: action,
-            setOpponentCardList: action,
             setGameMap: action,
             setUserID: action,
             setOpponentID: action,
@@ -36,7 +35,11 @@ class FrogViewModel {
             setScore: action,
             setGameOver: action,
             setRound: action,
+            setDora: action,
         });
+    }
+    setDora(dora: number) {
+        this.dora = dora;
     }
     setDiscardCardList(discardCardList: any[]) {
         this.discardCardList = discardCardList;
@@ -94,9 +97,7 @@ class FrogViewModel {
     setCardList(cardList: any[]) {
         this.cardList = cardList;
     }
-    setOpponentCardList(opponentCardList: any[]) {
-        this.opponentCardList = opponentCardList;
-    }
+ 
     /** 타이머 값을 설정하는 함수 */
     setTimer(value: number) {
         this.timer = value;

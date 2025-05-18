@@ -109,13 +109,14 @@ class FrogWebSocketService {
             // 카드 정보 저장
             parsedData.users.forEach((user: any) => {
                 if (user.id === this.userID) {
-                    frogViewModel.setCardList(user.ownedCardIDs || []);
+                  frogViewModel.setCardList(user.cards || []);
+                  frogViewModel.setDiscardCardList(user.discardedCards || []);
                     // 내 turn 정보 저장
                     if (parsedData.FrogGameInfo && typeof user.turn !== 'undefined') {
                         frogViewModel.updateTurn(parsedData.FrogGameInfo.round, user.turn);
                     }
                 } else {
-                    frogViewModel.setOpponentCardList(user.ownedCardIDs || []);
+                  frogViewModel.setOpponentDiscardCardList(user.discardedCards || []);
                 }
             });
         }
@@ -220,7 +221,9 @@ class FrogWebSocketService {
   handleJoinEvent(data: any) { /* TODO: 구현 */ }
   handleMatchEvent(data: any) { /* TODO: 구현 */ }
   handleQuitGameEvent(data: any) { /* TODO: 구현 */ }
-  handleDoraEvent(data: any) { /* TODO: 구현 */ }
+  handleDoraEvent(data: any) { 
+    frogViewModel.setDora(data.gameInfo.dora);
+  }
   handleImportCardsEvent(data: any) { /* TODO: 구현 */ }
   handleImportSingleCardEvent(data: any) { /* TODO: 구현 */ }
   handleDiscardEvent(data: any) { /* TODO: 구현 */ }

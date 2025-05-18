@@ -7,6 +7,7 @@ import { frogViewModel } from '../services/FrogViewModel';
 import { frogWebSocketService } from '../services/FrogWebsocketService';
 import FrogMultiHeader from '../../../components/FrogMultiHeader';
 import FrogCards from '../../../assets/data/sequnce_cards.json';
+import frogCards from '../../../assets/data/frog_cards.json';
 
 const GRID_ROWS = 6;
 const GRID_COLS = 8;
@@ -15,6 +16,31 @@ const TOTAL_CARDS = 44; // 실제 카드 개수
 // 임시 카드 이미지
   const dummyCard = require('../../../assets/icons/frog/card/card01.png');
   const dummyDora = require('../../../assets/icons/frog/card/card01.png');
+
+const cardImageMap: Record<string, any> = {
+  'red1.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red2.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red3.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red4.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red5.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red6.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red7.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red8.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red9.png': require('../../../assets/icons/frog/card/card01.png'),
+  'red10.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green2.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green3.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green4.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green6.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green8.png': require('../../../assets/icons/frog/card/card01.png'),
+  'green11.png': require('../../../assets/icons/frog/card/card01.png'),
+  'normal1.png': require('../../../assets/icons/frog/card/card01.png'),
+  'normal5.png': require('../../../assets/icons/frog/card/card01.png'),
+  'normal7.png': require('../../../assets/icons/frog/card/card01.png'),
+  'normal9.png': require('../../../assets/icons/frog/card/card01.png'),
+  // ... 나머지 카드 이미지도 모두 추가 ...
+};
+
 const FrogScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [timer, setTimer] = useState(30);
@@ -25,7 +51,6 @@ const FrogScreen: React.FC = observer(() => {
 
   // 플레이어의 카드 목록
   const playerHand = frogViewModel.cardList;
-  const opponentHand = frogViewModel.opponentCardList;
 
   // validPositions 대신 validMapIDs로 관리 (mapID 배열)
   const [validMapIDs, setValidMapIDs] = useState<number[]>([]);
@@ -33,6 +58,39 @@ const FrogScreen: React.FC = observer(() => {
   // 마지막으로 사용한 카드들을 저장할 상태 추가
   const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
   const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
+
+  // 카드 id → 카드 정보 매핑
+  const frogCardMap = useMemo(() => {
+    const map: Record<number, any> = {};
+    frogCards.forEach(card => {
+      map[card.id] = card;
+    });
+    return map;
+  }, []);
+
+  // getDiscardCounts를 컴포넌트 내부, frogCardMap 아래에 위치
+  const getDiscardCounts = (discardedCardIds: number[]) => {
+    const result: Record<number, { green: number; red: number; normal: number }> = {};
+    for (let i = 1; i <= 11; i++) {
+      result[i] = { green: 0, red: 0, normal: 0 };
+    }
+    discardedCardIds.forEach(id => {
+      const card = frogCardMap[id];
+      if (card) {
+        const { count, color } = card;
+        if (result[count] && (color === 'green' || color === 'red' || color === 'normal')) {
+          result[count][color as 'green' | 'red' | 'normal'] += 1;
+        }
+      }
+    });
+    return result;
+  };
+
+  // 2. 그 아래에서 useMemo(discardCounts) 사용
+  const discardCounts = useMemo(
+    () => getDiscardCounts(frogViewModel.discardCardList || []),
+    [frogViewModel.discardCardList]
+  );
 
   // 타이머 설정
   useEffect(() => {
@@ -92,16 +150,13 @@ const FrogScreen: React.FC = observer(() => {
   };
 
   // 버려진 패 정보를 표시하는 컴포넌트
-  const DiscardInfo = ({ cardNumber }: { cardNumber: number }) => {
-    const discardCounts = {
-      green: Math.floor(Math.random() * 3),
-      red: Math.floor(Math.random() * 3),
-      normal: Math.floor(Math.random() * 3)
-    };
+  const DiscardInfo = ({ count, discardCounts }: { count: number, discardCounts: { green: number, red: number, normal: number } }) => {
+    const card = frogCards.find(card => card.count === count);
+    const imageSource = card && cardImageMap[card.image] ? cardImageMap[card.image] : dummyCard;
 
     return (
       <View style={styles.discardInfoContainer}>
-        <Image source={dummyCard} style={styles.discardCardImage} resizeMode="contain" />
+        <Image source={imageSource} style={styles.discardCardImage} resizeMode="contain" />
         <View style={styles.discardCountsContainer}>
           <View style={styles.discardCountRow}>
             <View style={[styles.colorDot, styles.greenDot]} />
@@ -120,11 +175,14 @@ const FrogScreen: React.FC = observer(() => {
     );
   };
 
-  // 버려진 카드 렌더링
   const renderDiscardPile = () => (
     <View style={styles.discardPileContainer}>
       {Array.from({ length: 11 }).map((_, idx) => (
-        <DiscardInfo key={`discard-${idx}`} cardNumber={idx + 1} />
+        <DiscardInfo
+          key={`discard-${idx}`}
+          count={idx + 1}
+          discardCounts={discardCounts[idx + 1]}
+        />
       ))}
     </View>
   );
@@ -133,11 +191,15 @@ const FrogScreen: React.FC = observer(() => {
   const renderHand = () => (
     <View style={styles.handContainer}>
       <View style={styles.handScrollView}>
-        {Array.from({ length: 6 }).map((_, idx) => (
-          <View key={`hand-card-${idx}`} style={styles.handCardWrapper}>
-            <Image source={dummyCard} style={styles.handCardImage} resizeMode="contain" />
-          </View>
-        ))}
+        {playerHand.map((id: number, idx: number) => {
+          const card = frogCardMap[id];
+          const imageSource = card && cardImageMap[card.image] ? cardImageMap[card.image] : dummyCard;
+          return (
+            <View key={`hand-card-${idx}`} style={styles.handCardWrapper}>
+              <Image source={imageSource} style={styles.handCardImage} resizeMode="contain" />
+            </View>
+          );
+        })}
       </View>
     </View>
   );
