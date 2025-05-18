@@ -73,18 +73,20 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   handContainer: {
-    width: '70%',
-    alignSelf: 'center',
+    width: '100%',
     flexDirection: 'row',
-    padding: 10,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    marginBottom: 5,
+    padding: 0,
+    backgroundColor: 'transparent',
+    marginBottom: 0,
+    height: 54,
   },
   handScrollView: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     flex: 1,
+    gap: 4,
+    height: 54,
   },
   card: {
     width: 50,
@@ -204,28 +206,45 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  doraHandContainer: {
+  doraHandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: 8,
     justifyContent: 'center',
+    width: '100%',
+    gap: 10,
   },
-  doraWrapper: {
+  doraArea: {
     alignItems: 'center',
-    marginRight: 16,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
+    borderRadius: 8,
+    padding: 10,
+    marginRight: 10,
+    minWidth: 50,
+    height: 54,
+  },
+  handArea: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.10)',
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    height: 54,
+    flexDirection: 'row',
   },
   doraLabel: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 2,
+    color: '#000',
+    fontWeight: 'bold',
   },
   doraImage: {
-    width: 36,
-    height: 52,
+    width: 34,
+    height: 50,
   },
   handWrapper: {
     flex: 1,
+    alignItems: 'center',
   },
   handRow: {
     flexDirection: 'row',
@@ -233,6 +252,9 @@ export default StyleSheet.create({
   },
   handCardWrapper: {
     marginHorizontal: 2,
+    alignItems: 'center',
+    height: 54,
+    justifyContent: 'center',
   },
   handCardImage: {
     width: 34,
@@ -242,7 +264,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 16,
-    marginBottom: 8,
+    marginBottom: 16,
+    paddingHorizontal: 20,
   },
   actionButton: {
     backgroundColor: '#4A90E2',
@@ -254,5 +277,53 @@ export default StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  discardPileContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+
+  },
+  discardInfoContainer: {
+    alignItems: 'center',
+  },
+  discardCardImage: {
+    width: 30,
+    height: 40,
+    marginBottom: 2,
+    gap: 2,
+
+  },
+  discardCountsContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    gap: 2,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 2,
+    borderRadius: 4,
+  },
+  discardCountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  colorDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  greenDot: {
+    backgroundColor: '#4CAF50',
+  },
+  redDot: {
+    backgroundColor: '#F44336',
+  },
+  normalDot: {
+    backgroundColor: '#9E9E9E',
+  },
+  discardCountText: {
+    color: '#fff',
+    fontSize: 9,
   },
 }); 

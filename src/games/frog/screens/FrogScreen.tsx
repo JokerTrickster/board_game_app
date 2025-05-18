@@ -91,14 +91,54 @@ const FrogScreen: React.FC = observer(() => {
     ));
   };
 
-  // 내 카드 5+1장
-  const renderHand = () => (
-    <View style={styles.handRow}>
-      {Array.from({ length: 6 }).map((_, idx) => (
-        <View key={`hand-card-${idx}`} style={styles.handCardWrapper}>
-          <Image source={dummyCard} style={styles.handCardImage} resizeMode="contain" />
+  // 버려진 패 정보를 표시하는 컴포넌트
+  const DiscardInfo = ({ cardNumber }: { cardNumber: number }) => {
+    const discardCounts = {
+      green: Math.floor(Math.random() * 3),
+      red: Math.floor(Math.random() * 3),
+      normal: Math.floor(Math.random() * 3)
+    };
+
+    return (
+      <View style={styles.discardInfoContainer}>
+        <Image source={dummyCard} style={styles.discardCardImage} resizeMode="contain" />
+        <View style={styles.discardCountsContainer}>
+          <View style={styles.discardCountRow}>
+            <View style={[styles.colorDot, styles.greenDot]} />
+            <Text style={styles.discardCountText}>{discardCounts.green}</Text>
+          </View>
+          <View style={styles.discardCountRow}>
+            <View style={[styles.colorDot, styles.redDot]} />
+            <Text style={styles.discardCountText}>{discardCounts.red}</Text>
+          </View>
+          <View style={styles.discardCountRow}>
+            <View style={[styles.colorDot, styles.normalDot]} />
+            <Text style={styles.discardCountText}>{discardCounts.normal}</Text>
+          </View>
         </View>
+      </View>
+    );
+  };
+
+  // 버려진 카드 렌더링
+  const renderDiscardPile = () => (
+    <View style={styles.discardPileContainer}>
+      {Array.from({ length: 11 }).map((_, idx) => (
+        <DiscardInfo key={`discard-${idx}`} cardNumber={idx + 1} />
       ))}
+    </View>
+  );
+
+  // 내 카드 렌더링 함수 수정 (handContainer, handScrollView만 사용)
+  const renderHand = () => (
+    <View style={styles.handContainer}>
+      <View style={styles.handScrollView}>
+        {Array.from({ length: 6 }).map((_, idx) => (
+          <View key={`hand-card-${idx}`} style={styles.handCardWrapper}>
+            <Image source={dummyCard} style={styles.handCardImage} resizeMode="contain" />
+          </View>
+        ))}
+      </View>
     </View>
   );
 
@@ -138,13 +178,17 @@ const FrogScreen: React.FC = observer(() => {
           {renderGrid()}
         </View>
 
-        {/* 도라 카드 + 내 카드 */}
-        <View style={styles.doraHandContainer}>
-          <View style={styles.doraWrapper}>
-            <Text style={styles.doraLabel}>도라</Text>
+        {/* 버려진 카드(위) */}
+        <View style={styles.discardPileContainer}>
+          {renderDiscardPile()}
+        </View>
+
+        {/* 도라 + 내 카드(핸드) 한 행에 배치 */}
+        <View style={styles.doraHandRow}>
+          <View style={styles.doraArea}>
             <Image source={dummyDora} style={styles.doraImage} resizeMode="contain" />
           </View>
-          <View style={styles.handWrapper}>
+          <View style={styles.handArea}>
             {renderHand()}
           </View>
         </View>
