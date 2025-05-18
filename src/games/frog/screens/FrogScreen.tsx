@@ -8,8 +8,8 @@ import { frogWebSocketService } from '../services/FrogWebsocketService';
 import FrogMultiHeader from '../../../components/FrogMultiHeader';
 import FrogCards from '../../../assets/data/sequnce_cards.json';
 
-const GRID_ROWS = 8;
-const GRID_COLS = 6;
+const GRID_ROWS = 6;
+const GRID_COLS = 8;
 const TOTAL_CARDS = 44; // 실제 카드 개수
 
 // 임시 카드 이미지
@@ -73,9 +73,14 @@ const FrogScreen: React.FC = observer(() => {
       <View key={`row-${rowIdx}`} style={styles.row}>
         {Array.from({ length: GRID_COLS }).map((_, colIdx) => {
           cardCount++;
-          // 44장까지만 카드 표시, 나머지는 빈칸
           return (
-            <View key={`cell-${rowIdx}-${colIdx}`} style={styles.cell}>
+            <View 
+              key={`cell-${rowIdx}-${colIdx}`} 
+              style={[
+                styles.cell,
+                cardCount > TOTAL_CARDS && styles.emptyCell // 빈 셀 스타일 적용
+              ]}
+            >
               {cardCount <= TOTAL_CARDS ? (
                 <Image source={dummyCard} style={styles.cardImage} resizeMode="contain" />
               ) : null}

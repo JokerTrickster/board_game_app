@@ -121,13 +121,13 @@ class FrogWebSocketService {
         }
 
         // 게임 정보 처리
-        if (parsedData.FrogGameInfo) {
-            console.log("게임 정보:", parsedData.FrogGameInfo);
-            await gameService.setRoomID(parsedData.FrogGameInfo.roomID);
-            await gameService.setRound(parsedData.FrogGameInfo.round);
+        if (parsedData.gameInfo) {
+            console.log("게임 정보:", parsedData.gameInfo);
+            await gameService.setRoomID(parsedData.gameInfo.roomID);
+            await gameService.setRound(parsedData.gameInfo.round);
             
-            if (!this.gameStarted && parsedData.FrogGameInfo.allReady && 
-                parsedData.FrogGameInfo.isFull && parsedData.users) {
+            if (!this.gameStarted && parsedData.gameInfo.allReady && 
+                parsedData.gameInfo.isFull && parsedData.users) {
                 const isOwner = parsedData.users.some((user: any) => 
                     user.id === this.userID && user.isOwner
                 );
@@ -151,9 +151,13 @@ class FrogWebSocketService {
             case "QUIT_GAME":
                 this.handleQuitGameEvent(data);
                 break;
-            case "START":
-                this.handleStartEvent(data);
-                break;
+          case "START":
+              frogService.deductCoin(-100);
+              if (navigation) {
+                navigation.navigate('Loading', { nextScreen: 'Frog' });
+              }
+              this.handleStartEvent(parsedData);
+              break;
             case "DORA":
                 this.handleDoraEvent(data);
                 break;
@@ -230,21 +234,21 @@ class FrogWebSocketService {
   handleJoinPlayEvent(data: any) { /* TODO: 구현 */ }
 
   handleStartEvent(data: any) {
-    if (data.FrogGameInfo) {
-        this.roomID = data.FrogGameInfo.roomID;
-        this.round = data.FrogGameInfo.round;
+    if (data.gameInfo) {
+        this.roomID = data.gameInfo.roomID;
+        this.round = data.gameInfo.round;
         this.gameStarted = true;
-        // 카드 맵 랜덤 초기화 (8x6)
+        // 카드 맵 랜덤 초기화 (6x8)
         const cardIds = frogCards.map(card => card.id);
         // Fisher-Yates shuffle
         for (let i = cardIds.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [cardIds[i], cardIds[j]] = [cardIds[j], cardIds[i]];
         }
-        // 8x6 맵에 배치 (44장 + 4칸은 null)
+        // 6x8 맵에 배치 (44장 + 4칸은 null)
         const padded = [...cardIds, ...Array(48 - cardIds.length).fill(null)];
-        const map = Array.from({ length: 8 }, (_, row) =>
-          padded.slice(row * 6, row * 6 + 6)
+        const map = Array.from({ length: 6 }, (_, row) =>
+          padded.slice(row * 8, row * 8 + 8)
         );
         frogViewModel.setGameMap(map);
     }

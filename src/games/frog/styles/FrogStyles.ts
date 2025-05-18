@@ -62,6 +62,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
+  emptyCell: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+  },
   chipImage: {
     width: 20,
     height: 20,
