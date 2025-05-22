@@ -6,6 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { findItWebSocketService } from '../services/FindItWebSocketService';
 import { slimeWarWebSocketService } from '../games/slime-war/services/SlimeWarWebsocketService';
+import { frogWebSocketService } from '../games/frog/services/FrogWebsocketService';
 import { WebView } from 'react-native-webview';
 import { gameService } from '../services/GameService';
 import ActionCard from '../components/ActionCard';
@@ -134,6 +135,9 @@ const GameDetailScreen: React.FC = () => {
             case '시퀀스':
                 sequenceWebSocketService.connect();
                 break;
+            case '개굴작':
+                frogWebSocketService.connect();
+                break;
             default:
                 Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
                 return;
@@ -151,6 +155,9 @@ const GameDetailScreen: React.FC = () => {
                 break;
             case '시퀀스':
                 await sequenceWebSocketService.togetherConnect();
+                break;
+            case '개굴작':
+                await frogWebSocketService.togetherConnect();
                 break;
             default:
                 Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
@@ -177,6 +184,9 @@ const GameDetailScreen: React.FC = () => {
                     break;
                 case '시퀀스':
                     sequenceWebSocketService.joinConnect(authCode);
+                    break;
+                case '개굴작':
+                    frogWebSocketService.joinConnect(authCode);
                     break;
                 default:
                     Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
@@ -243,6 +253,11 @@ const GameDetailScreen: React.FC = () => {
                             source={require('../assets/images/game_detail/sequence_title.png')}
                             style={styles.gameTitleImage}
                         />
+                    ) : game.title === '개굴작' ? (
+                        <Image
+                            source={require('../assets/images/game_detail/sequence_title.png')}
+                            style={styles.gameTitleImage}
+                        />
                     ) : (
                         <Text style={styles.gameTitle}>{game.title || '게임 제목 없음'}</Text>
                     )}
@@ -260,7 +275,9 @@ const GameDetailScreen: React.FC = () => {
                                         ? require('../assets/images/common/find-it.png')
                                         : game.title === '슬라임전쟁'
                                             ? require('../assets/images/common/slime-war.png')
-                                            : game.title === '시퀀스'
+                                        : game.title === '시퀀스'
+                                            ? require('../assets/images/common/sequence.png')
+                                            : game.title === '개굴작'
                                                 ? require('../assets/images/common/sequence.png')
                                                 : require('../assets/images/common/default.png')
                                 }
