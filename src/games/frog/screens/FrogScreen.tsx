@@ -108,7 +108,7 @@ const FrogScreen: React.FC = observer(() => {
             clearInterval(timerRef.current!);
             timerRef.current = null;
             if (frogViewModel.isMyTurn) {
-              frogWebSocketService.sendTimeoutEvent();
+              handleTimeout();
             }
             return 0;
           }
@@ -125,15 +125,31 @@ const FrogScreen: React.FC = observer(() => {
     };
   }, [frogViewModel.isMyTurn]);
 
-  // dora 선택 핸들러
+  const { round, playTurn, isMyTurn, dora } = frogViewModel;
+
+  // 도라 선택 핸들러
   const handleSelectDora = (cardId: number) => {
-    if (frogViewModel.round === 0 && doraCard === null) {
-      setDoraCard(cardId);
-      frogWebSocketService.sendDoraEvent(cardId); // dora 이벤트 전송
+    if (round === 0 && playTurn === 1 && isMyTurn && !dora) {
+      frogWebSocketService.sendDoraEvent(cardId);
+      // frogViewModel.setDora(cardId); // 서버에서 응답 오면 setDora 처리
     }
   };
 
-  // 게임 맵에서 카드 클릭 시
+  // 도라 선택 안내 메시지
+  const renderDoraGuide = () => {
+    if (round === 0 && playTurn === 1 && isMyTurn && !dora) {
+      return (
+        <View style={{ alignItems: 'center', marginVertical: 8 }}>
+          <Text style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+            도라를 선택하세요!
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  // 게임 맵에서 카드 클릭 시 도라 선택 가능
   const renderGrid = () => {
     let cardCount = 0;
     return Array.from({ length: GRID_ROWS }).map((_, rowIdx) => (
@@ -141,17 +157,22 @@ const FrogScreen: React.FC = observer(() => {
         {Array.from({ length: GRID_COLS }).map((_, colIdx) => {
           cardCount++;
           const cardId = cardCount <= TOTAL_CARDS ? cardCount : null;
+          const isSelectable =
+            frogViewModel.round === 1 || frogViewModel.round === 2
+              ? frogViewModel.isMyTurn && !!cardId && !selectedImportCards.includes(cardId) && selectedImportCards.length < 5
+              : false;
+          const isSelected = selectedImportCards.includes(cardId!);
           return (
             <TouchableOpacity
               key={`cell-${rowIdx}-${colIdx}`}
               style={[
                 styles.cell,
-                cardCount > TOTAL_CARDS && styles.emptyCell
+                cardCount > TOTAL_CARDS && styles.emptyCell,
+                isSelected && { backgroundColor: '#4CAF50' },
+                isSelectable && { borderColor: '#4CAF50', borderWidth: 2 },
               ]}
-              disabled={
-                !(frogViewModel.round === 0 && doraCard === null && cardId)
-              }
-              onPress={() => cardId && handleSelectDora(cardId)}
+              disabled={!isSelectable}
+              onPress={() => cardId && handleSelectImportCard(cardId)}
             >
               {cardId ? (
                 <Image source={dummyCard} style={styles.cardImage} resizeMode="contain" />
@@ -222,16 +243,48 @@ const FrogScreen: React.FC = observer(() => {
   );
 
   // 내 카드 렌더링 함수 수정 (handContainer, handScrollView만 사용)
+  const [handOrder, setHandOrder] = useState<number[]>(frogViewModel.cardList);
+  const [selectedHandIdx, setSelectedHandIdx] = useState<number | null>(null);
+
+  // 카드 리스트가 바뀌면 handOrder도 동기화
+  useEffect(() => {
+    setHandOrder(frogViewModel.cardList);
+  }, [frogViewModel.cardList]);
+
+  const handleHandCardPress = (idx: number) => {
+    if (selectedHandIdx === null) {
+      setSelectedHandIdx(idx);
+    } else if (selectedHandIdx === idx) {
+      setSelectedHandIdx(null); // 같은 카드 다시 누르면 선택 해제
+    } else {
+      // 자리 교체
+      const newOrder = [...handOrder];
+      [newOrder[selectedHandIdx], newOrder[idx]] = [newOrder[idx], newOrder[selectedHandIdx]];
+      setHandOrder(newOrder);
+      setSelectedHandIdx(null);
+      // 교체 상태를 ViewModel에도 저장(다음 라운드에도 유지)
+      frogViewModel.setCardList(newOrder);
+    }
+  };
+
   const renderHand = () => (
     <View style={styles.handContainer}>
       <View style={styles.handScrollView}>
-        {playerHand.map((id: number, idx: number) => {
+        {handOrder.map((id: number, idx: number) => {
           const card = frogCardMap[id];
           const imageSource = card && cardImageMap[card.image] ? cardImageMap[card.image] : dummyCard;
+          const isSelected = selectedHandIdx === idx;
           return (
-            <View key={`hand-card-${idx}`} style={styles.handCardWrapper}>
+            <TouchableOpacity
+              key={`hand-card-${idx}`}
+              style={[
+                styles.handCardWrapper,
+                isSelected && { borderColor: '#4CAF50', borderWidth: 2 }
+              ]}
+              onPress={() => handleHandCardPress(idx)}
+            >
               <Image source={imageSource} style={styles.handCardImage} resizeMode="contain" />
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -241,11 +294,61 @@ const FrogScreen: React.FC = observer(() => {
   // 라운드별 카드 가져오기
   useEffect(() => {
     if (frogViewModel.round === 1 || frogViewModel.round === 2) {
-      frogWebSocketService.sendImportCardsEvent();
+      frogWebSocketService.sendImportCardsEvent([]);
     } else if (frogViewModel.round >= 3) {
-      frogWebSocketService.sendImportSingleCardEvent();
+      frogWebSocketService.sendImportSingleCardEvent(1);
     }
   }, [frogViewModel.round]);
+
+  const [selectedImportCards, setSelectedImportCards] = useState<number[]>([]);
+
+  const handleSelectImportCard = (cardId: number) => {
+    if (!frogViewModel.isMyTurn) return;
+    if (selectedImportCards.includes(cardId)) return;
+    if (selectedImportCards.length >= 5) return;
+
+    setSelectedImportCards(prev => {
+      const next = [...prev, cardId];
+      // 5장 선택 시 이벤트 호출
+      if (next.length === 5) {
+        frogWebSocketService.sendImportCardsEvent(next);
+        // 선택 초기화(서버 응답 후 초기화해도 됨)
+        setTimeout(() => setSelectedImportCards([]), 300);
+      }
+      return next;
+    });
+  };
+
+  const renderImportGuide = () => {
+    if ((frogViewModel.round === 1 || frogViewModel.round === 2) && frogViewModel.isMyTurn) {
+      return (
+        <View style={{ alignItems: 'center', marginVertical: 8 }}>
+          <Text style={{ color: '#4CAF50', fontWeight: 'bold' }}>
+            5장의 카드를 선택하세요! ({selectedImportCards.length}/5)
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const handleTimeout = () => {
+    const myCards = frogViewModel.cardList;
+    if (myCards.length === 6) {
+      // 내 카드 중 1장 랜덤 버리기
+      const randomIdx = Math.floor(Math.random() * myCards.length);
+      const cardIdToDiscard = myCards[randomIdx];
+      frogWebSocketService.sendDiscardEvent(cardIdToDiscard);
+    } else if (myCards.length === 5) {
+       frogWebSocketService.sendTimeoutEvent(0);
+    }
+  };
+
+  // 점수 계산 함수(임시, 실제 계산식은 추후 교체)
+  const calculateScore = (cards: number[]): number => {
+    // TODO: 실제 점수 계산식으로 교체
+    return cards.length * 10;
+  };
 
   return (
     <ImageBackground
@@ -255,6 +358,9 @@ const FrogScreen: React.FC = observer(() => {
     >
       <SafeAreaView style={styles.safeArea}>
         <FrogMultiHeader />
+
+        {/* 도라 선택 안내 메시지 */}
+        {renderDoraGuide()}
 
         {/* 가운데 상단 고정 턴 안내 */}
         <View style={styles.turnIndicatorFixed}>
@@ -307,6 +413,16 @@ const FrogScreen: React.FC = observer(() => {
           <TouchableOpacity style={styles.actionButton}>
             <Text style={styles.buttonText}>버리기</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => {
+              const myCards = frogViewModel.cardList;
+              const score = calculateScore(myCards);
+              frogWebSocketService.sendWinRequestEvent(score, myCards);
+            }}
+          >
+            <Text style={styles.buttonText}>승리 요청</Text>
+          </TouchableOpacity>
         </View>
 
         {/* 시스템 메시지 */}
@@ -322,3 +438,4 @@ const FrogScreen: React.FC = observer(() => {
 });
 
 export default FrogScreen;
+

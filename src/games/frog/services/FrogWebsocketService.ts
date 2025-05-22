@@ -88,21 +88,28 @@ class FrogWebSocketService {
         }
 
         // 유저 정보 업데이트
-        if (parsedData.users && Array.isArray(parsedData.users)) {  // 배열인지 확인
+        if (parsedData.users && Array.isArray(parsedData.users)) {
             gameService.setUsers(parsedData.users);
             
-            // 게임 맵 초기화 (10x10 빈 배열)
-            const initialMap = Array(10).fill(null).map(() => Array(10).fill(null));
-            frogViewModel.setGameMap(initialMap);
+            // 내 user 정보 추출
+            const myUser = parsedData.users.find((u: any) => u.id === this.userID);
+            if (myUser) {
+                frogViewModel.setUserID(myUser.id);
+                frogViewModel.setPlayTurn(myUser.playTurn); // 1 or 2
+                frogViewModel.setCardList(myUser.cards || []);
+                frogViewModel.setDiscardCardList(myUser.discardedCards || []);
+                // 내 turn 정보 저장
+                if (parsedData.FrogGameInfo && typeof myUser.turn !== 'undefined') {
+                    frogViewModel.updateTurn(parsedData.FrogGameInfo.round, myUser.turn);
+                }
+            }
             
             // 컬러타입 저장
             if (parsedData.users.length === 2) {
                 if (parsedData.users[0].id === this.userID) {
-                    frogViewModel.setUserID(parsedData.users[0].id);
                     frogViewModel.setOpponentID(parsedData.users[1].id);
                 } else {
                     frogViewModel.setOpponentID(parsedData.users[0].id);
-                    frogViewModel.setUserID(parsedData.users[1].id);
                 }
             }
             
@@ -125,8 +132,10 @@ class FrogWebSocketService {
         if (parsedData.gameInfo) {
             console.log("게임 정보:", parsedData.gameInfo);
             await gameService.setRoomID(parsedData.gameInfo.roomID);
-            await gameService.setRound(parsedData.gameInfo.round);
+            frogViewModel.setRound(parsedData.gameInfo.round);
             
+            // 내 차례 갱신
+            frogViewModel.updateTurn(parsedData.gameInfo.round, frogViewModel.playTurn);
             
             if (!this.gameStarted && parsedData.gameInfo.allReady && 
                 parsedData.gameInfo.isFull && parsedData.users) {
@@ -179,7 +188,31 @@ class FrogWebSocketService {
                 this.handleFailedLoanEvent(data);
                 break;
             case "GAME_OVER":
-                this.handleGameOverEvent(data);
+                     // ✅ 게임 결과 정보 호출
+                     const result = await frogService.fetchGameResult();
+                     let isSuccess = false;
+                     if (result[0].score > result[1].score) {
+                         if (result[0].userID === this.userID) {
+                             isSuccess = true;
+                         } else {
+                             isSuccess = false;
+                         }
+                     } else {
+                         if (result[0].userID === this.userID) {
+                             isSuccess = false;
+                         } else {
+                             isSuccess = true;
+                         }
+                     }
+                     await frogService.sendGameOver(isSuccess, this.roomID as number);
+     
+                     // ✅ 웹소켓 종료
+                     this.disconnect();
+                     //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
+                     // ✅ 게임 결과 화면으로 이동
+                     if (navigation) {
+                         navigation.navigate('SequenceResult', { isSuccess: isSuccess });
+                     }
                 break;
             case "SUCCESS_LOAN":
                 this.handleSuccessLoanEvent(data);
@@ -195,6 +228,9 @@ class FrogWebSocketService {
                 break;
             case "JOIN_PLAY":
                 this.handleJoinPlayEvent(data);
+                break;
+            case "REQUEST_WIN":
+                this.handleRequestWinEvent(data);
                 break;
             default:
                 console.warn("⚠️ 알 수 없는 이벤트:", data.event);
@@ -236,7 +272,7 @@ class FrogWebSocketService {
   handleCancelMatchEvent(data: any) { /* TODO: 구현 */ }
   handlePlayTogetherEvent(data: any) { /* TODO: 구현 */ }
   handleJoinPlayEvent(data: any) { /* TODO: 구현 */ }
-
+  handleRequestWinEvent(data: any) { /* TODO: 구현 */ }
   handleStartEvent(data: any) {
     if (data.gameInfo) {
         this.roomID = data.gameInfo.roomID;
@@ -274,29 +310,29 @@ class FrogWebSocketService {
   sendDoraEvent(dora: number) {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "DORA", { cardID: dora });
   }
-  sendImportCardsEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_CARDS", {});
+  sendImportCardsEvent(cardIds: number[]) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_CARDS", { cards: cardIds });
   }
-  sendImportSingleCardEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_SINGLE_CARD", {});
+  sendImportSingleCardEvent(cardId: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_SINGLE_CARD", { cardID: cardId });
   }
-  sendDiscardEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DISCARD", {});
+  sendDiscardEvent(cardId: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DISCARD", { cardID: cardId });
   }
-  sendLoanEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "LOAN", {});
+  sendLoanEvent(cardId: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "LOAN", { cardID: cardId ,opponentID: this.opponentID });
   }
-  sendFailedLoanEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "FAILED_LOAN", {});
+  sendFailedLoanEvent(cardId: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "FAILED_LOAN", {cardID: cardId ,opponentID: this.opponentID});
   }
   sendGameOverEvent() {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", {});
   }
-  sendSuccessLoanEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "SUCCESS_LOAN", {});
+  sendSuccessLoanEvent(cardId: number,score: number,loanInfo: any ) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "SUCCESS_LOAN", {cardID: cardId,score: score,loanInfo: loanInfo});
   }
-  sendTimeoutEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { userID:this.userID,round: this.round });
+  sendTimeoutEvent(cardId:number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { cardID: cardId });
   }
   sendCancelMatchEvent() {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "CANCEL_MATCH", { userID: this.userID });
@@ -307,7 +343,12 @@ class FrogWebSocketService {
   sendJoinPlayEvent(password: string) {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN_PLAY", { password });
   }
-
+  sendRequestWinEvent(cards: number[],score: number) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "REQUEST_WIN", {cards: cards,score: score});
+  }
+  sendWinRequestEvent(score: number, cards: number[]) {
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "WIN_REQUEST", {cards: cards,score: score});
+  }
   disconnect() {
     webSocketService.disconnect();
     // ✅ 게임 데이터 초기화

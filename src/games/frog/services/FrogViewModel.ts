@@ -15,7 +15,7 @@ class FrogViewModel {
     opponentDiscardCardList: any[] = [];
     score = 0;
     dora = 0;
-
+    playTurn = 0;
 
     constructor() {
         makeAutoObservable(this, {
@@ -36,7 +36,12 @@ class FrogViewModel {
             setGameOver: action,
             setRound: action,
             setDora: action,
+            setPlayTurn : action,
         });
+    }
+
+    setPlayTurn(playTurn: number) {
+        this.playTurn = playTurn;
     }
     setDora(dora: number) {
         this.dora = dora;
