@@ -73,20 +73,13 @@ export default StyleSheet.create({
     position: 'absolute',
   },
   handContainer: {
-    width: '100%',
     flexDirection: 'row',
-    padding: 0,
-    backgroundColor: 'transparent',
-    marginBottom: 0,
-    height: 54,
+    alignItems: 'center',
+    padding: 10,
   },
   handScrollView: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     flex: 1,
-    gap: 4,
-    height: 54,
+    flexDirection: 'row',
   },
   card: {
     width: 50,
@@ -328,5 +321,16 @@ export default StyleSheet.create({
   discardCountText: {
     color: '#fff',
     fontSize: 9,
+  },
+  scoreContainer: {
+    marginLeft: 10,
+    padding: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: 8,
+  },
+  scoreText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 }); 

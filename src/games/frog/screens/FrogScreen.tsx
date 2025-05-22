@@ -251,22 +251,52 @@ const FrogScreen: React.FC = observer(() => {
     setHandOrder(frogViewModel.cardList);
   }, [frogViewModel.cardList]);
 
+  // 점수 계산 함수 수정
+  const calculateScore = (cards: number[]): number => {
+    if (cards.length !== 6) return 0;
+    
+    // TODO: 실제 점수 계산식으로 교체
+    return cards.length * 10;
+  };
+
+  // 점수 상태 추가
+  const [currentScore, setCurrentScore] = useState<number>(0);
+
+  // 카드 교체 시 점수 계산
   const handleHandCardPress = (idx: number) => {
     if (selectedHandIdx === null) {
       setSelectedHandIdx(idx);
     } else if (selectedHandIdx === idx) {
-      setSelectedHandIdx(null); // 같은 카드 다시 누르면 선택 해제
+      setSelectedHandIdx(null);
     } else {
       // 자리 교체
       const newOrder = [...handOrder];
       [newOrder[selectedHandIdx], newOrder[idx]] = [newOrder[idx], newOrder[selectedHandIdx]];
       setHandOrder(newOrder);
       setSelectedHandIdx(null);
-      // 교체 상태를 ViewModel에도 저장(다음 라운드에도 유지)
+      
+      // 교체 상태를 ViewModel에도 저장
       frogViewModel.setCardList(newOrder);
+      
+      // 6장일 때만 점수 계산
+      if (newOrder.length === 6) {
+        const newScore = calculateScore(newOrder);
+        setCurrentScore(newScore);
+      }
     }
   };
 
+  // 카드 리스트가 바뀔 때마다 점수 계산
+  useEffect(() => {
+    if (frogViewModel.cardList.length === 6) {
+      const newScore = calculateScore(frogViewModel.cardList);
+      setCurrentScore(newScore);
+    } else {
+      setCurrentScore(0);
+    }
+  }, [frogViewModel.cardList]);
+
+  // renderHand 함수 수정
   const renderHand = () => (
     <View style={styles.handContainer}>
       <View style={styles.handScrollView}>
@@ -287,6 +317,12 @@ const FrogScreen: React.FC = observer(() => {
             </TouchableOpacity>
           );
         })}
+      </View>
+      {/* 점수 표시 */}
+      <View style={styles.scoreContainer}>
+        <Text style={styles.scoreText}>
+          {handOrder.length === 6 ? `현재 점수: ${currentScore}` : '카드 6장 필요'}
+        </Text>
       </View>
     </View>
   );
@@ -342,12 +378,6 @@ const FrogScreen: React.FC = observer(() => {
     } else if (myCards.length === 5) {
        frogWebSocketService.sendTimeoutEvent(0);
     }
-  };
-
-  // 점수 계산 함수(임시, 실제 계산식은 추후 교체)
-  const calculateScore = (cards: number[]): number => {
-    // TODO: 실제 점수 계산식으로 교체
-    return cards.length * 10;
   };
 
   return (
