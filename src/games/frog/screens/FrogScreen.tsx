@@ -185,11 +185,17 @@ const FrogScreen: React.FC = observer(() => {
   };
 
   // 도라 카드 UI
+  const doraCardObj = frogCards.find(card => card.id === dora);
+  const doraImageSource =
+    doraCardObj && cardImageMap[doraCardObj.image]
+      ? cardImageMap[doraCardObj.image]
+      : dummyCard;
+
   const renderDora = () => (
     <View style={styles.doraArea}>
-      {doraCard ? (
+      {dora ? (
         <Image
-          source={dummyCard}
+          source={doraImageSource}
           style={styles.doraImage}
           resizeMode="contain"
         />

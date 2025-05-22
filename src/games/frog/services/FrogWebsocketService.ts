@@ -170,7 +170,7 @@ class FrogWebSocketService {
               this.handleStartEvent(parsedData);
               break;
             case "DORA":
-                this.handleDoraEvent(data);
+             this.handleDoraEvent(parsedData);
                 break;
             case "IMPORT_CARDS":
                 this.handleImportCardsEvent(data);
@@ -259,7 +259,7 @@ class FrogWebSocketService {
   handleMatchEvent(data: any) { /* TODO: 구현 */ }
   handleQuitGameEvent(data: any) { /* TODO: 구현 */ }
   handleDoraEvent(data: any) { 
-    frogViewModel.setDora(data.gameInfo.dora);
+    frogViewModel.setDora(data.gameInfo.dora.cardID);
   }
   handleImportCardsEvent(data: any) { /* TODO: 구현 */ }
   handleImportSingleCardEvent(data: any) { /* TODO: 구현 */ }
