@@ -81,7 +81,6 @@ class FrogWebSocketService {
         let parsedData;
         try {
             parsedData = JSON.parse(data.message);
-            console.log("📩 파싱된 메시지 데이터:", parsedData);
         } catch (e) {
             console.error("❌ 메시지 파싱 실패:", e);
             return;
@@ -173,19 +172,19 @@ class FrogWebSocketService {
              this.handleDoraEvent(parsedData);
                 break;
             case "IMPORT_CARDS":
-                this.handleImportCardsEvent(data);
+                this.handleImportCardsEvent(parsedData);
                 break;
             case "IMPORT_SINGLE_CARD":
-                this.handleImportSingleCardEvent(data);
+                this.handleImportSingleCardEvent(parsedData);
                 break;
             case "DISCARD":
-                this.handleDiscardEvent(data);
+                this.handleDiscardEvent(parsedData);
                 break;
             case "LOAN":
-                this.handleLoanEvent(data);
+                this.handleLoanEvent(parsedData);
                 break;
             case "FAILED_LOAN":
-                this.handleFailedLoanEvent(data);
+                this.handleFailedLoanEvent(parsedData);
                 break;
             case "GAME_OVER":
                      // ✅ 게임 결과 정보 호출
@@ -215,10 +214,10 @@ class FrogWebSocketService {
                      }
                 break;
             case "SUCCESS_LOAN":
-                this.handleSuccessLoanEvent(data);
+                this.handleSuccessLoanEvent(parsedData);
                 break;
             case "TIME_OUT":
-                this.handleTimeoutEvent(data);
+                this.handleTimeoutEvent(parsedData);
                 break;
             case "CANCEL_MATCH":
                 this.handleCancelMatchEvent(data);
