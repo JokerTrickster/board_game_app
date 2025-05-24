@@ -29,7 +29,6 @@ const GameDetailScreen: React.FC = () => {
     const [isDescriptionModalVisible, setDescriptionModalVisible] = useState(false);
     const [isYoutubeModalVisible, setYoutubeModalVisible] = useState(false);
     // 함께하기 옵션 모달 상태 추가
-    const [isTogetherModalVisible, setTogetherModalVisible] = useState(false);
     const [isFriendMode, setFriendMode] = useState(false);
     const [authCodeInput, setAuthCodeInput] = useState('');
     const [password, setPassword] = useState('');
@@ -46,6 +45,7 @@ const GameDetailScreen: React.FC = () => {
     // podiumData state를 선언 (초기값은 빈 배열)
     const [podiumData, setPodiumData] = useState<any[]>([]);
 
+    const [matchingUIType, setMatchingUIType] = useState<'none' | 'start' | 'random' | 'together' | 'together_create'>('none');
     
   
     // 게임 제목이 '틀린그림찾기'일 때만 랭킹 API를 호출하여 podiumData 갱신
@@ -93,7 +93,6 @@ const GameDetailScreen: React.FC = () => {
                 setUserData(storedUser);
             }
         };
-        setTogetherModalVisible(false);
         setModalType("start");
         fetchUserData();
     }, []);
@@ -193,8 +192,7 @@ const GameDetailScreen: React.FC = () => {
                     return;
             }
             
-            setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
-            setModalType("random");
+            setMatchingUIType('together_create');
             
         } catch (error) {
             console.error('게임 참가 중 오류 발생:', error);
@@ -222,7 +220,7 @@ const GameDetailScreen: React.FC = () => {
 
         // ✅ UI 상태 업데이트
         setIsMatching(false);
-        setModalType("start");
+        setMatchingUIType('none');
         setMatchMessage("매칭하기 또는 함께하기\n선택해 주세요!");
 
     };
@@ -303,8 +301,113 @@ const GameDetailScreen: React.FC = () => {
                             </View>
                         </View>
 
-                        {/* 안내 메시지 */}
-                        <ActionCard podiumData={podiumData} />
+                        {/* 안내 메시지 or 매칭 UI */}
+                        {matchingUIType === 'none' ? (
+                            <ActionCard podiumData={podiumData} />
+                        ) : (
+                            <View style={styles.matchingUIContainer}>
+                                {matchingUIType === 'start' && (
+                                    <>
+                                        <Text style={styles.modalTitleStart}>게임 매칭 방식을 선택해주세요.</Text>
+                                        <TouchableOpacity
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setMatchingUIType('random');
+                                                handleMatching();
+                                            }}
+                                        >
+                                            <Text style={styles.modalRandomButtonText}>랜덤으로 매칭</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.modalButton}
+                                            onPress={() => setMatchingUIType('together')}
+                                        >
+                                            <Text style={styles.modalTogetherButtonText}>친구와 함께</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.modalCloseIcon}
+                                            onPress={() => setMatchingUIType('none')}
+                                        >
+                                            <Image
+                                                source={require('../assets/images/game_detail/close.png')}
+                                                style={styles.modalCloseIconImage}
+                                            />
+                                        </TouchableOpacity>
+                                    </>
+                                )}
+                                {matchingUIType === 'random' && (
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={styles.modalTitleRandom}>상대를 찾는 중....</Text>
+                                        <Text style={styles.modalSubtitleRandom}>잠시만 기다려주세요.</Text>
+                                        <TouchableOpacity
+                                            style={styles.modalCancelButton}
+                                            onPress={() => {
+                                                handleCancelMatching();
+                                                setMatchingUIType('none');
+                                            }}
+                                        >
+                                            <Text style={styles.modalCancelButtonText}>취소</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {matchingUIType === 'together' && (
+                                    <View style={{ alignItems: 'center', width: '100%' }}>
+                                        <TouchableOpacity
+                                            style={styles.createRoomButton}
+                                            onPress={async () => {
+                                                setMatchingUIType('together_create');
+                                                handleTogetherMatching();
+                                                const receivedPassword = await gameService.getPassword();
+                                                setPassword(receivedPassword || '');
+                                            }}
+                                        >
+                                            <Text style={styles.createRoomButtonText}>방만들기 100</Text>
+                                        </TouchableOpacity>
+                                        <Text style={styles.joinPromptText}>코드를 전달 받아 입력하세요.</Text>
+                                        <View style={styles.joinSection}>
+                                            <TextInput
+                                                style={styles.codeInput}
+                                                placeholder="초대코드 입력"
+                                                value={authCodeInput}
+                                                onChangeText={setAuthCodeInput}
+                                            />
+                                            <TouchableOpacity
+                                                style={styles.joinButton}
+                                                onPress={async () => {
+                                                    handleJoinMatching(authCodeInput);
+                                                }}
+                                            >
+                                                <Text style={styles.joinButtonText}>참가하기</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <TouchableOpacity
+                                            style={styles.modalCloseIcon}
+                                            onPress={() => setMatchingUIType('none')}
+                                        >
+                                            <Image
+                                                source={require('../assets/images/game_detail/close.png')}
+                                                style={styles.modalCloseIconImage}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {matchingUIType === 'together_create' && (
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={styles.modalTitleRandom}>초대 코드: {password}</Text>
+                                        <Text style={styles.modalSubtitleRandom}>친구를 기다리는 중...</Text>
+                                        <TouchableOpacity
+                                            style={styles.modalCancelButton}
+                                            onPress={() => {
+                                                handleCancelMatching();
+                                                setMatchingUIType('none');
+                                            }}
+                                        >
+                                            <Text style={styles.modalCancelButtonText}>취소</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+                        )}
                 </View>
 
                 {/* 하단 버튼 영역: 항상 화면 하단에 고정 */}
@@ -319,7 +422,7 @@ const GameDetailScreen: React.FC = () => {
                     />
                     {/* 함께하기 버튼 (이미지 + 텍스트) */}
                     <Button
-                        onPress={() => setTogetherModalVisible(true)}
+                        onPress={() => setMatchingUIType('start')}
                         disabled={false} // 항상 활성화
                         text="함께하기"
                         containerStyle={styles.togetherButton}
@@ -379,144 +482,6 @@ const GameDetailScreen: React.FC = () => {
                                 />
                             </TouchableOpacity>
                         </View>
-                    </View>
-                </Modal>
-
-                {/* 함께하기 옵션 모달 */}
-                <Modal
-                    visible={isTogetherModalVisible}
-                    transparent={true}
-                    animationType="slide"
-                    onRequestClose={() => {
-                        setTogetherModalVisible(false);
-                        setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
-                        setModalType("start");
-                    }}
-                >
-                    <View style={styles.modalOverlay}>
-                        <ImageBackground
-                            source={togetherModalBackground}
-                            style={styles.togetherModalContent}
-                            imageStyle={styles.togetherModalImage}
-                        >
-                            {/* 조건부로 모달 타입에 따라 다른 텍스트와 위치 렌더링 */}
-                            {modalType === "start" && (
-                                <>
-                                    <Text style={styles.modalTitleStart}>게임 매칭 방식을 선택해주세요.</Text>
-                                    <TouchableOpacity
-                                        style={styles.modalButton}
-                                        onPress={() => {
-                                            setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
-                                            setModalType("random");
-                                            handleMatching();
-                                        }}
-                                    >
-                                        <Text style={styles.modalRandomButtonText}>랜덤으로 매칭</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.modalButton}
-                                        onPress={() => {
-                                            setTogetherModalBackground(require('../assets/images/game_detail/together_join.png'));
-                                            setModalType("together");
-                                        }}
-                                    >
-                                        <Text style={styles.modalTogetherButtonText}>친구와 함께</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={styles.modalCloseIcon}
-                                        onPress={() => {
-                                            setTogetherModalVisible(false);
-                                            setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
-                                            setModalType("start");
-                                        }}
-                                    >
-                                        <Image
-                                            source={require('../assets/images/game_detail/close.png')}
-                                            style={styles.modalCloseIconImage}
-                                        />
-                                    </TouchableOpacity>
-                                </>
-                            )}
-                            {modalType === "random" && (
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={styles.modalTitleRandom}>상대를 찾는 중....</Text>
-                                    <Text style={styles.modalSubtitleRandom}>잠시만 기다려주세요.</Text>
-                                    <TouchableOpacity
-                                        style={styles.modalCancelButton}
-                                        onPress={() => {
-                                            handleCancelMatching();
-                                            setTogetherModalVisible(false);
-                                            setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
-                                            setModalType("start");
-                                        }}
-                                    >
-                                        <Text style={styles.modalCancelButtonText}>취소</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                            {modalType === "together" && (
-                                <View style={{ alignItems: 'center', width: '100%' }}>
-                                    <TouchableOpacity
-                                        style={styles.createRoomButton}
-                                        onPress={async () => {
-                                            setTogetherModalBackground(require('../assets/images/game_detail/random_match.png'));
-                                            handleTogetherMatching();
-                                            const receivedPassword = await gameService.getPassword();
-                                            setPassword(receivedPassword || '');
-                                        }}
-                                    >
-                                        <Text style={styles.createRoomButtonText}>방만들기 100</Text>
-                                    </TouchableOpacity>
-                                    <Text style={styles.joinPromptText}>코드를 전달 받아 입력하세요.</Text>
-                                    <View style={styles.joinSection}>
-                                        <TextInput
-                                            style={styles.codeInput}
-                                            placeholder="초대코드 입력"
-                                            value={authCodeInput}
-                                            onChangeText={setAuthCodeInput}
-                                        />
-                                        <TouchableOpacity
-                                            style={styles.joinButton}
-                                            onPress={async () => {
-                                                handleJoinMatching(authCodeInput); // Pass authCodeInput as a parameter
-                                            }}
-                                        >
-                                            <Text style={styles.joinButtonText}>참가하기</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <TouchableOpacity
-                                        style={styles.modalCloseIcon}
-                                        onPress={() => {
-                                            setTogetherModalVisible(false);
-                                            setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
-                                            setModalType("start");
-                                        }}
-                                    >
-                                        <Image
-                                            source={require('../assets/images/game_detail/close.png')}
-                                            style={styles.modalCloseIconImage}
-                                        />
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                            {modalType === "together_create" && (
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={styles.modalTitleRandom}>초대 코드: {password}</Text>
-                                    <Text style={styles.modalSubtitleRandom}>친구를 기다리는 중...</Text>
-                                    <TouchableOpacity
-                                        style={styles.modalCancelButton}
-                                        onPress={() => {
-                                            handleCancelMatching();
-                                            setTogetherModalVisible(false);
-                                            setTogetherModalBackground(require('../assets/images/game_detail/together_start.png'));
-                                            setModalType("start");
-                                        }}
-                                    >
-                                        <Text style={styles.modalCancelButtonText}>취소</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </ImageBackground>
                     </View>
                 </Modal>
             </View>

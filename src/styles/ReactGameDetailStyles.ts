@@ -402,8 +402,13 @@ export default StyleSheet.create({
         zIndex: 10,
     },
     modalCloseIconImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'contain',
+        width: 30,
+        height: 30,
+    },
+    matchingUIContainer: {
+        flex: 1,
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
