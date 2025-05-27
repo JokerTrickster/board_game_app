@@ -71,50 +71,58 @@ class SlimeWarWebSocketService {
     handleMessage = async (eventType: string, data: any) => {
         console.log("📩 서버 응답:", data);
         const navigation = webSocketService.getNavigation();
+        // message 필드가 JSON 문자열이므로 파싱
+        let parsedData;
+        try {
+            parsedData = JSON.parse(data.message);
+        } catch (e) {
+            console.error("❌ 메시지 파싱 실패:", e);
+            return;
+        }
 
         try {
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
-            if (data.users) {
-                gameService.setUsers(data.users);
+            if (parsedData.users) {
+                gameService.setUsers(parsedData.users);
                 // 맵 정보 저장
-                slimeWarViewModel.setGameMap(data.users);
+                slimeWarViewModel.setGameMap(parsedData.users);
 
                 // 컬러타입 저장
-                if (data.users.length === 2) {
-                    if (data.users[0].id === this.userID) {
-                        slimeWarViewModel.setUserColorType(data.users[0].colorType);
-                        slimeWarViewModel.setUserHeroCount(data.users[0].heroCardCount);
-                        slimeWarViewModel.setUserID(data.users[0].id);
-                        slimeWarViewModel.setOpponentColorType(data.users[1].colorType);
-                        slimeWarViewModel.setOpponentHeroCount(data.users[1].heroCardCount);
-                        slimeWarViewModel.setOpponentID(data.users[1].id);
-                        slimeWarViewModel.setOpponentCanMove(data.users[1].canMove);
+                if (parsedData.users.length === 2) {
+                    if (parsedData.users[0].id === this.userID) {
+                        slimeWarViewModel.setUserColorType(parsedData.users[0].colorType);
+                        slimeWarViewModel.setUserHeroCount(parsedData.users[0].heroCardCount);
+                        slimeWarViewModel.setUserID(parsedData.users[0].id);
+                        slimeWarViewModel.setOpponentColorType(parsedData.users[1].colorType);
+                        slimeWarViewModel.setOpponentHeroCount(parsedData.users[1].heroCardCount);
+                        slimeWarViewModel.setOpponentID(parsedData.users[1].id);
+                        slimeWarViewModel.setOpponentCanMove(parsedData.users[1].canMove);
                     } else {
-                        slimeWarViewModel.setOpponentColorType(data.users[0].colorType);
-                        slimeWarViewModel.setOpponentHeroCount(data.users[0].heroCardCount);
-                        slimeWarViewModel.setOpponentID(data.users[0].id);
-                        slimeWarViewModel.setOpponentCanMove(data.users[0].canMove);
-                        slimeWarViewModel.setUserID(data.users[1].id);
-                        slimeWarViewModel.setUserColorType(data.users[1].colorType);
-                        slimeWarViewModel.setUserHeroCount(data.users[1].heroCardCount);
+                        slimeWarViewModel.setOpponentColorType(parsedData.users[0].colorType);
+                        slimeWarViewModel.setOpponentHeroCount(parsedData.users[0].heroCardCount);
+                        slimeWarViewModel.setOpponentID(parsedData.users[0].id);
+                        slimeWarViewModel.setOpponentCanMove(parsedData.users[0].canMove);
+                        slimeWarViewModel.setUserID(parsedData.users[1].id);
+                        slimeWarViewModel.setUserColorType(parsedData.users[1].colorType);
+                        slimeWarViewModel.setUserHeroCount(parsedData.users[1].heroCardCount);
                     }   
                 }
                 // 카드 정보 저장
-                data.users.forEach((user: any) => {
+                parsedData.users.forEach((user: any) => {
                   if (user.id === this.userID) {
                       slimeWarViewModel.setCardList(user.ownedCardIDs || []);
                       // 내 turn 정보 저장
-                      if (data.slimeWarGameInfo && typeof user.turn !== 'undefined') {
-                          slimeWarViewModel.updateTurn(data.slimeWarGameInfo.currentRound, user.turn);
+                      if (parsedData.slimeWarGameInfo && typeof user.turn !== 'undefined') {
+                          slimeWarViewModel.updateTurn(parsedData.slimeWarGameInfo.currentRound, user.turn);
                       }
                   } else {
                     slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
                   }
                 });
             }
-            if (data.slimeWarGameInfo) {
-                slimeWarViewModel.setKingIndex(data.slimeWarGameInfo.kingPosition);
-                slimeWarViewModel.setRemainingSlime(data.slimeWarGameInfo.slimeCount);
+            if (parsedData.slimeWarGameInfo) {
+                slimeWarViewModel.setKingIndex(parsedData.slimeWarGameInfo.kingPosition);
+                slimeWarViewModel.setRemainingSlime(parsedData.slimeWarGameInfo.slimeCount);
             }
 
 
@@ -132,15 +140,17 @@ class SlimeWarWebSocketService {
             // round_start : next_round에서 호출 
             switch (eventType) {
                 case "MATCH":
-                    console.log("✅ 매칭 성공!", data.message);
+                    console.log("✅ 매칭 성공!",  parsedData);
+
 
                     // ✅ 게임 정보가 있는 경우 처리
-                    if (data.slimeWarGameInfo) {
-                        await gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
-                        await gameService.setRound(data.slimeWarGameInfo.round);
+                    if (parsedData.slimeWarGameInfo) {
+                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(parsedData.slimeWarGameInfo.round);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.slimeWarGameInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
-                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                        console.log("this.gameStarted", this.gameStarted);
+                        if (!this.gameStarted && parsedData.slimeWarGameInfo.allReady && parsedData.slimeWarGameInfo.isFull && parsedData.users) {
+                            const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
                                 console.log("방장이 게임 시작한다. ");
@@ -152,18 +162,18 @@ class SlimeWarWebSocketService {
                     }
                     break;
                 case "TOGETHER":
-                    console.log("✅ 함께하기 매칭 성공!", data.message);
+                    console.log("✅ 함께하기 매칭 성공!", parsedData);
 
                     // ✅ 게임 정보가 있는 경우 처리
-                    if (data.slimeWarGameInfo) {
-                        gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
-                        gameService.setRound(data.slimeWarGameInfo.round);
-                        gameService.setPassword(data.slimeWarGameInfo.password);
+                    if (parsedData.slimeWarGameInfo) {
+                        gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        gameService.setRound(parsedData.slimeWarGameInfo.round);
+                        gameService.setPassword(parsedData.slimeWarGameInfo.password);
                         console.log("함께하기 비밀번호 : ", data.slimeWarGameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.gameslimeWarGameInfoInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
+                        if (!this.gameStarted && parsedData.slimeWarGameInfo.allReady && parsedData.slimeWarGameInfo.isFull && parsedData.users) {
 
-                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                            const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
                                 console.log("방장이 게임 시작한다. ");
@@ -175,15 +185,15 @@ class SlimeWarWebSocketService {
                     }
                     break;
                 case "JOIN":
-                    console.log("✅ 참여 매칭 성공!", data.message);
-                    if (data.gameInfo) {
-                        await gameService.setRoomID(data.slimeWarGameInfo.roomID);  // ✅ roomID 저장
-                        await gameService.setRound(data.slimeWarGameInfo.round);
-                        await gameService.setPassword(data.slimeWarGameInfo.password);
+                    console.log("✅ 참여 매칭 성공!", parsedData);
+                    if (parsedData.gameInfo) {
+                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        await gameService.setRound(parsedData.slimeWarGameInfo.round);
+                        await gameService.setPassword(parsedData.slimeWarGameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        if (!this.gameStarted && data.slimeWarGameInfo.allReady && data.slimeWarGameInfo.isFull && data.users) {
+                        if (!this.gameStarted && parsedData.slimeWarGameInfo.allReady && parsedData.slimeWarGameInfo.isFull && parsedData.users) {
 
-                            const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
+                            const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
                                 console.log("방장이 게임 시작한다. ");
@@ -199,30 +209,30 @@ class SlimeWarWebSocketService {
                     if (navigation) {
                         navigation.navigate('Loading', { nextScreen: 'SlimeWar' });
                     }
-                    this.handleGameStart(data);
+                    this.handleGameStart(parsedData);
                     // ✅ 게임 정보 저장
                     
                     break;
                 case "GET_CARD":
-                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
-                    console.log("🔑 카드 받았다. ", data.message);
+                    slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    console.log("🔑 카드 받았다. ", parsedData);
                     break;
                 case "HERO":
-                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
-                    console.log("🔑 영웅 카드 사용. ", data.message);
+                    slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    console.log("🔑 영웅 카드 사용. ", parsedData);
                     break;
                 case "MOVE":
-                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
-                    console.log("🔑 이동. ", data.message);
+                    slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    console.log("🔑 이동. ", parsedData);
                     break;
                 
                 case "TIME_OUT":
-                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
-                    console.log("🔑 시간 초과. ", data.message);
+                    slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    console.log("🔑 시간 초과. ", parsedData);
                     break;
                 case "NEXT_ROUND":
-                    slimeWarViewModel.updateGameState(data.slimeWarGameInfo.round);
-                    console.log("🔑 다음 라운드. ", data.message);
+                    slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    console.log("🔑 다음 라운드. ", parsedData);
                     break;
                
                 case "GAME_OVER":
@@ -253,7 +263,7 @@ class SlimeWarWebSocketService {
                     }
                     break;
                 case "MATCH_CANCEL":
-                    console.log("🚫 매칭 취소:", data.message);
+                    console.log("🚫 매칭 취소:", parsedData);
                     break;
                 case "DISCONNECT":
                     console.log("❌ 서버와 연결이 끊어졌습니다.");
@@ -268,7 +278,7 @@ class SlimeWarWebSocketService {
             }
             
             // 게임 정보에 gameOver가 true인 경우에도 결과 호출
-            if (data.slimeWarGameInfo && data.slimeWarGameInfo.gameOver === true) {
+            if (parsedData.slimeWarGameInfo && parsedData.slimeWarGameInfo.gameOver === true) {
                 try {
                     const result = await slimeWarService.fetchGameResult();
                     console.log('게임 결과:', result);

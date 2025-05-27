@@ -241,13 +241,23 @@ export default StyleSheet.create({
     },
     modalRandomButtonText: {
         fontSize: scale(20),
+        paddingVertical: verticalScale(5),
         fontWeight: '600',
         textAlign: 'center',
+        backgroundColor: '#F4AEB0',
+        borderRadius: scale(30),
+        borderWidth: scale(1),
+        marginBottom: verticalScale(-40),
+        
     },
     modalTogetherButtonText: {
         fontSize: scale(20),
+        paddingVertical: verticalScale(5),
         fontWeight: '600',
         textAlign: 'center',
+        backgroundColor: '#F3CDB1',
+        borderRadius: scale(30),
+        borderWidth: scale(1),
     },
     friendInput: {
         width: '100%',
@@ -292,12 +302,10 @@ export default StyleSheet.create({
         fontSize: scale(14),
         color: '#333',
         textAlign: 'center',
-        paddingTop:  verticalScale(20),
     },
     modalTitleRandom: {
         fontSize: scale(18),
         fontWeight: 'bold',
-        marginTop: verticalScale(90),
 
     },
     modalTitleTogether: {
@@ -307,7 +315,7 @@ export default StyleSheet.create({
     },
 
     modalSubtitleRandom: {
-        fontSize: scale(14),
+        fontSize: scale(20),
         color: '#000',
         textAlign: 'center',
         marginTop: verticalScale(25),
@@ -321,6 +329,12 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         color: '#000',
         textAlign: 'center',
+        borderWidth: scale(1),
+        borderColor: '#000',
+        paddingHorizontal: scale(20),
+        paddingVertical: verticalScale(5),
+        borderRadius: scale(30),
+        backgroundColor: '#F4AEB0',
     },
 
     waitingText: {
@@ -342,18 +356,20 @@ export default StyleSheet.create({
         color: '#fff',
     },
     createRoomButton: {
-        marginTop: verticalScale(75),
         paddingVertical: verticalScale(11),
-        paddingHorizontal: scale(90),
         borderRadius: scale(10),
-        marginVertical: verticalScale(30),
-        marginRight: scale(10),
+        marginVertical: verticalScale(10),
     },
     createRoomButtonText: {
         fontSize: scale(18),
         fontWeight: 'bold',
         color: '#000',
-        marginTop: verticalScale(5),
+        borderWidth: scale(1),
+        borderColor: '#000',
+        paddingHorizontal: scale(20),
+        paddingVertical: verticalScale(5),
+        borderRadius: scale(30),
+        backgroundColor: '#F3CDB1',
     },
     inviteCodeText: {
         fontSize: scale(18),
@@ -379,13 +395,24 @@ export default StyleSheet.create({
         height: 40,
         borderRadius: scale(5),
         marginLeft: scale(50),
-        marginTop:scale(10),
+        marginTop: scale(20),
+        borderWidth: scale(1),
+        borderColor: '#000',
+        paddingHorizontal: scale(20),
+        paddingVertical: verticalScale(5),
+        
     },
     joinButton: {
         paddingHorizontal: scale(20),
-        borderRadius: scale(8),
-        marginRight: scale(55),
-        marginTop: scale(5),
+        marginRight: scale(10),
+        marginLeft: scale(10),
+        marginTop: scale(10),
+        borderWidth: scale(1),
+        borderColor: '#000',
+        paddingVertical: verticalScale(5),
+        borderRadius: scale(30),
+        backgroundColor: '#F3CDB1',
+        
     },
     joinButtonText: {
         fontSize: scale(16),
@@ -408,7 +435,9 @@ export default StyleSheet.create({
     matchingUIContainer: {
         flex: 1,
         padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
+        borderWidth: scale(1),
+        borderColor: '#000',
+        borderRadius: scale(10),
+        marginTop: verticalScale(10),
     },
 });
