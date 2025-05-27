@@ -138,7 +138,7 @@ const SlimeWarScreen: React.FC = observer(() => {
 
   //라운드가 변경될 떄마다 누구차례인지 체크
   useEffect(() => {
-    if (slimeWarViewModel.round % 2 === 0) {
+    if (slimeWarViewModel.myTurn === (slimeWarViewModel.round % 2)) {
       slimeWarViewModel.setIsMyTurn(true);
     } else {
       slimeWarViewModel.setIsMyTurn(false);

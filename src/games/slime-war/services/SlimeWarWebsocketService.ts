@@ -93,6 +93,7 @@ class SlimeWarWebSocketService {
                         slimeWarViewModel.setUserColorType(parsedData.users[0].colorType);
                         slimeWarViewModel.setUserHeroCount(parsedData.users[0].heroCardCount);
                         slimeWarViewModel.setUserID(parsedData.users[0].id);
+                        slimeWarViewModel.setMyTurn(parsedData.users[0].turn);
                         slimeWarViewModel.setOpponentColorType(parsedData.users[1].colorType);
                         slimeWarViewModel.setOpponentHeroCount(parsedData.users[1].heroCardCount);
                         slimeWarViewModel.setOpponentID(parsedData.users[1].id);
@@ -105,6 +106,7 @@ class SlimeWarWebSocketService {
                         slimeWarViewModel.setUserID(parsedData.users[1].id);
                         slimeWarViewModel.setUserColorType(parsedData.users[1].colorType);
                         slimeWarViewModel.setUserHeroCount(parsedData.users[1].heroCardCount);
+                        slimeWarViewModel.setMyTurn(parsedData.users[1].turn);
                     }   
                 }
                 // 카드 정보 저장
