@@ -1,6 +1,6 @@
 import SystemMessage from '../../../components/common/SystemMessage';
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground, BackHandler } from 'react-native';
 import styles from '../styles/SlimeWarStyles';
 import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
@@ -105,36 +105,40 @@ const SlimeWarScreen: React.FC = observer(() => {
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
 
-  // 매 턴마다 타이머 리셋 및 타임아웃 처리
+  // 타이머 관련 useEffect 수정
   useEffect(() => {
-    if (!slimeWarViewModel.isMyTurn) {
-      setTimer(TURN_TIME);
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      return;
-    }
+    // 타이머 초기화
     setTimer(TURN_TIME);
-    if (timerRef.current) clearInterval(timerRef.current);
+    
+    // 기존 타이머가 있다면 제거
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    // 새로운 타이머 시작
     timerRef.current = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
           timerRef.current = null;
-          slimeWarWebSocketService.sendTimeoutEvent();
+          // 내 턴일 때만 타임아웃 이벤트 발생
+          if (slimeWarViewModel.isMyTurn) {
+            slimeWarWebSocketService.sendTimeoutEvent();
+          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+
+    // 컴포넌트 언마운트 시 타이머 정리
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
-  }, [slimeWarViewModel.isMyTurn]);
+  }, [slimeWarViewModel.isMyTurn]); // 내 턴이 바뀔 때만 타이머 리셋
 
   //라운드가 변경될 떄마다 누구차례인지 체크
   useEffect(() => {
@@ -150,76 +154,66 @@ const SlimeWarScreen: React.FC = observer(() => {
     return cardData.find((c: any) => c.id === id);
   };
 
-  // 이동 가능한 카드가 있는지 판별
-  const hasMovableCard = React.useMemo(() => {
-    if (!slimeWarViewModel.isMyTurn) return false;
+  // 이동 가능한 카드 목록 계산
+  const movableCards = React.useMemo(() => {
+    if (!slimeWarViewModel.isMyTurn) return [];
+    
     const directionMap: { [key: number]: [number, number] } = {
-      0: [-1, -1],
-      1: [0, -1],
-      2: [1, -1],
-      3: [-1, 0],
-      4: [1, 0],
-      5: [-1, 1],
-      6: [0, 1],
-      7: [1, 1],
+      0: [-1, -1], 1: [0, -1], 2: [1, -1],
+      3: [-1, 0],  4: [1, 0],
+      5: [-1, 1],  6: [0, 1],  7: [1, 1],
     };
-    let currentIndex = slimeWarViewModel.kingIndex;
-    let currentX = currentIndex % GRID_SIZE;
-    let currentY = Math.floor(currentIndex / GRID_SIZE);
-    if (currentX === 0) {
-      currentX = GRID_SIZE;
-      currentY -= 1;
-    }
-    return playerHand.some((card: any) => {
-      const cardInfo = getCardInfoById(card.id ?? card);
+
+    return playerHand.filter((cardId: number) => {
+      const cardInfo = cardData.find((c: any) => c.id === cardId);
       if (!cardInfo) return false;
-      const vector = directionMap[cardInfo.direction];
+      
+      const { direction, move } = cardInfo;
+      const vector = directionMap[direction];
       if (!vector) return false;
-      const newX = currentX + vector[0] * cardInfo.move;
-      const newY = currentY + vector[1] * cardInfo.move;
-      // 맵 범위 내 & 타겟 셀이 비어있는지 확인
+      
+      const currentIndex = slimeWarViewModel.kingIndex;
+      const currentX = currentIndex % GRID_SIZE;
+      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      const newX = currentX + vector[0] * move;
+      const newY = currentY + vector[1] * move;
+      
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
       const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
-      // 내 슬라임을 놓을 수 있는 빈 칸만 허용 (상대방 슬라임X, 내 슬라임X, 빈칸만)
-      return targetCellValue === 0;
+      return targetCellValue === 0; // 빈 칸인 경우만 이동 가능
     });
   }, [playerHand, slimeWarViewModel.isMyTurn, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap]);
 
-  // 흡수(영웅) 가능한 카드가 있는지 판별
-  const hasHeroCard = React.useMemo(() => {
-    if (!slimeWarViewModel.isMyTurn) return false;
-    if ((slimeWarViewModel.userHeroCount ?? 0) < 1) return false;
-    if (playerHand.length < 1) return false;
+  // 흡수 가능한 카드 목록 계산
+  const heroCards = React.useMemo(() => {
+    if (!slimeWarViewModel.isMyTurn) return [];
+    if ((slimeWarViewModel.userHeroCount ?? 0) < 1) return [];
+    
     const directionMap: { [key: number]: [number, number] } = {
-      0: [-1, -1],
-      1: [0, -1],
-      2: [1, -1],
-      3: [-1, 0],
-      4: [1, 0],
-      5: [-1, 1],
-      6: [0, 1],
-      7: [1, 1],
+      0: [-1, -1], 1: [0, -1], 2: [1, -1],
+      3: [-1, 0],  4: [1, 0],
+      5: [-1, 1],  6: [0, 1],  7: [1, 1],
     };
-    let currentIndex = slimeWarViewModel.kingIndex;
-    let currentX = currentIndex % GRID_SIZE;
-    let currentY = Math.floor(currentIndex / GRID_SIZE);
-    if (currentX === 0) {
-      currentX = GRID_SIZE;
-      currentY -= 1;
-    }
-    return playerHand.some((card: any) => {
-      const cardInfo = getCardInfoById(card.id ?? card);
+
+    return playerHand.filter((cardId: number) => {
+      const cardInfo = cardData.find((c: any) => c.id === cardId);
       if (!cardInfo) return false;
-      const vector = directionMap[cardInfo.direction];
+      
+      const { direction, move } = cardInfo;
+      const vector = directionMap[direction];
       if (!vector) return false;
-      const newX = currentX + vector[0] * cardInfo.move;
-      const newY = currentY + vector[1] * cardInfo.move;
-      // 맵 범위 내 & 타겟 셀이 상대방 슬라임인지 확인
+      
+      const currentIndex = slimeWarViewModel.kingIndex;
+      const currentX = currentIndex % GRID_SIZE;
+      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      const newX = currentX + vector[0] * move;
+      const newY = currentY + vector[1] * move;
+      
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
-      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
+      const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
       return targetCellValue === slimeWarViewModel.opponentID;
     });
-  }, [playerHand, slimeWarViewModel.userHeroCount, slimeWarViewModel.isMyTurn, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap, slimeWarViewModel.opponentID]);
+  }, [playerHand, slimeWarViewModel.isMyTurn, slimeWarViewModel.userHeroCount, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap, slimeWarViewModel.opponentID]);
 
   // 더미(카드 뽑기) 가능 여부
   const canDrawCard = React.useMemo(() => {
@@ -231,13 +225,27 @@ const SlimeWarScreen: React.FC = observer(() => {
     if (
       slimeWarViewModel.isMyTurn &&
       !canDrawCard &&
-      !hasMovableCard &&
-      !hasHeroCard
+      !movableCards.length &&
+      !heroCards.length
     ) {
       setSystemMessage('할 수 있는 행동이 없습니다. 상대방에게 턴을 넘깁니다.');
       slimeWarWebSocketService.sendNextRoundEvent(slimeWarViewModel.opponentCanMove);
     }
-  }, [slimeWarViewModel.isMyTurn, canDrawCard, hasMovableCard, hasHeroCard]);
+  }, [slimeWarViewModel.isMyTurn, canDrawCard, movableCards.length, heroCards.length]);
+
+  // 백키 완전 차단
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        // 항상 true를 반환하여 백키 이벤트를 완전히 차단
+        return true;
+      }
+    );
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => backHandler.remove();
+  }, []); // 의존성 배열이 비어있으므로 컴포넌트 마운트 시 한 번만 실행
 
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
@@ -343,16 +351,22 @@ const SlimeWarScreen: React.FC = observer(() => {
       6: [0, 1],
       7: [1, 1],
     };
-    const validHeroCards = playerHand.filter((card: { direction: number; move: number }) => {
-      const { direction, move } = card;
+    const validHeroCards = playerHand.filter((cardId: number) => {
+      // cardData에서 카드 정보 조회
+      const cardInfo = cardData.find((c: any) => c.id === cardId);
+      if (!cardInfo) return false;
+      
+      const { direction, move } = cardInfo;
       const vector = directionMap[direction];
       if (!vector) return false;
+      
       const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE ;
-      const currentY = Math.floor(currentIndex / GRID_SIZE );
+      const currentX = currentIndex % GRID_SIZE;
+      const currentY = Math.floor(currentIndex / GRID_SIZE);
       const newX = currentX + vector[0] * move;
       const newY = currentY + vector[1] * move;
-      if (newX < 1  || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
+      
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
       const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
       return targetCellValue === slimeWarViewModel.opponentID;
     });
@@ -377,74 +391,45 @@ const SlimeWarScreen: React.FC = observer(() => {
     setIsMoveMode(true);
   };
   
-  // 카드 클릭 핸들러
-  const handleCardPress = (card: number) => {
-    // Proceed only if either move mode or hero mode is active
-    if (!isMoveMode && isCardSelectMode !== 'HERO') return;
+  // 카드 클릭 핸들러 수정
+  const handleCardPress = (cardId: number) => {
+    if (!slimeWarViewModel.isMyTurn) return;
+    
+    // 이동 모드이거나 이동 가능한 카드인 경우
+    if (isMoveMode || movableCards.includes(cardId)) {
+      const cardInfo = cardData.find((c: any) => c.id === cardId);
+      if (!cardInfo) return;
 
-    const cardInfo = cardData.find((c: { id: number }) => c.id === card);
-    if (!cardInfo) {
-      Alert.alert('오류', '유효하지 않은 카드입니다.');
-      return;
-    }
+      const directionMap: { [key: number]: [number, number] } = {
+        0: [-1, -1], 1: [0, -1], 2: [1, -1],
+        3: [-1, 0],  4: [1, 0],
+        5: [-1, 1],  6: [0, 1],  7: [1, 1],
+      };
 
-    const directionMap: { [key: number]: [number, number] } = {
-      0: [-1, -1],
-      1: [0, -1],
-      2: [1, -1],
-      3: [-1, 0],
-      4: [1, 0],
-      5: [-1, 1],
-      6: [0, 1],
-      7: [1, 1],
-    };
-    const vector = directionMap[cardInfo.direction];
-    if (!vector) {
-      Alert.alert('오류', '유효하지 않은 방향입니다.');
-      setIsMoveMode(false);
-      setIsCardSelectMode(null);
-      return;
-    }
+      const vector = directionMap[cardInfo.direction];
+      if (!vector) return;
 
-    let currentIndex = slimeWarViewModel.kingIndex;
-    let currentX = currentIndex % GRID_SIZE;
-    let currentY = Math.floor(currentIndex / GRID_SIZE);
-    if (currentX === 0) {
-      currentX = GRID_SIZE;
-      currentY -= 1;
-    }
-    let newX = currentX + (vector[0] * cardInfo.move);
-    let newY = currentY + (vector[1] * cardInfo.move);
-    // Check boundaries
-    if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
-      setSystemMessage('사용 불가능한 카드입니다.');
-      return;
-    } else {
-      const newIndex = newY * GRID_SIZE + newX; // 왕 좌표
-      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
-      if (isMoveMode) {
-        // Move mode: allow move only if target cell is empty (0)
-        if (targetCellValue !== 0) {
-          setSystemMessage('사용 불가능한 카드입니다.');
-          return;
-        } else {
+      const currentIndex = slimeWarViewModel.kingIndex;
+      const currentX = currentIndex % GRID_SIZE;
+      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      const newX = currentX + vector[0] * cardInfo.move;
+      const newY = currentY + vector[1] * cardInfo.move;
 
-          slimeWarWebSocketService.sendMoveEvent(cardInfo.id, newIndex);
-          slimeWarViewModel.setKingIndex(newIndex);
-        }
-        setIsMoveMode(false);
-      } else if (isCardSelectMode === 'HERO') {
-        // Hero mode: allow action only if target cell contains opponent's slime
-        if (targetCellValue !== slimeWarViewModel.opponentID) {
-          Alert.alert('영웅 행동 불가', '상대 슬라임이 존재하지 않습니다.');
-        } else {
-          // Remove the opponent slime and place player's slime
-          slimeWarViewModel.gameMap[newX][newY] = slimeWarViewModel.userID;
-          slimeWarWebSocketService.sendHeroEvent(cardInfo.id, newIndex);
-          slimeWarViewModel.setKingIndex(newIndex);
-        }
-        setIsCardSelectMode(null);
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
+        setSystemMessage('이동할 수 없는 위치입니다.');
+        return;
       }
+
+      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
+      if (targetCellValue !== 0) {
+        setSystemMessage('이미 슬라임이 있는 위치입니다.');
+        return;
+      }
+
+      const newIndex = newY * GRID_SIZE + newX;
+      slimeWarWebSocketService.sendMoveEvent(cardId, newIndex);
+      slimeWarViewModel.setKingIndex(newIndex);
+      setIsMoveMode(false);
     }
   };
 
@@ -460,9 +445,24 @@ const SlimeWarScreen: React.FC = observer(() => {
         {/* 타이머 바 */}
         <View style={styles.timerContainer}>
           <View style={styles.timerBar}>
-            <View style={{ width: `${(timer / TURN_TIME) * 100}%`, height: '100%', backgroundColor: timer <= 5 ? '#B0C1B1' : '#F47660' }} />
+            <View 
+              style={{ 
+                width: `${(timer / TURN_TIME) * 100}%`, 
+                height: '100%', 
+                backgroundColor: timer <= 5 
+                  ? '#B0C1B1' 
+                  : slimeWarViewModel.isMyTurn 
+                    ? '#F47660'  // 내 턴일 때는 빨간색
+                    : '#4CAF50'  // 상대 턴일 때는 초록색
+              }} 
+            />
           </View>
-          <Text style={styles.timerText}>{timer}s</Text>
+          <Text style={[
+            styles.timerText,
+            { color: timer <= 5 ? '#B0C1B1' : slimeWarViewModel.isMyTurn ? '#F47660' : '#4CAF50' }
+          ]}>
+            {timer}s
+          </Text>
         </View>
         {/* 나무 + 격자 */}
         <View style={styles.topContainer}>
@@ -527,21 +527,34 @@ const SlimeWarScreen: React.FC = observer(() => {
               showsHorizontalScrollIndicator={false}
               style={{ flex: 1 }}
             >
-              {playerHand.map((item, index) => (
+              {playerHand.map((cardId, index) => (
                 <TouchableOpacity
-                  key={`player-card-${item.id ?? index}`}
-                  onPress={() => handleCardPress(item)}
-                  disabled={!(slimeWarViewModel.isMyTurn && (isMoveMode || isCardSelectMode === 'HERO')) || (item.isUsable !== undefined && !item.isUsable)}
+                  key={`player-card-${cardId}`}
+                  onPress={() => handleCardPress(cardId)}
+                  disabled={!slimeWarViewModel.isMyTurn}
                   style={[
                     styles.card,
-                    (isMoveMode || isCardSelectMode === 'HERO') && (item.isUsable === undefined || item.isUsable) && { borderColor: '#4CAF50', borderWidth: 2 }
+                    movableCards.includes(cardId) && styles.movableCard,
+                    heroCards.includes(cardId) && styles.heroCard,
+                    isMoveMode && styles.moveModeCard,
+                    isCardSelectMode === 'HERO' && styles.heroModeCard,
                   ]}
                 >
                   <Image
-                    source={getCardImageSource(item.id ?? item)}
+                    source={getCardImageSource(cardId)}
                     style={styles.cardImage}
                     resizeMode="contain"
                   />
+                  {movableCards.includes(cardId) && (
+                    <View style={styles.movableIndicator}>
+                      <Text style={styles.movableText}>이동 가능</Text>
+                    </View>
+                  )}
+                  {heroCards.includes(cardId) && (
+                    <View style={styles.heroIndicator}>
+                      <Text style={styles.heroText}>흡수 가능</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -569,18 +582,18 @@ const SlimeWarScreen: React.FC = observer(() => {
             <Text style={[styles.buttonText, !canDrawCard && { color: '#999999' }]}>더미</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, !hasHeroCard && { opacity: 0.5 }]}
+            style={[styles.button, !heroCards.length && { opacity: 0.5 }]}
             onPress={handleHero}
-            disabled={!hasHeroCard}
+            disabled={!heroCards.length}
           >
-            <Text style={[styles.buttonText, !hasHeroCard && { color: '#999999' }]}>흡수</Text>
+            <Text style={[styles.buttonText, !heroCards.length && { color: '#999999' }]}>흡수</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, !hasMovableCard && { opacity: 0.5 }]}
+            style={[styles.button, !movableCards.length && { opacity: 0.5 }]}
             onPress={handleMove}
-            disabled={!hasMovableCard}
+            disabled={!movableCards.length}
           >
-            <Text style={[styles.buttonText, !hasMovableCard && { color: '#999999' }]}>이동</Text>
+            <Text style={[styles.buttonText, !movableCards.length && { color: '#999999' }]}>이동</Text>
           </TouchableOpacity>
         </View>
 
