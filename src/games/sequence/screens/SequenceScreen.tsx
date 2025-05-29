@@ -245,9 +245,13 @@ const SequenceScreen: React.FC = observer(() => {
     setMySequences(mySeqs);
     setOpponentSequences(opponentSeqs);
 
-    // 내가 만든 시퀀스가 2개 이상일 때만 게임 종료
+    // 시퀀스 2개 이상일 때 게임 종료
     if (mySeqs.length >= 2) {
+      // 게임 종료 웹소켓 이벤트 호출
       sequenceWebSocketService.sendGameOverEvent();
+      
+      // 시스템 메시지 표시 (선택사항)
+      setSystemMessage('시퀀스 2개를 완성했습니다! 게임이 종료됩니다.');
     }
   }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
 
