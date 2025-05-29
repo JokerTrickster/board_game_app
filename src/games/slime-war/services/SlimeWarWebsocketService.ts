@@ -275,6 +275,14 @@ class SlimeWarWebSocketService {
                         navigation.navigate('SlimeWarResult', { isSuccess: false });
                     }
                     break;
+                case "ERROR":
+                    console.log("❌ 에러:", parsedData);
+                    this.disconnect();
+                    // ✅ 게임 결과 화면으로 이동
+                    if (navigation) {
+                        navigation.navigate('SlimeWarResult', { isSuccess: false });
+                    }
+                    break;
                 default:
                     console.warn("⚠️ 알 수 없는 이벤트:", data.event);
             }

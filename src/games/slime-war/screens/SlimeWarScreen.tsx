@@ -186,8 +186,8 @@ const SlimeWarScreen: React.FC = observer(() => {
 
   // 흡수 가능한 카드 목록 계산
   const heroCards = React.useMemo(() => {
-    if (!slimeWarViewModel.isMyTurn) return [];
-    if ((slimeWarViewModel.userHeroCount ?? 0) < 1) return [];
+    // 내 턴이 아니거나 히어로 카드가 없으면 빈 배열 반환
+    if (!slimeWarViewModel.isMyTurn || (slimeWarViewModel.userHeroCount ?? 0) <= 0) return [];
     
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1], 1: [0, -1], 2: [1, -1],
@@ -210,7 +210,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       const newY = currentY + vector[1] * move;
       
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
-      const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
+      const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
       return targetCellValue === slimeWarViewModel.opponentID;
     });
   }, [playerHand, slimeWarViewModel.isMyTurn, slimeWarViewModel.userHeroCount, slimeWarViewModel.kingIndex, slimeWarViewModel.gameMap, slimeWarViewModel.opponentID]);
@@ -332,71 +332,11 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
   };
   
-  const handleHero = () => {
-    if (buttonCooldown) return;
-    setButtonCooldown(true);
-    setTimeout(() => setButtonCooldown(false), 1000);
-    if (!slimeWarViewModel.isMyTurn) {
-      setSystemMessage('지금은 당신의 턴이 아닙니다.');
-      return;
-    }
-    
-    const directionMap: { [key: number]: [number, number] } = {
-      0: [-1, -1],
-      1: [0, -1],
-      2: [1, -1],
-      3: [-1, 0],
-      4: [1, 0],
-      5: [-1, 1],
-      6: [0, 1],
-      7: [1, 1],
-    };
-    const validHeroCards = playerHand.filter((cardId: number) => {
-      // cardData에서 카드 정보 조회
-      const cardInfo = cardData.find((c: any) => c.id === cardId);
-      if (!cardInfo) return false;
-      
-      const { direction, move } = cardInfo;
-      const vector = directionMap[direction];
-      if (!vector) return false;
-      
-      const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE;
-      const currentY = Math.floor(currentIndex / GRID_SIZE);
-      const newX = currentX + vector[0] * move;
-      const newY = currentY + vector[1] * move;
-      
-      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
-      const targetCellValue = slimeWarViewModel.gameMap[newY][newX];
-      return targetCellValue === slimeWarViewModel.opponentID;
-    });
-    if (validHeroCards.length < 1) {
-      setSystemMessage('영웅 행동을 할 수 있는 카드가 없습니다.');
-      return;
-    }
-    setSystemMessage('영웅 행동 모드가 활성화되었습니다. 카드를 선택하세요.');
-    setIsCardSelectMode('HERO');
-  };
-  
-  const handleMove = () => {
-    if (buttonCooldown) return;
-    setButtonCooldown(true);
-    setTimeout(() => setButtonCooldown(false), 1000);
-    if (!slimeWarViewModel.isMyTurn) {
-      setSystemMessage('지금은 당신의 턴이 아닙니다.');
-      return;
-    }
-    
-    setSystemMessage('이동 모드가 활성화되었습니다. 카드를 선택하세요.');
-    setIsMoveMode(true);
-  };
-  
   // 카드 클릭 핸들러 수정
   const handleCardPress = (cardId: number) => {
     if (!slimeWarViewModel.isMyTurn) return;
-    
     // 이동 모드이거나 이동 가능한 카드인 경우
-    if (isMoveMode || movableCards.includes(cardId)) {
+    if (movableCards.includes(cardId)) {
       const cardInfo = cardData.find((c: any) => c.id === cardId);
       if (!cardInfo) return;
 
@@ -428,6 +368,34 @@ const SlimeWarScreen: React.FC = observer(() => {
 
       const newIndex = newY * GRID_SIZE + newX;
       slimeWarWebSocketService.sendMoveEvent(cardId, newIndex);
+      slimeWarViewModel.setKingIndex(newIndex);
+      setIsMoveMode(false);
+    } else if ( heroCards.includes(cardId)) {
+      const cardInfo = cardData.find((c: any) => c.id === cardId);
+      if (!cardInfo) return;
+
+      const directionMap: { [key: number]: [number, number] } = {
+        0: [-1, -1], 1: [0, -1], 2: [1, -1],
+        3: [-1, 0], 4: [1, 0],
+        5: [-1, 1], 6: [0, 1], 7: [1, 1],
+      };
+
+      const vector = directionMap[cardInfo.direction];
+      if (!vector) return;
+
+      const currentIndex = slimeWarViewModel.kingIndex;
+      const currentX = currentIndex % GRID_SIZE;
+      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      const newX = currentX + vector[0] * cardInfo.move;
+      const newY = currentY + vector[1] * cardInfo.move;
+
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
+        setSystemMessage('이동할 수 없는 위치입니다.');
+        return;
+      }
+
+      const newIndex = newY * GRID_SIZE + newX;
+      slimeWarWebSocketService.sendHeroEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);
     }
@@ -550,7 +518,7 @@ const SlimeWarScreen: React.FC = observer(() => {
                       <Text style={styles.movableText}>이동 가능</Text>
                     </View>
                   )}
-                  {heroCards.includes(cardId) && (
+                  {heroCards.includes(cardId) && (slimeWarViewModel.userHeroCount ?? 0) > 0 && (
                     <View style={styles.heroIndicator}>
                       <Text style={styles.heroText}>흡수 가능</Text>
                     </View>
@@ -580,20 +548,6 @@ const SlimeWarScreen: React.FC = observer(() => {
             disabled={!canDrawCard}
           >
             <Text style={[styles.buttonText, !canDrawCard && { color: '#999999' }]}>더미</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, !heroCards.length && { opacity: 0.5 }]}
-            onPress={handleHero}
-            disabled={!heroCards.length}
-          >
-            <Text style={[styles.buttonText, !heroCards.length && { color: '#999999' }]}>흡수</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, !movableCards.length && { opacity: 0.5 }]}
-            onPress={handleMove}
-            disabled={!movableCards.length}
-          >
-            <Text style={[styles.buttonText, !movableCards.length && { color: '#999999' }]}>이동</Text>
           </TouchableOpacity>
         </View>
 
