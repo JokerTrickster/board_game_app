@@ -204,6 +204,10 @@ class SequenceWebSocketService {
             case "MATCH_CANCEL":
                 console.log("🚫 매칭 취소:", data.message);
                 break;
+
+            case "REMOVE_CARD":
+                console.log("🔑 카드 제거:", data.message);
+                break;
             case "DISCONNECT":
                 console.log("❌ 서버와 연결이 끊어졌습니다.");
                 this.disconnect();
@@ -241,6 +245,9 @@ class SequenceWebSocketService {
         this.round = data.sequenceGameInfo.round;
         this.gameStarted = true;
     }
+  }
+  sendRemoveCardEvent(cardID: number, mapID: number){
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, "REMOVE_CARD", { cardID: cardID, mapID: mapID });
   }
   sendGameOverEvent() {
     webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", { winnerID: this.userID, loserID: sequenceViewModel.opponentID });

@@ -98,5 +98,9 @@
     { "id": 97, "type": "diamond", "count": "k", "image": "diamondk.png", "mapID": 100 },
     { "id": 98, "type": "diamond", "count": "q", "image": "diamondq.png", "mapID": 70 },
     { "id": 99, "type": "diamond", "count": "q", "image": "diamondq.png", "mapID": 71 },
-    { "id": 100, "type": "all", "count": "all", "image": "all.png", "mapID": 100 }
+    { "id": 100, "type": "all", "count": "all", "image": "all.png", "mapID": 100 },
+    { "id": 101, "type": "joker", "count": "j1", "image": "joker1.png", "mapID": 101 },
+    { "id": 102, "type": "joker", "count": "j1", "image": "joker1.png", "mapID": 102 },
+    { "id": 103, "type": "joker", "count": "j2", "image": "joker2.png", "mapID": 103 },
+    { "id": 104, "type": "joker", "count": "j2", "image": "joker2.png", "mapID": 104 }
 ]

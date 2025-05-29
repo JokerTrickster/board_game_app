@@ -205,21 +205,21 @@ const SequenceScreen: React.FC = observer(() => {
     }
     setTimer(TURN_TIME);
 
-    if (sequenceViewModel.isMyTurn) {
-      timerRef.current = setInterval(() => {
-        setTimer(prev => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current!);
-            timerRef.current = null;
-            if (sequenceViewModel.isMyTurn) {
-              sequenceWebSocketService.sendTimeoutEvent();
-            }
-            return 0;
+    // 내 턴일 때만 타이머 동작하던 조건을 제거
+    timerRef.current = setInterval(() => {
+      setTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current!);
+          timerRef.current = null;
+          // 내 턴일 때만 타임아웃 이벤트 발생
+          if (sequenceViewModel.isMyTurn) {
+            sequenceWebSocketService.sendTimeoutEvent();
           }
-          return prev - 1;
-        });
-      }, 1000);
-    }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
       if (timerRef.current) {
@@ -227,7 +227,7 @@ const SequenceScreen: React.FC = observer(() => {
         timerRef.current = null;
       }
     };
-  }, [sequenceViewModel.isMyTurn]);
+  }, [sequenceViewModel.isMyTurn]); // 턴이 바뀔 때마다 타이머 리셋
 
   // 내 턴이 끝나면 validMapIDs 초기화
   useEffect(() => {
@@ -315,12 +315,30 @@ const SequenceScreen: React.FC = observer(() => {
       return;
     }
 
-    // 해당 카드의 모든 mapID 찾기 (2장)
+    // 조커 카드 처리
+    if (cardInfo.type === 'joker') {
+      if (cardInfo.count === 'j1') {
+        // j1 조커: 상대방이 놓은 칩을 제거할 수 있는 위치
+        const validMapIDs = sequenceViewModel.opponentOwnedMapIDs;
+        setValidMapIDs(validMapIDs);
+      } else if (cardInfo.count === 'j2') {
+        // j2 조커: 비어있는 곳 중 특수 위치(1,10,91,100)를 제외한 모든 위치
+        const allMapIDs = Array.from({ length: 100 }, (_, i) => i + 1);
+        const validMapIDs = allMapIDs.filter(mapID => 
+          !SPECIAL_MAP_IDS.includes(mapID) && // 특수 위치 제외
+          !sequenceViewModel.ownedMapIDs.includes(mapID) && // 내가 놓은 칩 제외
+          !sequenceViewModel.opponentOwnedMapIDs.includes(mapID) // 상대방이 놓은 칩 제외
+        );
+        setValidMapIDs(validMapIDs);
+      }
+      return;
+    }
+
+    // 일반 카드 처리 (기존 로직)
     const allMapIDs = sequenceCards
       .filter(card => card.type === cardInfo.type && card.count === cardInfo.count)
       .map(card => card.mapID);
 
-    // 이미 점령된 칸 제외
     const validMapIDs = allMapIDs.filter(mapID => 
       !sequenceViewModel.ownedMapIDs.includes(mapID) &&
       !sequenceViewModel.opponentOwnedMapIDs.includes(mapID)
@@ -340,12 +358,30 @@ const SequenceScreen: React.FC = observer(() => {
       setSystemMessage('먼저 카드를 선택해주세요.');
       return;
     }
+
     const mapID = row * GRID_SIZE + col + 1;
     if (!validMapIDs.includes(mapID)) {
       setSystemMessage('이 위치에는 카드를 놓을 수 없습니다.');
       return;
     }
-    sequenceWebSocketService.sendUseCardEvent(selectedCard, mapID);
+
+    const cardInfo = getCardInfoById(selectedCard);
+    if (!cardInfo) return;
+
+    // 조커 카드 처리
+    if (cardInfo.type === 'joker') {
+      if (cardInfo.count === 'j1') {
+        // j1 조커: 상대방 칩 제거
+        sequenceWebSocketService.sendRemoveCardEvent(selectedCard, mapID);
+      } else if (cardInfo.count === 'j2') {
+        // j2 조커: 빈 공간에 칩 배치
+        sequenceWebSocketService.sendUseCardEvent(selectedCard, mapID);
+      }
+    } else {
+      // 일반 카드 처리
+      sequenceWebSocketService.sendUseCardEvent(selectedCard, mapID);
+    }
+
     setValidMapIDs([]);
     sequenceViewModel.setSelectedCard(0);
   };
@@ -412,8 +448,8 @@ const SequenceScreen: React.FC = observer(() => {
                 styles.chipImage,
                 {
                   position: 'absolute',
-                  left: (col * cellWidth)+20,
-                  top: (row * cellHeight)+26,
+                  left: col * cellWidth + (cellWidth - 20) / 2,
+                  top: row * cellHeight + (cellHeight - 20) / 2,
                 },
               ]}
               resizeMode="contain"

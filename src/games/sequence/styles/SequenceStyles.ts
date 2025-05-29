@@ -63,12 +63,14 @@ export default StyleSheet.create({
     width: 35,
     height: 50,
     margin: 1,
+    position: 'relative',
   },
   chipImage: {
     width: 20,
     height: 20,
     zIndex: 10,
     position: 'absolute',
+    alignSelf: 'center',
   },
   handContainer: {
     width: '70%',
