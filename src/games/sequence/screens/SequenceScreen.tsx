@@ -443,19 +443,32 @@ const SequenceScreen: React.FC = observer(() => {
         }
         if (chip) {
           chips.push(
-            <Image
-              key={`chip-${row}-${col}`}
-              source={chip}
-              style={[
-                styles.chipImage,
-                {
-                  position: 'absolute',
-                  left: col * cellWidth + (cellWidth - 20) / 2,
-                  top: row * cellHeight + (cellHeight - 20) / 2,
-                },
-              ]}
-              resizeMode="contain"
-            />
+            <View
+              key={`chip-container-${row}-${col}`}
+              style={{
+                position: 'absolute',
+                left: col * cellWidth + (cellWidth - 20) / 1.5,
+                top: row * cellHeight + (cellHeight - 20) / 2.5,
+                width: cellWidth,
+                height: cellHeight,
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 1,
+              }}
+            >
+              <Image
+                key={`chip-${row}-${col}`}
+                source={chip}
+                style={[
+                  styles.chipImage,
+                  {
+                    width: cellWidth * 0.6, // 카드 크기의 60%
+                    height: cellWidth * 0.6, // 정사각형 유지
+                  }
+                ]}
+                resizeMode="contain"
+              />
+            </View>
           );
         }
       }
