@@ -215,6 +215,14 @@ class SequenceWebSocketService {
                 if (navigation) {
                     navigation.navigate('SequenceResult', { isSuccess: false });
                 }
+            break;
+            case "ERROR":
+              console.log("❌ 에러:", data.message);
+              this.disconnect();
+              // ✅ 게임 결과 화면으로 이동
+              if (navigation) {
+                navigation.navigate('SequenceResult', { isSuccess: false });
+              }
                 break;
             default:
                 console.warn("⚠️ 알 수 없는 이벤트:", data.event);
