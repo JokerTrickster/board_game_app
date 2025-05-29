@@ -89,6 +89,8 @@ const cardImageMap: { [key: string]: any } = {
   'space10.png': require('../../../assets/icons/sequence/cards/space10.png'),
   'spacek.png': require('../../../assets/icons/sequence/cards/spacek.png'),
   'spaceq.png': require('../../../assets/icons/sequence/cards/spaceq.png'),
+  'joker1.png': require('../../../assets/icons/sequence/cards/joker1.png'),
+  'joker2.png': require('../../../assets/icons/sequence/cards/joker2.png'),
 };
 
 // 연속된 칩 체크를 위한 방향 배열 (상하좌우, 대각선)
