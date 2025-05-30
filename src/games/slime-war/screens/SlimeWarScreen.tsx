@@ -76,16 +76,9 @@ const getCardImageSource = (cardId: number) => {
 const getSlimeImage = (colorType: number) => {
   // 20% 확률로 액션 슬라임
   if (colorType === 0) {
-    if (Math.random() < 0.2) {
-      return require('../../../assets/icons/slime-war/common/blue_slime_action.gif');
-    }
     return require('../../../assets/icons/slime-war/common/blue_slime.png');
   }
   if (colorType === 1) {
-    // 필요시 red_slime_action.gif 등도 추가
-    if (Math.random() < 0.2) {
-      return require('../../../assets/icons/slime-war/common/red_slime_action.gif');
-    }
     return require('../../../assets/icons/slime-war/common/red_slime.png');
   }
   return null;
@@ -278,7 +271,10 @@ const SlimeWarScreen: React.FC = observer(() => {
         cells.push(
           <View
             key={`cell-${col}-${row}`}
-            style={isEven ? styles.cellEven : styles.cellOdd}
+            style={[
+              isEven ? styles.cellEven : styles.cellOdd,
+              isKing && styles.kingCell
+            ]}
           >
             {isKing && (
               <>

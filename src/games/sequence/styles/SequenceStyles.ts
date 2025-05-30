@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+const CELL_SIZE = 35;
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -60,17 +62,18 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   cell: {
-    width: 35,
-    height: 50,
+    width: CELL_SIZE,
+    height: CELL_SIZE,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
     margin: 1,
-    position: 'relative',
   },
   chipImage: {
-    width: 20,
-    height: 20,
+    width: CELL_SIZE * 0.6,
+    height: CELL_SIZE * 0.6,
+    resizeMode: 'contain',
     zIndex: 10,
-    position: 'absolute',
-    alignSelf: 'center',
   },
   handContainer: {
     width: '70%',
@@ -79,6 +82,18 @@ export default StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgba(255,255,255,0.2)',
     marginBottom: 5,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  activeHandContainer: {
+    borderColor: '#4CAF50',
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    shadowColor: '#4CAF50',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   handScrollView: {
     flexDirection: 'row',
@@ -99,19 +114,28 @@ export default StyleSheet.create({
   cardImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'contain',
+    zIndex: 1,
   },
   turnIndicator: {
     position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: 10,
-    borderRadius: 20,
+    top: -25,
+    left: '50%',
+    transform: [{ translateX: -50 }],
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  turnText: {
+  turnIndicatorText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   validCell: {
     backgroundColor: 'rgba(255, 0, 0, 0.2)',

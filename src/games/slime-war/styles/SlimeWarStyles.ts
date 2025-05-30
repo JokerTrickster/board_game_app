@@ -278,4 +278,15 @@ export default StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
   },
+  kingCell: {
+    borderWidth: 2,
+    borderColor: '#FFD600', // 노란색 테두리
+    backgroundColor: 'rgba(255, 214, 0, 0.15)', // 연한 노란색 배경
+    shadowColor: '#FFD600',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+    zIndex: 2,
+  },
 });

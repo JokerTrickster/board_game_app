@@ -10,6 +10,7 @@ import sequenceCards from '../../../assets/data/sequnce_cards.json';
 
 const GRID_SIZE = 10; // 10x10 격자
 const TURN_TIME = 30; // 턴당 제한 시간(초)
+const CELL_SIZE = 35; // 셀 크기 상수 추가
 
 const SPECIAL_MAP_IDS = [1, 10, 91, 100];
 
@@ -27,8 +28,9 @@ const mapIdToCoord = (mapID: number) => ({
 // 좌표를 mapID로 변환
 const coordToMapId = (row: number, col: number) => row * 10 + col + 1;
 
-const cellWidth = styles.cell.width + 2 * (styles.cell.margin ?? 0);
-const cellHeight = styles.cell.height + 2 * (styles.cell.margin ?? 0);
+// cellWidth와 cellHeight 계산 수정
+const cellWidth = CELL_SIZE + 2; // margin 1px * 2
+const cellHeight = CELL_SIZE + 2; // margin 1px * 2
 
 const mapGrid: { mapID: number; row: number; col: number }[][] = Array.from({ length: GRID_SIZE }, (_, row) =>
   Array.from({ length: GRID_SIZE }, (_, col) => ({
@@ -247,15 +249,12 @@ const SequenceScreen: React.FC = observer(() => {
     setMySequences(mySeqs);
     setOpponentSequences(opponentSeqs);
 
-    // 시퀀스 2개 이상일 때 게임 종료
-    if (mySeqs.length >= 2) {
-      // 게임 종료 웹소켓 이벤트 호출
+    // 시퀀스 2개 이상일 때 게임 종료 (카드 사용 후 체크는 handleCellPress에서 처리)
+    if (mySeqs.length >= 2 && !sequenceViewModel.isMyTurn) {
       sequenceWebSocketService.sendGameOverEvent();
-      
-      // 시스템 메시지 표시 (선택사항)
       setSystemMessage('시퀀스 2개를 완성했습니다! 게임이 종료됩니다.');
     }
-  }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
+  }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs, sequenceViewModel.isMyTurn]);
 
   // 카드 사용 추적을 위한 useEffect
   useEffect(() => {
@@ -349,7 +348,7 @@ const SequenceScreen: React.FC = observer(() => {
     setValidMapIDs(validMapIDs);
   };
 
-  // 셀 클릭 핸들러
+  // 셀 클릭 핸들러 수정
   const handleCellPress = (row: number, col: number) => {
     if (!sequenceViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
@@ -383,6 +382,16 @@ const SequenceScreen: React.FC = observer(() => {
       // 일반 카드 처리
       sequenceWebSocketService.sendUseCardEvent(selectedCard, mapID);
     }
+
+    // 카드 사용 후 시퀀스 체크를 위한 타이머 설정
+    setTimeout(() => {
+      const mySeqs = findConsecutiveSequences(sequenceViewModel.ownedMapIDs);
+      if (mySeqs.length >= 2) {
+        // 시퀀스 2개 이상 완성 시 게임 종료
+        sequenceWebSocketService.sendGameOverEvent();
+        setSystemMessage('시퀀스 2개를 완성했습니다! 게임이 종료됩니다.');
+      }
+    }, 500); // 0.5초 후 체크 (서버 응답 대기 시간 고려)
 
     setValidMapIDs([]);
     sequenceViewModel.setSelectedCard(0);
@@ -453,7 +462,7 @@ const SequenceScreen: React.FC = observer(() => {
                 height: cellHeight,
                 justifyContent: 'center',
                 alignItems: 'center',
-                zIndex: 1,
+                zIndex: 10,
               }}
             >
               <Image
@@ -462,8 +471,9 @@ const SequenceScreen: React.FC = observer(() => {
                 style={[
                   styles.chipImage,
                   {
-                    width: cellWidth * 0.6, // 카드 크기의 60%
-                    height: cellWidth * 0.6, // 정사각형 유지
+                    width: cellWidth * 0.6,
+                    height: cellWidth * 0.6,
+                    zIndex: 10,
                   }
                 ]}
                 resizeMode="contain"
@@ -514,7 +524,15 @@ const SequenceScreen: React.FC = observer(() => {
         </View>
 
         {/* 플레이어 카드 영역 */}
-        <View style={styles.handContainer}>
+        <View style={[
+          styles.handContainer,
+          sequenceViewModel.isMyTurn && styles.activeHandContainer
+        ]}>
+          {sequenceViewModel.isMyTurn && (
+            <View style={styles.turnIndicator}>
+              <Text style={styles.turnIndicatorText}>내 차례</Text>
+            </View>
+          )}
           <View style={styles.handScrollView}>
             {playerHand.map((cardID: number, index: number) => {
               const cardInfo = getCardInfoById(cardID);
