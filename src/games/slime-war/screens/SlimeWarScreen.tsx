@@ -371,7 +371,10 @@ const SlimeWarScreen: React.FC = observer(() => {
         return;
       }
 
-      const newIndex = newY * GRID_SIZE + newX;
+      let newIndex = newY * GRID_SIZE + newX;
+      if (newX === 9) {
+        newIndex -= GRID_SIZE;
+      }
       slimeWarWebSocketService.sendMoveEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);
@@ -393,7 +396,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       let currentY = Math.floor(currentIndex / GRID_SIZE);
       if (currentX === 0) {
         currentX = GRID_SIZE;
-        currentY -= 1;
       }
       const newX = currentX + vector[0] * cardInfo.move;
       const newY = currentY + vector[1] * cardInfo.move;
@@ -403,7 +405,10 @@ const SlimeWarScreen: React.FC = observer(() => {
         return;
       }
 
-      const newIndex = newY * GRID_SIZE + newX;
+      let newIndex = newY * GRID_SIZE + newX;
+      if (newX === 9) {
+        newIndex -= GRID_SIZE;
+      }
       slimeWarWebSocketService.sendHeroEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);
