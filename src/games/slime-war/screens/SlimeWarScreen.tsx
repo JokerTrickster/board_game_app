@@ -166,8 +166,11 @@ const SlimeWarScreen: React.FC = observer(() => {
       if (!vector) return false;
       
       const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE;
-      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      let currentX = currentIndex % GRID_SIZE;
+      let currentY = Math.floor(currentIndex / GRID_SIZE);
+      if (currentX === 0) {
+        currentX = GRID_SIZE;
+      }
       const newX = currentX + vector[0] * move;
       const newY = currentY + vector[1] * move;
       
@@ -197,8 +200,11 @@ const SlimeWarScreen: React.FC = observer(() => {
       if (!vector) return false;
       
       const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE;
-      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      let currentX = currentIndex % GRID_SIZE;
+      let currentY = Math.floor(currentIndex / GRID_SIZE);
+      if (currentX === 0) {
+        currentX = GRID_SIZE;
+      }
       const newX = currentX + vector[0] * move;
       const newY = currentY + vector[1] * move;
       
@@ -346,8 +352,11 @@ const SlimeWarScreen: React.FC = observer(() => {
       if (!vector) return;
 
       const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE;
-      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      let currentX = currentIndex % GRID_SIZE;
+      let currentY = Math.floor(currentIndex / GRID_SIZE);
+      if (currentX === 0) {
+        currentX = GRID_SIZE;
+      }
       const newX = currentX + vector[0] * cardInfo.move;
       const newY = currentY + vector[1] * cardInfo.move;
 
@@ -380,8 +389,12 @@ const SlimeWarScreen: React.FC = observer(() => {
       if (!vector) return;
 
       const currentIndex = slimeWarViewModel.kingIndex;
-      const currentX = currentIndex % GRID_SIZE;
-      const currentY = Math.floor(currentIndex / GRID_SIZE);
+      let currentX = currentIndex % GRID_SIZE;
+      let currentY = Math.floor(currentIndex / GRID_SIZE);
+      if (currentX === 0) {
+        currentX = GRID_SIZE;
+        currentY -= 1;
+      }
       const newX = currentX + vector[0] * cardInfo.move;
       const newY = currentY + vector[1] * cardInfo.move;
 
