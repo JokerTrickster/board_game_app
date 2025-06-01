@@ -444,22 +444,32 @@ const SequenceScreen: React.FC = observer(() => {
       for (let col = 0; col < GRID_SIZE; col++) {
         let chip = null;
         const mapID = coordToMapId(row, col);
+        
+        // 칩 이미지 결정
         if (sequenceViewModel.ownedMapIDs.includes(mapID)) {
           chip = getChipImage(sequenceViewModel.userColorType);
         }
         if (sequenceViewModel.opponentOwnedMapIDs.includes(mapID)) {
           chip = getChipImage(sequenceViewModel.opponentColorType);
         }
+
         if (chip) {
+          // 칩의 크기 계산 (카드 크기와 동일하게)
+          const chipSize = cellWidth;
+          
+          // 칩의 위치 계산 (카드와 정확히 같은 위치)
+          const chipLeft = col * (cellWidth+1.3);
+          const chipTop = row * (cellHeight/0.702);
+
           chips.push(
             <View
               key={`chip-container-${row}-${col}`}
               style={{
                 position: 'absolute',
-                left: col * cellWidth + (cellWidth - 20) / 1.5,
-                top: row * cellHeight + (cellHeight - 20) / 2.5,
-                width: cellWidth,
-                height: cellHeight,
+                left: chipLeft,
+                top: chipTop,
+                width: chipSize,
+                height: chipSize,
                 justifyContent: 'center',
                 alignItems: 'center',
                 zIndex: 10,
@@ -468,15 +478,11 @@ const SequenceScreen: React.FC = observer(() => {
               <Image
                 key={`chip-${row}-${col}`}
                 source={chip}
-                style={[
-                  styles.chipImage,
-                  {
-                    width: cellWidth * 0.6,
-                    height: cellWidth * 0.6,
-                    zIndex: 10,
-                  }
-                ]}
-                resizeMode="contain"
+                style={{
+                  width: chipSize * 0.6,
+                  height: chipSize * 0.6,
+                  resizeMode: 'contain',
+                }}
               />
             </View>
           );
