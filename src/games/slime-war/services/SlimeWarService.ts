@@ -118,6 +118,7 @@ class SlimeWarService {
             if (!data.result) {
                 throw new Error('Invalid response from server');
             }
+            console.log("data.result", data.result);
             return data.result;
         } catch (error) {
             throw error;

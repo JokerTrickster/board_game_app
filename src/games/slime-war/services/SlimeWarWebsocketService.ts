@@ -239,29 +239,29 @@ class SlimeWarWebSocketService {
                
                 case "GAME_OVER":
                     // ✅ 게임 결과 정보 호출
-                    const result = await slimeWarService.fetchGameResult();
-                    let isSuccess = false;
-                    if (result[0].score > result[1].score){
-                        if(result[0].userID === this.userID){
-                            isSuccess = true;
-                        }else{
-                            isSuccess = false;
-                        }
-                    }else{
-                        if(result[0].userID === this.userID){
-                            isSuccess = false;
-                        }else{
-                            isSuccess = true;
-                        }
-                    }
-                    await slimeWarService.sendGameOver(isSuccess, this.roomID as number);
+                    // const result = await slimeWarService.fetchGameResult();
+                    // let isSuccess = false;
+                    // if (result[0].score > result[1].score){
+                    //     if(result[0].userID === this.userID){
+                    //         isSuccess = true;
+                    //     }else{
+                    //         isSuccess = false;
+                    //     }
+                    // }else{
+                    //     if(result[0].userID === this.userID){
+                    //         isSuccess = false;
+                    //     }else{
+                    //         isSuccess = true;
+                    //     }
+                    // }
+                    await slimeWarService.sendGameOver(true, this.roomID as number);
 
                     // ✅ 웹소켓 종료
                     this.disconnect();
                     //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: isSuccess });
+                        navigation.navigate('SlimeWarResult', { isSuccess: true });
                     }
                     break;
                 case "MATCH_CANCEL":

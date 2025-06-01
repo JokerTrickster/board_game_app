@@ -170,9 +170,11 @@ const SlimeWarScreen: React.FC = observer(() => {
       let currentY = Math.floor(currentIndex / GRID_SIZE);
       if (currentX === 0) {
         currentX = GRID_SIZE;
+        currentY -= 1;
       }
-      const newX = currentX + vector[0] * move;
-      const newY = currentY + vector[1] * move;
+
+      const newX = currentX + (vector[0] * move);
+      const newY = currentY + (vector[1] * move);
       
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
       const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
@@ -204,9 +206,11 @@ const SlimeWarScreen: React.FC = observer(() => {
       let currentY = Math.floor(currentIndex / GRID_SIZE);
       if (currentX === 0) {
         currentX = GRID_SIZE;
+        currentY -= 1;
       }
-      const newX = currentX + vector[0] * move;
-      const newY = currentY + vector[1] * move;
+
+      const newX = currentX + (vector[0] * move);
+      const newY = currentY + (vector[1] * move);
       
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
       const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
@@ -292,7 +296,7 @@ const SlimeWarScreen: React.FC = observer(() => {
                 )}
                 <Image
                   source={require('../../../assets/icons/slime-war/common/crown.png')}
-                  style={{ width: 24, height: 18, position: 'absolute', top: -8, left: 6 }}
+                  style={{ width: 24, height: 18, position: 'absolute', top: -8, left: 6, zIndex: 10, overflow: 'visible'}}
                 />
               </>
             )}
@@ -356,10 +360,12 @@ const SlimeWarScreen: React.FC = observer(() => {
       let currentY = Math.floor(currentIndex / GRID_SIZE);
       if (currentX === 0) {
         currentX = GRID_SIZE;
+        currentY -= 1;
       }
-      const newX = currentX + vector[0] * cardInfo.move;
-      const newY = currentY + vector[1] * cardInfo.move;
-
+      const newX = currentX + (vector[0] * cardInfo.move);
+      const newY = currentY + (vector[1] * cardInfo.move);
+      console.log("currentX, currentY", currentX, currentY);
+      console.log("newX, newY", newX, newY);
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
         setSystemMessage('이동할 수 없는 위치입니다.');
         return;
@@ -372,9 +378,9 @@ const SlimeWarScreen: React.FC = observer(() => {
       }
 
       let newIndex = newY * GRID_SIZE + newX;
-      if (newX === 9) {
-        newIndex -= GRID_SIZE;
-      }
+      console.log("currentIndex", currentIndex);
+      console.log("newIndex , newY, newX", newIndex,newY,newX);
+      console.log("newIndex", newIndex);
       slimeWarWebSocketService.sendMoveEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);
@@ -396,19 +402,17 @@ const SlimeWarScreen: React.FC = observer(() => {
       let currentY = Math.floor(currentIndex / GRID_SIZE);
       if (currentX === 0) {
         currentX = GRID_SIZE;
+        currentY -= 1;
       }
-      const newX = currentX + vector[0] * cardInfo.move;
-      const newY = currentY + vector[1] * cardInfo.move;
+      const newX = currentX + (vector[0] * cardInfo.move);
+      const newY = currentY + (vector[1] * cardInfo.move);
 
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
         setSystemMessage('이동할 수 없는 위치입니다.');
         return;
       }
 
-      let newIndex = newY * GRID_SIZE + newX;
-      if (newX === 9) {
-        newIndex -= GRID_SIZE;
-      }
+      let newIndex = newY * 9 + newX;
       slimeWarWebSocketService.sendHeroEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);
