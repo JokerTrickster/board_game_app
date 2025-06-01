@@ -1,12 +1,21 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
-const CELL_SIZE = 35;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
+// 보드 가로는 화면의 98%, 세로는 10x(셀 높이)로 맞춤
+const BOARD_WIDTH = SCREEN_WIDTH * 0.98;
+const CELL_WIDTH = BOARD_WIDTH / 10;
+const CELL_HEIGHT = CELL_WIDTH * 1.35; // 세로를 더 길게(예: 1.35배, 필요시 더 조정)
+
+const BOARD_HEIGHT = CELL_HEIGHT * 10;
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    backgroundColor: '#1a1a2e', // 어두운 남색 계열, 카드와 어울림
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   safeArea: {
     flex: 1,
@@ -50,29 +59,44 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   boardContainer: {
-    flex: 1,
-    padding: 10,
-    justifyContent: 'center',
+    width: BOARD_WIDTH,
+    height: BOARD_HEIGHT,
+    backgroundColor: '#232946', // 보드 배경(남색/회색 계열)
     alignItems: 'center',
+    justifyContent: 'center',
     position: 'relative',
+    overflow: 'hidden',
+    marginVertical: 8,
+    borderWidth: 2,
+    marginLeft:5,
+    borderColor: '#b8c1ec',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   cell: {
-    width: CELL_SIZE,
-    height: CELL_SIZE,
+    width: CELL_WIDTH,
+    height: CELL_HEIGHT,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1,
-    margin: 1,
+    margin: 0,
+    padding: 0,
+    backgroundColor: '#f4f4f8',
+    borderWidth: 1,
+    borderColor: '#b8c1ec',
+    overflow: 'hidden',
   },
   chipImage: {
-    width: CELL_SIZE * 0.6,
-    height: CELL_SIZE * 0.6,
-    resizeMode: 'contain',
+    width: CELL_WIDTH * 0.6,
+    height: CELL_WIDTH * 0.6,
+    position: 'absolute',
+    left: (CELL_WIDTH * 0.2),
+    top: (CELL_HEIGHT * 0.2),
     zIndex: 10,
   },
   handContainer: {
@@ -115,7 +139,8 @@ export default StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    zIndex: 1,
+    backgroundColor: '#fff',
+    borderWidth: 0,
   },
   turnIndicator: {
     position: 'absolute',
@@ -138,12 +163,8 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   validCell: {
-    backgroundColor: 'rgba(255, 0, 0, 0.2)',
-    borderColor: 'rgba(255, 0, 0, 1)',
-    borderWidth: 2,
-    zIndex: 10,
-    width: 35,
-    height: 50,
+    borderColor: '#FF9800',
+    borderWidth: 3,
   },
   sequenceCell: {
     borderColor: 'rgb(255, 0, 0)',
@@ -153,30 +174,12 @@ export default StyleSheet.create({
     height: 50,
   },
   mySequenceCell: {
-    width: 35,
-    height: 50,
-    margin: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(255, 0, 0)',
-    borderRadius: 4,
-    borderWidth: 4,
-    borderColor: '#FF0000',
-    overflow: 'hidden',
-    zIndex: 10,
+    borderColor: '#4CAF50',
+    borderWidth: 3,
   },
   opponentSequenceCell: {
-    width: 35,
-    height: 50,
-    margin: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(72, 0, 255)',
-    borderRadius: 4,
-    borderWidth: 4,
-    borderColor: '#800080',
-    overflow: 'hidden',
-    zIndex: 10,
+    borderColor: '#F44336',
+    borderWidth: 3,
   },
   timerRowWrapper: {
     flexDirection: 'row',
