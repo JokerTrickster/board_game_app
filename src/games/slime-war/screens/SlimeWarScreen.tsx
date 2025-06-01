@@ -296,7 +296,7 @@ const SlimeWarScreen: React.FC = observer(() => {
                 )}
                 <Image
                   source={require('../../../assets/icons/slime-war/common/crown.png')}
-                  style={{ width: 24, height: 18, position: 'absolute', top: -8, left: 6, zIndex: 10, overflow: 'visible'}}
+                  style={{ width: 24, height: 18, position: 'absolute', top: -8, left: 4, zIndex: 10, overflow: 'visible'}}
                 />
               </>
             )}

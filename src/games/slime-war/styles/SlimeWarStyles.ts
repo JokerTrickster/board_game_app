@@ -17,7 +17,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.2)',
     marginVertical: 12,
-    overflow: 'hidden',
+    overflow: 'visible',
     marginTop: 0,
   },
   row: {
