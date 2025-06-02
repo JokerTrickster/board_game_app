@@ -8,7 +8,10 @@ import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
 import { slimeWarViewModel } from '../games/slime-war/services/SlimeWarViewModel';
-const SlimeWarMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
+
+const TURN_TIME = 30;
+
+const SlimeWarMultiHeader: React.FC<{ userData?: any; timer: number }> = ({ userData, timer }) => {
     const [users, setUsers] = useState(userData?.users || []);
     const [profileImage, setProfileImage] = useState(userData?.profileImage);
     const [isModalVisible, setModalVisible] = useState(false);
@@ -76,9 +79,21 @@ const SlimeWarMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                 </View>
             </View>
 
-            {/* 가운데: Round 값 */}
+            {/* 가운데: 타이머만 표시 */}
             <View style={styles.centerContainer}>
-                <Text style={styles.roundText}>ROUND {slimeWarViewModel.round}</Text>
+                <View style={styles.timerWrapper}>
+                    <View style={styles.timerContainer}>
+                        <View style={styles.timerBar}>
+                            <View
+                                style={[
+                                    styles.timerProgress,
+                                    { width: `${(timer / TURN_TIME) * 100}%` }
+                                ]}
+                            />
+                        </View>
+                        <Text style={styles.timerText}>{timer}초</Text>
+                    </View>
+                </View>
             </View>
 
             {/* 프로필 2 */}

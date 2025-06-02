@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import { slimeWarViewModel } from '../services/SlimeWarViewModel';
 import SlimeWarMultiHeader from '../../../components/SlimeWarMultiHeader';
 import cardData from '../../../assets/data/cards.json';
+import { useNavigation } from '@react-navigation/native';
 
 
 const GRID_SIZE = 9; // 0~8까지 9칸
@@ -97,24 +98,17 @@ const SlimeWarScreen: React.FC = observer(() => {
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
+  const navigation = useNavigation();
 
-  // 타이머 관련 useEffect 수정
+  // 타이머 관련 useEffect만 남기고, 타이머 UI는 삭제
   useEffect(() => {
-    // 타이머 초기화
     setTimer(TURN_TIME);
-    
-    // 기존 타이머가 있다면 제거
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-
-    // 새로운 타이머 시작
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current!);
           timerRef.current = null;
-          // 내 턴일 때만 타임아웃 이벤트 발생
           if (slimeWarViewModel.isMyTurn) {
             slimeWarWebSocketService.sendTimeoutEvent();
           }
@@ -123,15 +117,13 @@ const SlimeWarScreen: React.FC = observer(() => {
         return prev - 1;
       });
     }, 1000);
-
-    // 컴포넌트 언마운트 시 타이머 정리
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
     };
-  }, [slimeWarViewModel.isMyTurn]); // 내 턴이 바뀔 때만 타이머 리셋
+  }, [slimeWarViewModel.isMyTurn]);
 
   //라운드가 변경될 떄마다 누구차례인지 체크
   useEffect(() => {
@@ -249,6 +241,15 @@ const SlimeWarScreen: React.FC = observer(() => {
     // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
     return () => backHandler.remove();
   }, []); // 의존성 배열이 비어있으므로 컴포넌트 마운트 시 한 번만 실행
+
+  // 게임 종료 감지 및 결과 화면 이동
+  useEffect(() => {
+    if (slimeWarViewModel.gameMap) {
+      setSystemMessage('게임이 종료되었습니다.');
+      setTimeout(() => {
+      }, 3000);
+    }
+  }, [slimeWarViewModel.gameOver]);
 
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
@@ -426,30 +427,9 @@ const SlimeWarScreen: React.FC = observer(() => {
       resizeMode="cover"
     >
       <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-          <SlimeWarMultiHeader />
+        {/* 헤더에 timer 전달 */}
+        <SlimeWarMultiHeader timer={timer} />
 
-        {/* 타이머 바 */}
-        <View style={styles.timerContainer}>
-          <View style={styles.timerBar}>
-            <View 
-              style={{ 
-                width: `${(timer / TURN_TIME) * 100}%`, 
-                height: '100%', 
-                backgroundColor: timer <= 5 
-                  ? '#B0C1B1' 
-                  : slimeWarViewModel.isMyTurn 
-                    ? '#F47660'  // 내 턴일 때는 빨간색
-                    : '#4CAF50'  // 상대 턴일 때는 초록색
-              }} 
-            />
-          </View>
-          <Text style={[
-            styles.timerText,
-            { color: timer <= 5 ? '#B0C1B1' : slimeWarViewModel.isMyTurn ? '#F47660' : '#4CAF50' }
-          ]}>
-            {timer}s
-          </Text>
-        </View>
         {/* 나무 + 격자 */}
         <View style={styles.topContainer}>
           

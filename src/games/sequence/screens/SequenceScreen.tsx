@@ -107,70 +107,56 @@ const DIRECTIONS = [
   { row: 1, col: 1 },   // 우하
 ];
 
-// 특정 방향으로 연속된 칩 개수 체크 (특수칩 포함)
-const checkConsecutiveChipsWithSpecial = (
-  startRow: number,
-  startCol: number,
-  direction: { row: number; col: number },
-  ownedMapIDs: number[]
-): { count: number, sequence: number[], specialIncluded: boolean } => {
-  let count = 1;
-  let sequence = [coordToMapId(startRow, startCol)];
-  let specialIncluded = SPECIAL_MAP_IDS.includes(sequence[0]);
-  let currentRow = startRow + direction.row;
-  let currentCol = startCol + direction.col;
-
-  while (
-    currentRow >= 0 && currentRow < GRID_SIZE &&
-    currentCol >= 0 && currentCol < GRID_SIZE
-  ) {
-    const mapID = coordToMapId(currentRow, currentCol);
-    if (ownedMapIDs.includes(mapID) || SPECIAL_MAP_IDS.includes(mapID)) {
-      sequence.push(mapID);
-      if (SPECIAL_MAP_IDS.includes(mapID)) specialIncluded = true;
-      count++;
-      currentRow += direction.row;
-      currentCol += direction.col;
-    } else {
-      break;
-    }
-  }
-
-  return { count, sequence, specialIncluded };
-};
-
-// 내 칩만으로 시퀀스 찾기
+// 내 칩만으로 시퀀스 찾기 (중복 없는 5개 단위 시퀀스만 인정)
 const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
   const sequences: number[][] = [];
-  const checked = new Set<string>();
+  const checked = new Set<number>(); // 이미 시퀀스로 인정된 mapID는 중복 포함 금지
 
   for (let row = 0; row < GRID_SIZE; row++) {
     for (let col = 0; col < GRID_SIZE; col++) {
       const mapID = coordToMapId(row, col);
       if (!ownedMapIDs.includes(mapID) && !SPECIAL_MAP_IDS.includes(mapID)) continue;
 
-      const key = `${row}-${col}`;
-      if (checked.has(key)) continue;
-
       for (const direction of DIRECTIONS) {
-        const { count, sequence, specialIncluded } = checkConsecutiveChipsWithSpecial(
-          row, col, direction, ownedMapIDs
-        );
+        let tempSeq: number[] = [];
+        let specialCount = 0;
+        let r = row;
+        let c = col;
 
-        // 특수칩 포함: 4+1(특수) = 5개, 특수칩 미포함: 5개 이상
-        if (
-          (specialIncluded && count >= 5) ||
-          (!specialIncluded && count >= 5)
-        ) {
-          // 표시할 때는 특수칩(mapID) 제외
-          const displaySequence = sequence.filter(id => !SPECIAL_MAP_IDS.includes(id));
-          // 특수칩 포함이면 4개 이상, 아니면 5개 이상
+        // 10개 연속이라면 5개 단위로 쪼개서 여러 시퀀스 인정
+        while (true) {
+          const curMapID = coordToMapId(r, c);
           if (
-            (specialIncluded && displaySequence.length >= 4) ||
-            (!specialIncluded && displaySequence.length >= 5)
+            (ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID)) &&
+            !checked.has(curMapID)
           ) {
-            displaySequence.forEach(id => checked.add(`${mapIdToCoord(id).row}-${mapIdToCoord(id).col}`));
-            sequences.push(displaySequence);
+            tempSeq.push(curMapID);
+            if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
+            // 5개가 모이면 시퀀스 인정
+            if (tempSeq.length === 5) {
+              // 특수칩이 2개 이상 포함되면 시퀀스 불인정(룰에 따라 조정)
+              if (specialCount <= 1) {
+                // 특수칩은 시퀀스 표시에서 제외
+                const displaySeq = tempSeq.filter(id => !SPECIAL_MAP_IDS.includes(id));
+                if (displaySeq.length >= 4) {
+                  displaySeq.forEach(id => checked.add(id));
+                  sequences.push(displaySeq);
+                }
+              }
+              // 다음 시퀀스 탐색을 위해 tempSeq 초기화(중복 방지)
+              tempSeq = [];
+              specialCount = 0;
+            }
+            // 다음 칸으로 이동
+            r += direction.row;
+            c += direction.col;
+            // 범위 체크
+            if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) break;
+          } else {
+            // 연속이 끊기면 tempSeq 초기화
+            tempSeq = [];
+            specialCount = 0;
+            break;
           }
         }
       }
@@ -207,10 +193,18 @@ const SequenceScreen: React.FC = observer(() => {
 
     // 시퀀스 2개 이상일 때 게임 종료 (카드 사용 후 체크는 handleCellPress에서 처리)
     if (mySeqs.length >= 2 && !sequenceViewModel.isMyTurn) {
-      sequenceWebSocketService.sendGameOverEvent();
-      setSystemMessage('시퀀스 2개를 완성했습니다! 게임이 종료됩니다.');
+        sequenceWebSocketService.sendGameOverEvent();
     }
   }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs, sequenceViewModel.isMyTurn]);
+
+  useEffect(() => {
+    if (sequenceViewModel.gameOver) {
+      setSystemMessage('시퀀스 2개를 완성했습니다! 게임이 종료됩니다.');
+      setTimeout(() => {
+      }, 3000);
+    }
+  }, [sequenceViewModel.gameOver]);
+
 
   // 카드 사용 추적을 위한 useEffect
   useEffect(() => {
