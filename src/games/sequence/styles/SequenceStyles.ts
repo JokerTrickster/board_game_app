@@ -168,7 +168,7 @@ export default StyleSheet.create({
     fontWeight: 'bold',
   },
   validCell: {
-    borderColor: '#FF9800',
+    borderColor: 'rgb(0, 0, 255)',
     borderWidth: 3,
   },
   sequenceCell: {
@@ -179,11 +179,11 @@ export default StyleSheet.create({
     height: 50,
   },
   mySequenceCell: {
-    borderColor: '#4CAF50',
+    borderColor: 'rgb(255, 242, 0)',
     borderWidth: 3,
   },
   opponentSequenceCell: {
-    borderColor: '#F44336',
+    borderColor: 'rgb(0, 255, 81)',
     borderWidth: 3,
   },
   timerRowWrapper: {

@@ -256,6 +256,8 @@ const SequenceScreen: React.FC = observer(() => {
   const handleCardSelect = (cardID: number) => {
     if (!sequenceViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
+      setValidMapIDs([]); // 내 턴이 아닐 때는 유효한 위치 초기화
+      sequenceViewModel.setSelectedCard(0); // 내 턴이 아닐 때는 선택된 카드 초기화
       return;
     }
     sequenceViewModel.setSelectedCard(cardID);
@@ -297,6 +299,14 @@ const SequenceScreen: React.FC = observer(() => {
 
     setValidMapIDs(validMapIDs);
   };
+
+  // 턴이 변경될 때 선택된 카드 초기화를 위한 useEffect 추가
+  useEffect(() => {
+    if (!sequenceViewModel.isMyTurn) {
+      sequenceViewModel.setSelectedCard(0);
+      setValidMapIDs([]);
+    }
+  }, [sequenceViewModel.isMyTurn]);
 
   // 셀 클릭 핸들러 수정
   const handleCellPress = (row: number, col: number) => {
@@ -357,7 +367,8 @@ const SequenceScreen: React.FC = observer(() => {
       <View key={`row-${rowIdx}`} style={styles.row}>
         {rowArr.map(({ mapID, row, col }) => {
           const cardInfo = sequenceCards.find(card => card.mapID === mapID);
-          const isValid = validMapIDs.includes(mapID);
+          // 내 턴일 때만 유효한 위치 표시
+          const isValid = sequenceViewModel.isMyTurn && validMapIDs.includes(mapID);
           const isInMySequence = mySequenceMapIDs.has(mapID);
           const isInOpponentSequence = opponentSequenceMapIDs.has(mapID);
 
