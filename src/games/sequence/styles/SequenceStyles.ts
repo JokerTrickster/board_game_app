@@ -179,7 +179,7 @@ export default StyleSheet.create({
     height: 50,
   },
   mySequenceCell: {
-    borderColor: 'rgb(255, 242, 0)',
+    borderColor: 'rgb(255, 0, 0)',
     borderWidth: 3,
   },
   opponentSequenceCell: {
