@@ -67,10 +67,16 @@ class FindItWebSocketService {
         this.sendJoinMatchEvent(password);
     }
 
-    handleMessage = async (eventType: string, data: any) => {
-        console.log("📩 서버 응답:", data);
+    handleMessage = async (eventType: string, resData: any) => {
+        console.log("📩 서버 응답:", resData);
         const navigation = webSocketService.getNavigation();
-
+        let data;
+        try {
+            data = JSON.parse(resData.message);
+        } catch (e) {
+            console.error("❌ 메시지 파싱 실패:", e);
+            return;
+        }
         try {
             
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
@@ -128,12 +134,14 @@ class FindItWebSocketService {
             switch (eventType) {
                 case "MATCH":
                     console.log("✅ 매칭 성공!", data.message);
+                    
 
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setRound(data.gameInfo.round);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
+                        console.log("this.gameStarted", this.gameStarted);
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
 
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
