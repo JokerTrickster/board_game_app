@@ -91,13 +91,18 @@ export default StyleSheet.create({
     borderColor: '#b8c1ec',
     overflow: 'hidden',
   },
-  chipImage: {
-    width: CELL_WIDTH * 0.6,
-    height: CELL_WIDTH * 0.6,
+  chipContainer: {
     position: 'absolute',
-    left: (CELL_WIDTH * 0.2),
-    top: (CELL_HEIGHT * 0.2),
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 10,
+  },
+  chipImage: {
+    width: '60%',
+    height: '60%',
+    resizeMode: 'contain',
   },
   handContainer: {
     width: '70%',

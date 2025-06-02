@@ -411,6 +411,15 @@ const SequenceScreen: React.FC = observer(() => {
           const isInMySequence = mySequenceMapIDs.has(mapID);
           const isInOpponentSequence = opponentSequenceMapIDs.has(mapID);
 
+          // 칩 이미지 결정
+          let chip = null;
+          if (sequenceViewModel.ownedMapIDs.includes(mapID)) {
+            chip = getChipImage(sequenceViewModel.userColorType);
+          }
+          if (sequenceViewModel.opponentOwnedMapIDs.includes(mapID)) {
+            chip = getChipImage(sequenceViewModel.opponentColorType);
+          }
+
           return (
             <TouchableOpacity
               key={`cell-${row}-${col}`}
@@ -430,66 +439,20 @@ const SequenceScreen: React.FC = observer(() => {
                   resizeMode="contain"
                 />
               )}
+              {chip && (
+                <View style={styles.chipContainer}>
+                  <Image
+                    source={chip}
+                    style={styles.chipImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
             </TouchableOpacity>
           );
         })}
       </View>
     ));
-  };
-
-  // 칩(코인)만 상태에 따라 렌더링
-  const renderChips = () => {
-    let chips = [];
-    for (let row = 0; row < GRID_SIZE; row++) {
-      for (let col = 0; col < GRID_SIZE; col++) {
-        let chip = null;
-        const mapID = coordToMapId(row, col);
-        
-        // 칩 이미지 결정
-        if (sequenceViewModel.ownedMapIDs.includes(mapID)) {
-          chip = getChipImage(sequenceViewModel.userColorType);
-        }
-        if (sequenceViewModel.opponentOwnedMapIDs.includes(mapID)) {
-          chip = getChipImage(sequenceViewModel.opponentColorType);
-        }
-
-        if (chip) {
-          // 칩의 크기 계산 (카드 크기와 동일하게)
-          const chipSize = cellWidth;
-          
-          // 칩의 위치 계산 (카드와 정확히 같은 위치)
-          const chipLeft = col * (cellWidth+1.3);
-          const chipTop = row * (cellHeight/0.702);
-
-          chips.push(
-            <View
-              key={`chip-container-${row}-${col}`}
-              style={{
-                position: 'absolute',
-                left: chipLeft,
-                top: chipTop,
-                width: chipSize,
-                height: chipSize,
-                justifyContent: 'center',
-                alignItems: 'center',
-                zIndex: 10,
-              }}
-            >
-              <Image
-                key={`chip-${row}-${col}`}
-                source={chip}
-                style={{
-                  width: chipSize * 0.6,
-                  height: chipSize * 0.6,
-                  resizeMode: 'contain',
-                }}
-              />
-            </View>
-          );
-        }
-      }
-    }
-    return chips;
   };
 
   return (
@@ -526,7 +489,6 @@ const SequenceScreen: React.FC = observer(() => {
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>
           {renderGrid()}
-          {renderChips()}
         </View>
 
         {/* 플레이어 카드 영역 */}
