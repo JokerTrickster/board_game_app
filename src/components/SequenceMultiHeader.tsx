@@ -8,14 +8,50 @@ import { useNavigation } from '@react-navigation/native';
 import { StackActions } from '@react-navigation/native';
 import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
 import { sequenceViewModel } from '../games/sequence/services/SequenceViewModel';
+import { sequenceWebSocketService } from '../games/sequence/services/SequenceWebsocketService';
+
+const TURN_TIME = 30; // 타이머 시간 상수
+
 const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
     const [users, setUsers] = useState(userData?.users || []);
     const [profileImage, setProfileImage] = useState(userData?.profileImage);
     const [isModalVisible, setModalVisible] = useState(false);
     const [effectVolume, setEffectVolume] = useState(0.5);
     const [bgmVolume, setBgmVolume] = useState(0.5);
+    const [timer, setTimer] = useState(TURN_TIME);
+    const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const navigation = useNavigation();
+
+    // 타이머 설정
+    useEffect(() => {
+        if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+        setTimer(TURN_TIME);
+
+        timerRef.current = setInterval(() => {
+            setTimer(prev => {
+                if (prev <= 1) {
+                    clearInterval(timerRef.current!);
+                    timerRef.current = null;
+                    if (sequenceViewModel.isMyTurn) {
+                        sequenceWebSocketService.sendTimeoutEvent();
+                    }
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [sequenceViewModel.isMyTurn]);
 
     useEffect(() => {
         const fetchUserInfo = async () => {
@@ -76,9 +112,21 @@ const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                 </View>
             </View>
 
-            {/* 가운데: Round 값 */}
+            {/* 가운데: 타이머만 표시 */}
             <View style={styles.centerContainer}>
-                <Text style={styles.roundText}>ROUND {sequenceViewModel.round}</Text>
+                <View style={styles.timerWrapper}>
+                    <View style={styles.timerContainer}>
+                        <View style={styles.timerBar}>
+                            <View
+                                style={[
+                                    styles.timerProgress,
+                                    { width: `${(timer / TURN_TIME) * 100}%` }
+                                ]}
+                            />
+                        </View>
+                        <Text style={styles.timerText}>{timer}초</Text>
+                    </View>
+                </View>
             </View>
 
             {/* 프로필 2 */}

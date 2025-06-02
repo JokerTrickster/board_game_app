@@ -56,8 +56,9 @@ export default StyleSheet.create({
     // 가운데 영역 스타일
     centerContainer: {
         flex: 1,
-        paddingLeft: scale(35),
-        paddingTop: verticalScale(35),
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: verticalScale(50),
     },
     roundText: {
         fontSize: scale(24),
@@ -211,5 +212,36 @@ export default StyleSheet.create({
         flex: 1,
         resizeMode: 'cover',
     },
-    
+    timerWrapper: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    timerContainer: {
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        padding: scale(10),
+        borderRadius: scale(15),
+        width: scale(120),
+    },
+    timerBar: {
+        width: '100%',
+        height: scale(8),
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: scale(4),
+        overflow: 'hidden',
+        marginBottom: scale(5),
+    },
+    timerProgress: {
+        height: '100%',
+        backgroundColor: '#4CAF50',
+        borderRadius: scale(4),
+    },
+    timerText: {
+        color: 'white',
+        fontSize: scale(16),
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 2,
+    },
 });

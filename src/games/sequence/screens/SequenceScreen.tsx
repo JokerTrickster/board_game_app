@@ -182,8 +182,6 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
 
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
-  const [timer, setTimer] = useState(TURN_TIME);
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
   const [mySequences, setMySequences] = useState<number[][]>([]);
   const [opponentSequences, setOpponentSequences] = useState<number[][]>([]);
@@ -198,48 +196,6 @@ const SequenceScreen: React.FC = observer(() => {
   // 마지막으로 사용한 카드들을 저장할 상태 추가
   const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
   const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
-
-
-
-  // 타이머 설정
-  useEffect(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    setTimer(TURN_TIME);
-
-    // 내 턴일 때만 타이머 동작하던 조건을 제거
-    timerRef.current = setInterval(() => {
-      setTimer(prev => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!);
-          timerRef.current = null;
-          // 내 턴일 때만 타임아웃 이벤트 발생
-          if (sequenceViewModel.isMyTurn) {
-            sequenceWebSocketService.sendTimeoutEvent();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [sequenceViewModel.isMyTurn]); // 턴이 바뀔 때마다 타이머 리셋
-
-  // 내 턴이 끝나면 validMapIDs 초기화
-  useEffect(() => {
-    if (!sequenceViewModel.isMyTurn) {
-      setValidMapIDs([]);
-      sequenceViewModel.setSelectedCard(0);
-    }
-  }, [sequenceViewModel.isMyTurn]);
 
   // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
   useEffect(() => {
@@ -470,21 +426,6 @@ const SequenceScreen: React.FC = observer(() => {
             {sequenceViewModel.isMyTurn ? '내 턴' : '상대방 턴'}
           </Text>
         </View>
-
-        {/* 타이머 + 마지막 카드 UI */}
-         
-          {/* 타이머(가운데) */}
-          <View style={styles.timerWrapper}>
-            <View style={styles.timerBar}>
-              <View
-                style={[
-                  styles.timerProgress,
-                  { width: `${(timer / TURN_TIME) * 100}%` }
-                ]}
-              />
-            </View>
-          </View>
-         
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>
