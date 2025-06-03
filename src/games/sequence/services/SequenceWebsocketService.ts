@@ -175,30 +175,39 @@ class SequenceWebSocketService {
                 console.log("🔑 시간 초과. ", data.message);
                 break;
             case "GAME_OVER":
-                // ✅ 게임 결과 정보 호출
-                // const result = await sequenceService.fetchGameResult();
-                // let isSuccess = false;
-                // if (result[0].score > result[1].score) {
-                //     if (result[0].userID === this.userID) {
-                //         isSuccess = true;
-                //     } else {
-                //         isSuccess = false;
-                //     }
-                // } else {
-                //     if (result[0].userID === this.userID) {
-                //         isSuccess = false;
-                //     } else {
-                //         isSuccess = true;
-                //     }
-                // }
-                await sequenceService.sendGameOver(true, this.roomID as number);
+                try {
+                    // 시퀀스 개수를 점수로 사용
+                    const myScore = sequenceViewModel.mySequences.length;
+                    const opponentScore = sequenceViewModel.opponentSequences.length;
+                    
+                    // 결과 결정 (1: 승리, 0: 패배)
+                    const result = myScore > opponentScore ? 1 : 0;
+                    
+                    // 게임 종료 결과 전송
+                    await sequenceService.sendGameOverResult(
+                        this.roomID as number,
+                        this.userID as number,
+                        myScore,
+                      result,
+                        
+                    );
 
-                // ✅ 웹소켓 종료
-                this.disconnect();
-                //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
-                // ✅ 게임 결과 화면으로 이동
-                if (navigation) {
-                    navigation.navigate('SequenceResult', { isSuccess: true });
+                    // 웹소켓 종료
+                    this.disconnect();
+                    
+                    // 게임 결과 화면으로 이동
+                  if (navigation) {
+                        navigation.navigate('SequenceResult', { 
+                            isSuccess: result === 1,
+                            myScore: myScore,
+                            opponentScore: opponentScore
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error in game over handling:', error);
+                    if (navigation) {
+                        navigation.navigate('SequenceResult', { isSuccess: false, myScore: 0, opponentScore: 0 });  
+                    }
                 }
                 break;
             case "MATCH_CANCEL":
@@ -213,7 +222,7 @@ class SequenceWebSocketService {
                 this.disconnect();
                 // ✅ 게임 결과 화면으로 이동
                 if (navigation) {
-                    navigation.navigate('SequenceResult', { isSuccess: false });
+                    navigation.navigate('SequenceResult', { isSuccess: false, myScore: 0, opponentScore: 0 });  
                 }
             break;
             case "ERROR":
@@ -221,7 +230,7 @@ class SequenceWebSocketService {
               this.disconnect();
               // ✅ 게임 결과 화면으로 이동
               if (navigation) {
-                navigation.navigate('SequenceResult', { isSuccess: false });
+                navigation.navigate('SequenceResult', { isSuccess: false, myScore: 0, opponentScore: 0 });  
               }
                 break;
             default:
@@ -231,7 +240,7 @@ class SequenceWebSocketService {
         // 게임 정보에 gameOver가 true인 경우에도 결과 호출
         if (parsedData.sequenceGameInfo && parsedData.sequenceGameInfo.gameOver === true) {
             try {
-                const result = await sequenceService.fetchGameResult();
+                const result = await sequenceService.fetchGameResult(this.roomID as number);
                 console.log('게임 결과:', result);
                 // TODO: 결과를 화면에 전달하거나 상태에 저장
             } catch (err) {
@@ -239,7 +248,7 @@ class SequenceWebSocketService {
             }
             this.disconnect();
             if (navigation) {
-                navigation.navigate('SequenceResult', { isSuccess: false });
+                navigation.navigate('SequenceResult', { isSuccess: false, myScore: 0, opponentScore: 0 });  
             }
         }
     } catch (error) {

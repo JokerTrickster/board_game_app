@@ -113,7 +113,8 @@ class FindItWebSocketService {
                     }
 
                     // ✅ 오답 처리 (모든 유저에게 동일한 오답 표시)
-                    if (data.gameInfo.wrongPosition && (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
+                    if (data.gameInfo && data.gameInfo.wrongPosition && 
+                        (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
                         console.log(`❌ 유저 ${user.id} 오답 표시:`, data.gameInfo.wrongPosition);
                         findItViewModel.addWrongClick(
                             data.gameInfo.wrongPosition.x,

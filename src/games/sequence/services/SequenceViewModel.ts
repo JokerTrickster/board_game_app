@@ -19,6 +19,8 @@ class SequenceViewModel {
     selectedCard = 0;
     userOneLastPlacedCard = null;
     userTwoLastPlacedCard = null;
+    mySequences: number[][] = [];      // 내 시퀀스 목록
+    opponentSequences: number[][] = []; // 상대방 시퀀스 목록
 
     constructor() {
         makeAutoObservable(this, {
@@ -42,6 +44,8 @@ class SequenceViewModel {
             setOpponentOwnedMapIDs: action,
             setUserOneLastPlacedCard: action,
             setUserTwoLastPlacedCard: action,
+            setMySequences: action,
+            setOpponentSequences: action,
         });
     }
     setUserOneLastPlacedCard(card: any) {
@@ -178,7 +182,14 @@ class SequenceViewModel {
         this.isMyTurn = (currentRound % 2 === turn);
     }
 
-    
+    // 시퀀스 설정 메서드 추가
+    setMySequences(sequences: number[][]) {
+        this.mySequences = sequences;
+    }
+
+    setOpponentSequences(sequences: number[][]) {
+        this.opponentSequences = sequences;
+    }
 }
 
 export const sequenceViewModel = new SequenceViewModel();

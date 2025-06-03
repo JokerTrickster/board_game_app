@@ -98,18 +98,19 @@ class SequenceService {
      * 시퀀스 게임 결과를 가져오는 함수
      * @returns Promise resolving to result 배열 (각 원소: { score, userID })
      */
-    async fetchGameResult(): Promise<Array<{ score: number; userID: number }>> {
+    async fetchGameResult(roomID: number): Promise<Array<{ score: number; userID: number }>> {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) {
             throw new Error('Access token not found');
         }
         try {
             const response = await fetch(`${API_BASE_URL}/sequence/v0.1/game/result`, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'tkn': token,
                 },
+                body: JSON.stringify({ roomID: roomID }),
             });
             if (!response.ok) {
                 throw new Error(`서버 요청 실패: ${response.status}`);
@@ -153,6 +154,36 @@ class SequenceService {
             }
             return true;
         } catch (error) {
+            throw error;
+        }
+    }
+
+    async sendGameOverResult(roomId: number, userId: number, score: number, result: number): Promise<void> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/board-game/v0.1/game-over`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+                body: JSON.stringify({
+                    gameType: 3,
+                    roomID: roomId,
+                    userID: userId,
+                    score: score,
+                    result: result
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send game over result');
+            }
+        } catch (error) {
+            console.error('Error sending game over result:', error);
             throw error;
         }
     }

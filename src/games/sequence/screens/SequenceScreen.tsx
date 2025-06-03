@@ -190,8 +190,9 @@ const SequenceScreen: React.FC = observer(() => {
     
     setMySequences(mySeqs);
     setOpponentSequences(opponentSeqs);
-
-    // 시퀀스 2개 이상일 때 게임 종료 (카드 사용 후 체크는 handleCellPress에서 처리)
+    sequenceViewModel.setMySequences(mySeqs);
+    sequenceViewModel.setOpponentSequences(opponentSeqs);
+    // 시퀀스 2개 이상일 때 게임 종료
     if (mySeqs.length >= 2 && !sequenceViewModel.isMyTurn) {
         sequenceWebSocketService.sendGameOverEvent();
     }

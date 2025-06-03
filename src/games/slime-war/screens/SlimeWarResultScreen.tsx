@@ -89,10 +89,13 @@ const SlimeWarResultScreen: React.FC = () => {
                               style={styles.profileImage}
                             />
                           </View>
-                          <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginLeft: 8 }}>
-                            <Text style={styles.profileName}>
-                              {myName} : {myScore} / <Text style={{ fontWeight: 'bold', color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{myResult}</Text>
-                            </Text>
+                          <Text style={styles.profileName}>{myName}</Text>
+                          <View style={styles.profileScoreContainer}>
+                            <Image
+                              source={require('../../../assets/icons/find-it/coin.png')}
+                              style={styles.profileScoreIcon}
+                            />
+                            <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
                           </View>
                         </View>
                         {/* 상대 정보 */}
@@ -109,13 +112,46 @@ const SlimeWarResultScreen: React.FC = () => {
                               style={styles.profileImage}
                             />
                           </View>
-                          <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginLeft: 8 }}>
-                            <Text style={styles.profileName}>
-                              {opponentName} : {opponentScore} / <Text style={{ fontWeight: 'bold', color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{opponentResult}</Text>
-                            </Text>
+                          <Text style={styles.profileName}>{opponentName}</Text>
+                          <View style={styles.profileTwoScoreContainer}>
+                            <Image
+                              source={require('../../../assets/icons/find-it/coin.png')}
+                              style={styles.profileScoreIcon}
+                            />
+                            <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
                           </View>
                         </View>
                       </View>
+                    </View>
+
+                    {/* 결과 바로 밑에 추가되는 스코어 영역 */}
+                    <View style={{
+                      marginTop: 24,
+                      padding: 14,
+                      backgroundColor: '#f6faff',
+                      borderRadius: 14,
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.08,
+                      shadowRadius: 4,
+                      elevation: 2,
+                      alignItems: 'flex-start'
+                    }}>
+                      <Text style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        marginBottom: 6,
+                        color: '#1a237e',
+                        letterSpacing: 1
+                      }}>
+                        최종 점수 및 승패
+                      </Text>
+                      <Text style={{ fontSize: 15, marginBottom: 2 }}>
+                        {myName} : {myScore} / <Text style={{ fontWeight: 'bold', color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{myResult}</Text>
+                      </Text>
+                      <Text style={{ fontSize: 15 }}>
+                        {opponentName} : {opponentScore} / <Text style={{ fontWeight: 'bold', color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{opponentResult}</Text>
+                      </Text>
                     </View>
                 </View>
                 <View style={styles.ResultButtonContainer}>

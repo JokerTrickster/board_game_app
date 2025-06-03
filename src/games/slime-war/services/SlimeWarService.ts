@@ -96,30 +96,31 @@ class SlimeWarService {
 
     /**
      * 슬라임 전쟁 게임 결과를 가져오는 함수
-     * @returns Promise resolving to result 배열 (각 원소: { score, userID })
+     * @returns Promise resolving to result 배열 (각 원소: { result, score, userID })
      */
-    async fetchGameResult(): Promise<Array<{ score: number; userID: number }>> {
+    async fetchGameResult(roomID: number): Promise<Array<{ result: number; score: number; userID: number }>> {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) {
             throw new Error('Access token not found');
         }
         try {
             const response = await fetch(`${API_BASE_URL}/slime-war/v0.1/game/result`, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'tkn': token,
                 },
+                body: JSON.stringify({ roomID: roomID }),
             });
             if (!response.ok) {
                 throw new Error(`서버 요청 실패: ${response.status}`);
             }
             const data = await response.json();
-            if (!data.result) {
+            if (!data.users) {
                 throw new Error('Invalid response from server');
             }
-            console.log("data.result", data.result);
-            return data.result;
+            console.log("data.users", data.users);
+            return data.users;
         } catch (error) {
             throw error;
         }
@@ -159,12 +160,16 @@ class SlimeWarService {
     }
 
     async sendGameOverResult(roomId: number, userId: number, score: number, result: number): Promise<void> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
         try {
             const response = await fetch(`${API_BASE_URL}/board-game/v0.1/game-over`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${await AsyncStorage.getItem('accessToken')}`,
+                    'tkn': token,
                 },
                 body: JSON.stringify({
                     gameType: 2,

@@ -137,10 +137,10 @@ class SlimeWarWebSocketService {
                 case "MATCH":
                     console.log("✅ 매칭 성공!",  parsedData);
 
-
                     // ✅ 게임 정보가 있는 경우 처리
                     if (parsedData.slimeWarGameInfo) {
-                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        this.roomID = parsedData.slimeWarGameInfo.roomID; // roomID 직접 설정
+                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);
                         await gameService.setRound(parsedData.slimeWarGameInfo.round);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && parsedData.slimeWarGameInfo.allReady && parsedData.slimeWarGameInfo.isFull && parsedData.users) {
@@ -160,7 +160,8 @@ class SlimeWarWebSocketService {
 
                     // ✅ 게임 정보가 있는 경우 처리
                     if (parsedData.slimeWarGameInfo) {
-                        gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                        this.roomID = parsedData.slimeWarGameInfo.roomID; // roomID 직접 설정
+                        gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);
                         gameService.setRound(parsedData.slimeWarGameInfo.round);
                         gameService.setPassword(parsedData.slimeWarGameInfo.password);
                         console.log("함께하기 비밀번호 : ", data.slimeWarGameInfo.password);
@@ -180,8 +181,9 @@ class SlimeWarWebSocketService {
                     break;
                 case "JOIN":
                     console.log("✅ 참여 매칭 성공!", parsedData);
-                    if (parsedData.gameInfo) {
-                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
+                    if (parsedData.slimeWarGameInfo) {
+                        this.roomID = parsedData.slimeWarGameInfo.roomID; // roomID 직접 설정
+                        await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);
                         await gameService.setRound(parsedData.slimeWarGameInfo.round);
                         await gameService.setPassword(parsedData.slimeWarGameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
@@ -218,11 +220,15 @@ class SlimeWarWebSocketService {
                 case "MOVE":
                     
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
-                    if (parsedData.slimeWarGameInfo.slimeCount === 0) {
-                        //게임 종료 요청 
-
-
-                        this.sendGameOverEvent();
+                    if (parsedData.slimeWarGameInfo.slimeCount === 30) {
+                        const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
+                        if (isOwner) {
+                            console.log(this.roomID);
+                            console.log("방장이 게임 종료한다. ");
+                            this.sendGameOverEvent();
+                        } else {
+                            console.log("🕒 게임 종료 대기 중...");
+                        }
                     }
                     
                     console.log("🔑 이동. ", parsedData);
@@ -235,10 +241,14 @@ class SlimeWarWebSocketService {
                 case "NEXT_ROUND":
                     // parsedData.users에 유저 둘다 이동이 불가능하다면 GAME_OVER 이벤트 호출 
                     if (parsedData.users[0].canMove === false && parsedData.users[1].canMove === false) {
-                        //게임 종료 요청 
-
-
-                        this.sendGameOverEvent();
+                        const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
+                        if (isOwner) {
+                            console.log(this.roomID);
+                            console.log("방장이 게임 종료한다. ");
+                            this.sendGameOverEvent();
+                        } else {
+                            console.log("🕒 게임 종료 대기 중...");
+                        }
                     }
                     
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
@@ -255,11 +265,12 @@ class SlimeWarWebSocketService {
                         const result = myScore > opponentScore ? 1 : 0;
 
                         // 게임 종료 결과 전송
+                        console.log(this.roomID , "roomID");
                         await slimeWarService.sendGameOverResult(
                             this.roomID as number,
                             this.userID as number,
                             myScore,
-                            result
+                            result,
                         );
 
                         // 웹소켓 종료
@@ -267,6 +278,7 @@ class SlimeWarWebSocketService {
                         
                         // 게임 결과 화면으로 이동
                         if (navigation) {
+                            console.log("🔑 게임 결과 화면으로 이동");
                             navigation.navigate('SlimeWarResult', { 
                                 isSuccess: result === 1,
                                 myScore: myScore,
@@ -303,20 +315,20 @@ class SlimeWarWebSocketService {
                     console.warn("⚠️ 알 수 없는 이벤트:", data.event);
             }
             
-            // 게임 정보에 gameOver가 true인 경우에도 결과 호출
-            if (parsedData.slimeWarGameInfo && parsedData.slimeWarGameInfo.gameOver === true) {
-                try {
-                    const result = await slimeWarService.fetchGameResult();
-                    console.log('게임 결과:', result);
-                    // TODO: 결과를 화면에 전달하거나 상태에 저장
-                } catch (err) {
-                    console.error('게임 결과 조회 실패:', err);
-                }
-                this.disconnect();
-                if (navigation) {
-                    navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
-                }
-            }
+            // // 게임 정보에 gameOver가 true인 경우에도 결과 호출
+            // if (parsedData.slimeWarGameInfo && parsedData.slimeWarGameInfo.gameOver === true) {
+            //     try {
+            //         const result = await slimeWarService.fetchGameResult(this.roomID as number);
+            //         console.log('게임 결과:', result);
+            //         // TODO: 결과를 화면에 전달하거나 상태에 저장
+            //     } catch (err) {
+            //         console.error('게임 결과 조회 실패:', err);
+            //     }
+            //     this.disconnect();
+            //     if (navigation) {
+            //         navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
+            //     }
+            // }
         } catch (error) {
             console.error("❌ 데이터 처리 중 오류 발생:", error);
         }

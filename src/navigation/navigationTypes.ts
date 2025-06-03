@@ -15,7 +15,7 @@ export type RootStackParamList = {
     MultiFindItResult: { isSuccess: boolean };  
     SlimeWarResult: { isSuccess: boolean, myScore: number, opponentScore: number };  
     Sequence: undefined;    
-    SequenceResult: { isSuccess: boolean };
+    SequenceResult: { isSuccess: boolean, myScore: number, opponentScore: number };
     Frog: undefined;
     FrogResult: { isSuccess: boolean };
 };
