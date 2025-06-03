@@ -184,6 +184,46 @@ class SlimeWarViewModel {
     updateTurn(currentRound: number, turn: number) {
         this.isMyTurn = (currentRound % 2 === turn);
     }
+
+    // 연결된 슬라임 그룹을 찾는 함수
+    private findConnectedSlimes(gameMap: number[][], startX: number, startY: number, targetUserId: number, visited: boolean[][]): number {
+        if (startX < 1 || startX > 9 || startY < 1 || startY > 9 || 
+            visited[startY][startX] || gameMap[startX][startY] !== targetUserId) {
+            return 0;
+        }
+
+        visited[startY][startX] = true;
+        let count = 1;
+
+        // 상하좌우 방향으로 탐색
+        const directions = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+        for (const [dx, dy] of directions) {
+            const newX = startX + dx;
+            const newY = startY + dy;
+            count += this.findConnectedSlimes(gameMap, newX, newY, targetUserId, visited);
+        }
+
+        return count;
+    }
+
+    // 점수 계산 함수
+    calculateScore(userId: number): number {
+        const gameMap = this.gameMap;
+        const visited: boolean[][] = Array(10).fill(0).map(() => Array(10).fill(false));
+        let totalScore = 0;
+
+        // 모든 칸을 순회하면서 연결된 슬라임 그룹 찾기
+        for (let y = 1; y <= 9; y++) {
+            for (let x = 1; x <= 9; x++) {
+                if (!visited[y][x] && gameMap[x][y] === userId) {
+                    const groupSize = this.findConnectedSlimes(gameMap, x, y, userId, visited);
+                    totalScore += groupSize * groupSize; // 제곱하여 점수 계산
+                }
+            }
+        }
+
+        return totalScore;
+    }
 }
 
 export default SlimeWarViewModel;

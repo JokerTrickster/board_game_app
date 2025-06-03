@@ -20,6 +20,7 @@ import SlimeWarScreen from '../games/slime-war/screens/SlimeWarScreen';
 import SequenceScreen from '../games/sequence/screens/SequenceScreen';
 import FrogResultScreen from '../games/frog/screens/FrogResultScreen';
 import FrogScreen from '../games/frog/screens/FrogScreen';
+import SequenceResultScreen from '../games/sequence/screens/SequenceResultScreen';
 const Stack = createStackNavigator<RootStackParamList>();
 
 // ✅ NavigationContainerRef 생성 (React Navigation 공식 방법)
@@ -62,6 +63,7 @@ const AppNavigator: React.FC = () => {
                     <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
                     <Stack.Screen name="SlimeWarResult" component={SlimeWarResultScreen} />
                     <Stack.Screen name="Sequence" component={SequenceScreen} />
+                    <Stack.Screen name="SequenceResult" component={SequenceResultScreen} />
                     <Stack.Screen name="Frog" component={FrogScreen} />
                     <Stack.Screen name= "FrogResult" component={FrogResultScreen}/>
             </Stack.Navigator>

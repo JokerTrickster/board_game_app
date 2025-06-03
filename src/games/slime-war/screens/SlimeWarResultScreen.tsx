@@ -16,9 +16,16 @@ const SlimeWarResultScreen: React.FC = () => {
     const goToHome = () => {
         navigation.navigate('Loading', { nextScreen: 'Home' });
     };
-    const { isSuccess } = route.params || { isSuccess: false };
+    const { isSuccess, myScore, opponentScore } = route.params || { isSuccess: false, myScore: 0, opponentScore: 0 };
 
-    const userName = '임시개굴맨'; // 임시 사용자 이름
+    // 임시 유저명, 실제 유저명으로 교체 가능
+    const myName = '나';
+    const opponentName = '상대';
+
+    // 승패 텍스트
+    const myResult = myScore > opponentScore ? 'Winner' : 'Loser';
+    const opponentResult = myScore < opponentScore ? 'Winner' : 'Loser';
+
     useEffect(() => {
         const backAction = () => {
             // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
@@ -62,62 +69,54 @@ const SlimeWarResultScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.roundInfo}>
-                        <Text style={styles.roundTitle}>최종 라운드</Text>
+                        <Text style={styles.roundTitle}>결 과</Text>
                     </View>
 
-                    {/* 프로필 영역 (1개 정보 표시) */}
+                    {/* 두 유저의 점수 및 승패 표시 */}
                     <View style={styles.profilesRootContainer}>
-                    <View style={styles.profilesContainer}>
+                      <View style={styles.profilesContainer}>
+                        {/* 내 정보 */}
                         <View style={styles.profileRow}>
-                            <View style={styles.profileIconContainer} >
-                                <Image
-                                    source={require('../../../assets/icons/find-it/medal.png')}
-                                    style={styles.medalIcon}
-                                />
-                            </View>
-
-                            <View style={styles.profileImageContainer} >
-                                <Image
-                                    source={require('../../../assets/images/home/default_profile.png')}
-                                    style={styles.profileImage}
-                                />
-                            </View>
-                            <Text style={styles.profileName}>{userName}</Text>
-                            <View style={styles.profileScoreContainer}>
-                                <Image
-                                    source={require('../../../assets/icons/find-it/coin.png')}
-                                    style={styles.profileScoreIcon}
-                                />
-                                <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
-                            </View>
+                          <View style={styles.profileIconContainer} >
+                            <Image
+                              source={require('../../../assets/icons/find-it/medal.png')}
+                              style={styles.medalIcon}
+                            />
+                          </View>
+                          <View style={styles.profileImageContainer} >
+                            <Image
+                              source={require('../../../assets/images/home/default_profile.png')}
+                              style={styles.profileImage}
+                            />
+                          </View>
+                          <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginLeft: 8 }}>
+                            <Text style={styles.profileName}>
+                              {myName} : {myScore} / <Text style={{ fontWeight: 'bold', color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{myResult}</Text>
+                            </Text>
+                          </View>
                         </View>
+                        {/* 상대 정보 */}
+                        <View style={styles.profileRow}>
+                          <View style={styles.profileTwoIconContainer} >
+                            <Image
+                              source={require('../../../assets/icons/find-it/medal2.png')}
+                              style={styles.medalTwoIcon}
+                            />
+                          </View>
+                          <View style={styles.profileImageContainer} >
+                            <Image
+                              source={require('../../../assets/images/home/default_profile.png')}
+                              style={styles.profileImage}
+                            />
+                          </View>
+                          <View style={{ flexDirection: 'column', alignItems: 'flex-start', marginLeft: 8 }}>
+                            <Text style={styles.profileName}>
+                              {opponentName} : {opponentScore} / <Text style={{ fontWeight: 'bold', color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{opponentResult}</Text>
+                            </Text>
+                          </View>
                         </View>
-                        <View style={styles.profilesTwoContainer}>
-                            <View style={styles.profileRow}>
-                                <View style={styles.profileTwoIconContainer} >
-                                    <Image
-                                        source={require('../../../assets/icons/find-it/medal2.png')}
-                                        style={styles.medalTwoIcon}
-                                    />
-                                </View>
-
-                                <View style={styles.profileImageContainer} >
-                                    <Image
-                                        source={require('../../../assets/images/home/default_profile.png')}
-                                        style={styles.profileImage}
-                                    />
-                                </View>
-                                <Text style={styles.profileName}>{userName}</Text>
-                                <View style={styles.profileTwoScoreContainer}>
-                                    <Image
-                                        source={require('../../../assets/icons/find-it/coin.png')}
-                                        style={styles.profileScoreIcon}
-                                    />
-                                    <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
-                                </View>
-                            </View>
-                        </View>
-                        </View>
+                      </View>
+                    </View>
                 </View>
                 <View style={styles.ResultButtonContainer}>
                     <TouchableOpacity

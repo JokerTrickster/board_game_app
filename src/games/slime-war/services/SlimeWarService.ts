@@ -157,6 +157,32 @@ class SlimeWarService {
             throw error;
         }
     }
+
+    async sendGameOverResult(roomId: number, userId: number, score: number, result: number): Promise<void> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/board-game/v0.1/game-over`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${await AsyncStorage.getItem('accessToken')}`,
+                },
+                body: JSON.stringify({
+                    gameType: 2,
+                    roomID: roomId,
+                    userID: userId,
+                    score: score,
+                    result: result
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send game over result');
+            }
+        } catch (error) {
+            console.error('Error sending game over result:', error);
+            throw error;
+        }
+    }
 }
 
 export const slimeWarService = new SlimeWarService();

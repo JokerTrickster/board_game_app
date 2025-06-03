@@ -15,8 +15,6 @@ const GRID_SIZE = 9; // 0~8까지 9칸
 
 const TURN_TIME = 30; // 턴당 제한 시간(초)
 
-const CELL_SIZE = 32; // 스타일과 동일하게 맞춰주세요
-
 // 카드 이미지 매핑 (id: require)
 const cardImageMap: { [key: number]: any } = {
   1: require('../../../assets/icons/slime-war/card/card01.png'),
@@ -90,11 +88,9 @@ const SlimeWarScreen: React.FC = observer(() => {
   const [isMoveMode, setIsMoveMode] = useState(false);
   const [systemMessage, setSystemMessage] = useState<string>('');
   // kingIndex를 mobx 상태에서 가져옴
-  const kingIndex = slimeWarViewModel.kingIndex;
   // 본인/상대방 카드 mobx 상태에서 가져오기
   const playerHand = slimeWarViewModel.cardList;
   const opponentHand = slimeWarViewModel.opponentCardList;
-  const heroCount = slimeWarViewModel.hero ?? 0;
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
@@ -134,10 +130,6 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
   }, [slimeWarViewModel.round]);
 
-  // 카드 id로 cards.json에서 카드 정보 찾기
-  const getCardInfoById = (id: number) => {
-    return cardData.find((c: any) => c.id === id);
-  };
 
   // 이동 가능한 카드 목록 계산
   const movableCards = React.useMemo(() => {
@@ -242,14 +234,9 @@ const SlimeWarScreen: React.FC = observer(() => {
     return () => backHandler.remove();
   }, []); // 의존성 배열이 비어있으므로 컴포넌트 마운트 시 한 번만 실행
 
-  // 게임 종료 감지 및 결과 화면 이동
   useEffect(() => {
-    if (slimeWarViewModel.gameMap) {
-      setSystemMessage('게임이 종료되었습니다.');
-      setTimeout(() => {
-      }, 3000);
-    }
-  }, [slimeWarViewModel.gameOver]);
+
+  }, [slimeWarViewModel.round]);
 
   // 9x9 격자를 생성하는 함수
   const renderGrid = () => {
@@ -365,8 +352,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       }
       const newX = currentX + (vector[0] * cardInfo.move);
       const newY = currentY + (vector[1] * cardInfo.move);
-      console.log("currentX, currentY", currentX, currentY);
-      console.log("newX, newY", newX, newY);
       if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {
         setSystemMessage('이동할 수 없는 위치입니다.');
         return;
@@ -379,9 +364,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       }
 
       let newIndex = newY * GRID_SIZE + newX;
-      console.log("currentIndex", currentIndex);
-      console.log("newIndex , newY, newX", newIndex,newY,newX);
-      console.log("newIndex", newIndex);
       slimeWarWebSocketService.sendMoveEvent(cardId, newIndex);
       slimeWarViewModel.setKingIndex(newIndex);
       setIsMoveMode(false);

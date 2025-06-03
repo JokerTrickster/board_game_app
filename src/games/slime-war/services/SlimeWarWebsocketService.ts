@@ -127,13 +127,6 @@ class SlimeWarWebSocketService {
                 slimeWarViewModel.setRemainingSlime(parsedData.slimeWarGameInfo.slimeCount);
             }
 
-
-            if (slimeWarViewModel.canMoveCardList.length > 0) {
-                console.log("🔍 이동 가능한 카드 리스트 : ", slimeWarViewModel.canMoveCardList);
-            } else {
-                console.log("🔍 이동 불가능한 카드 리스트 : ", slimeWarViewModel.canMoveCardList);
-            }
-
             console.log("응답으로 온 타입 , ",eventType);
             // 게임이 시작한다. START 이벤트 
             // next_round -> round_start
@@ -150,7 +143,6 @@ class SlimeWarWebSocketService {
                         await gameService.setRoomID(parsedData.slimeWarGameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setRound(parsedData.slimeWarGameInfo.round);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        console.log("this.gameStarted", this.gameStarted);
                         if (!this.gameStarted && parsedData.slimeWarGameInfo.allReady && parsedData.slimeWarGameInfo.isFull && parsedData.users) {
                             const isOwner = parsedData.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
@@ -224,7 +216,15 @@ class SlimeWarWebSocketService {
                     console.log("🔑 영웅 카드 사용. ", parsedData);
                     break;
                 case "MOVE":
+                    
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
+                    if (parsedData.slimeWarGameInfo.slimeCount === 0) {
+                        //게임 종료 요청 
+
+
+                        this.sendGameOverEvent();
+                    }
+                    
                     console.log("🔑 이동. ", parsedData);
                     break;
                 
@@ -233,35 +233,51 @@ class SlimeWarWebSocketService {
                     console.log("🔑 시간 초과. ", parsedData);
                     break;
                 case "NEXT_ROUND":
+                    // parsedData.users에 유저 둘다 이동이 불가능하다면 GAME_OVER 이벤트 호출 
+                    if (parsedData.users[0].canMove === false && parsedData.users[1].canMove === false) {
+                        //게임 종료 요청 
+
+
+                        this.sendGameOverEvent();
+                    }
+                    
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
                     console.log("🔑 다음 라운드. ", parsedData);
                     break;
                
                 case "GAME_OVER":
-                    // ✅ 게임 결과 정보 호출
-                    // const result = await slimeWarService.fetchGameResult();
-                    // let isSuccess = false;
-                    // if (result[0].score > result[1].score){
-                    //     if(result[0].userID === this.userID){
-                    //         isSuccess = true;
-                    //     }else{
-                    //         isSuccess = false;
-                    //     }
-                    // }else{
-                    //     if(result[0].userID === this.userID){
-                    //         isSuccess = false;
-                    //     }else{
-                    //         isSuccess = true;
-                    //     }
-                    // }
-                    await slimeWarService.sendGameOver(true, this.roomID as number);
+                    try {
+                        // 내 점수와 상대방 점수 계산
+                        const myScore = slimeWarViewModel.calculateScore(this.userID as number);
+                        const opponentScore = slimeWarViewModel.calculateScore(slimeWarViewModel.opponentID);
+                        
+                        // 결과 결정 (1: 승리, 0: 패배)
+                        const result = myScore > opponentScore ? 1 : 0;
 
-                    // ✅ 웹소켓 종료
-                    this.disconnect();
-                    //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
-                    // ✅ 게임 결과 화면으로 이동
-                    if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: true });
+                        // 게임 종료 결과 전송
+                        await slimeWarService.sendGameOverResult(
+                            this.roomID as number,
+                            this.userID as number,
+                            myScore,
+                            result
+                        );
+
+                        // 웹소켓 종료
+                        this.disconnect();
+                        
+                        // 게임 결과 화면으로 이동
+                        if (navigation) {
+                            navigation.navigate('SlimeWarResult', { 
+                                isSuccess: result === 1,
+                                myScore: myScore,
+                                opponentScore: opponentScore
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error in game over handling:', error);
+                        if (navigation) {
+                            navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
+                        }
                     }
                     break;
                 case "MATCH_CANCEL":
@@ -272,7 +288,7 @@ class SlimeWarWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: false });
+                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
                     }
                     break;
                 case "ERROR":
@@ -280,7 +296,7 @@ class SlimeWarWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: false });
+                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
                     }
                     break;
                 default:
@@ -298,7 +314,7 @@ class SlimeWarWebSocketService {
                 }
                 this.disconnect();
                 if (navigation) {
-                    navigation.navigate('SlimeWarResult', { isSuccess: false });
+                    navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
                 }
             }
         } catch (error) {
@@ -339,7 +355,9 @@ class SlimeWarWebSocketService {
     sendJoinMatchEvent(password: string) {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { password: password });
     }
-
+    sendGameOverEvent() {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", { userID: this.userID});
+    }
     sendStartEvent() {
         webSocketService.sendMessage(this.userID as number, this.roomID as number, "START", { userID: this.userID, roomID: this.roomID });
     }
