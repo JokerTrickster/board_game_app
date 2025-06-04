@@ -120,42 +120,56 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
       for (const direction of DIRECTIONS) {
         let tempSeq: number[] = [];
         let specialCount = 0;
+        let usedSequenceCount = 0; // 이미 만들어진 시퀀스 칩 사용 횟수
         let r = row;
         let c = col;
 
-        // 10개 연속이라면 5개 단위로 쪼개서 여러 시퀀스 인정
         while (true) {
           const curMapID = coordToMapId(r, c);
           if (
-            (ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID)) &&
-            !checked.has(curMapID)
+            (ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID))
           ) {
+            // 이미 시퀀스로 인정된 칩인지 체크
+            if (checked.has(curMapID)) {
+              usedSequenceCount++;
+            }
             tempSeq.push(curMapID);
             if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
-            // 5개가 모이면 시퀀스 인정
-            if (tempSeq.length === 5) {
-              // 특수칩이 2개 이상 포함되면 시퀀스 불인정(룰에 따라 조정)
-              if (specialCount <= 1) {
-                // 특수칩은 시퀀스 표시에서 제외
+
+            // 가로/세로/대각선 방향 체크
+            const isHorizontal = direction.row === 0 && direction.col !== 0;
+            const isVertical = direction.col === 0 && direction.row !== 0;
+            const isStraightLine = isHorizontal || isVertical;
+
+            // 가로/세로는 10개, 대각선은 5개
+            const requiredLength = isStraightLine ? 10 : 5;
+
+            if (tempSeq.length === requiredLength) {
+              // 특수칩 2개 이상 불인정, 이미 만들어진 시퀀스 칩 2개 이상 불인정
+              if (specialCount <= 1 && usedSequenceCount <= 1) {
                 const displaySeq = tempSeq.filter(id => !SPECIAL_MAP_IDS.includes(id));
+                // 실제 칩이 4개 이상일 때만 인정
                 if (displaySeq.length >= 4) {
                   displaySeq.forEach(id => checked.add(id));
                   sequences.push(displaySeq);
                 }
               }
-              // 다음 시퀀스 탐색을 위해 tempSeq 초기화(중복 방지)
+              // 다음 시퀀스 탐색을 위해 초기화
               tempSeq = [];
               specialCount = 0;
+              usedSequenceCount = 0;
+              break; // 한 번 찾으면 해당 방향은 break
             }
+
             // 다음 칸으로 이동
             r += direction.row;
             c += direction.col;
-            // 범위 체크
             if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) break;
           } else {
-            // 연속이 끊기면 tempSeq 초기화
+            // 연속이 끊기면 초기화
             tempSeq = [];
             specialCount = 0;
+            usedSequenceCount = 0;
             break;
           }
         }
@@ -432,6 +446,10 @@ const SequenceScreen: React.FC = observer(() => {
             {sequenceViewModel.isMyTurn ? '내 턴' : '상대방 턴'}
           </Text>
         </View>
+
+        /* 플레이어가 마지막으로 선택한 카드 정보 보여준다. 이미지 표시 */
+      
+      
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>

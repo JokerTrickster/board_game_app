@@ -17,8 +17,8 @@ class SequenceViewModel {
     opponentID = 0;
     isMyTurn = false;
     selectedCard = 0;
-    userOneLastPlacedCard = null;
-    userTwoLastPlacedCard = null;
+    myLastPlacedCard = null;
+    opponentLastPlacedCard = null;
     mySequences: number[][] = [];      // 내 시퀀스 목록
     opponentSequences: number[][] = []; // 상대방 시퀀스 목록
 
@@ -42,25 +42,25 @@ class SequenceViewModel {
             setOpponentID: action,
             setOwnedMapIDs: action,
             setOpponentOwnedMapIDs: action,
-            setUserOneLastPlacedCard: action,
-            setUserTwoLastPlacedCard: action,
+            setMyLastPlacedCard: action,
+            setOpponentLastPlacedCard: action,
             setMySequences: action,
             setOpponentSequences: action,
         });
     }
-    setUserOneLastPlacedCard(card: any) {
-        this.userOneLastPlacedCard = card;
-    }
-    setUserTwoLastPlacedCard(card: any) {
-        this.userTwoLastPlacedCard = card;
-    }
+    
     setOwnedMapIDs(ownedMapIDs: number[]) {
         this.ownedMapIDs = ownedMapIDs;
     }
     setOpponentOwnedMapIDs(opponentOwnedMapIDs: number[]) {
         this.opponentOwnedMapIDs = opponentOwnedMapIDs;
     }
-    
+    setMyLastPlacedCard(card: any) {
+        this.myLastPlacedCard = card;
+    }
+    setOpponentLastPlacedCard(card: any) {
+        this.opponentLastPlacedCard = card;
+    }
     setSelectedCard(card: number) {
         this.selectedCard = card;
     }

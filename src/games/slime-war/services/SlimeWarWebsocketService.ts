@@ -110,17 +110,23 @@ class SlimeWarWebSocketService {
                     }   
                 }
                 // 카드 정보 저장
-                parsedData.users.forEach((user: any) => {
-                  if (user.id === this.userID) {
-                      slimeWarViewModel.setCardList(user.ownedCardIDs || []);
-                      // 내 turn 정보 저장
-                      if (parsedData.slimeWarGameInfo && typeof user.turn !== 'undefined') {
-                          slimeWarViewModel.updateTurn(parsedData.slimeWarGameInfo.currentRound, user.turn);
-                      }
-                  } else {
-                    slimeWarViewModel.setOpponentCardList(user.ownedCardIDs || []);
-                  }
-                });
+                if (parsedData.users) {
+                    // 내 정보 찾기
+                    const myInfo = parsedData.users.find((user: any) => user.id === this.userID);
+                    if (myInfo) {
+                        slimeWarViewModel.setCardList(myInfo.ownedCardIDs || []);
+                        // 내 turn 정보 저장
+                        if (parsedData.slimeWarGameInfo && typeof myInfo.turn !== 'undefined') {
+                            slimeWarViewModel.updateTurn(parsedData.slimeWarGameInfo.currentRound, myInfo.turn);
+                        }
+                    }
+
+                    // 상대방 정보 찾기
+                    const opponentInfo = parsedData.users.find((user: any) => user.id !== this.userID);
+                    if (opponentInfo) {
+                        slimeWarViewModel.setOpponentCardList(opponentInfo.ownedCardIDs || []);
+                    }
+                }
             }
             if (parsedData.slimeWarGameInfo) {
                 slimeWarViewModel.setKingIndex(parsedData.slimeWarGameInfo.kingPosition);
@@ -314,23 +320,9 @@ class SlimeWarWebSocketService {
                 default:
                     console.warn("⚠️ 알 수 없는 이벤트:", data.event);
             }
-            
-            // // 게임 정보에 gameOver가 true인 경우에도 결과 호출
-            // if (parsedData.slimeWarGameInfo && parsedData.slimeWarGameInfo.gameOver === true) {
-            //     try {
-            //         const result = await slimeWarService.fetchGameResult(this.roomID as number);
-            //         console.log('게임 결과:', result);
-            //         // TODO: 결과를 화면에 전달하거나 상태에 저장
-            //     } catch (err) {
-            //         console.error('게임 결과 조회 실패:', err);
-            //     }
-            //     this.disconnect();
-            //     if (navigation) {
-            //         navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
-            //     }
-            // }
+
         } catch (error) {
-            console.error("❌ 데이터 처리 중 오류 발생:", error);
+            console.log("❌ 데이터 처리 중 오류 발생:", error);
         }
     };
 

@@ -162,15 +162,11 @@ class SequenceWebSocketService {
             case "USE_CARD":
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
-                  sequenceViewModel.setUserOneLastPlacedCard(parsedData.users[0].lastCardID);
-                  sequenceViewModel.setUserTwoLastPlacedCard(parsedData.users[1].lastCardID);
                 }
                 break;
             case "TIME_OUT":
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
-                  sequenceViewModel.setUserOneLastPlacedCard(parsedData.users[0].lastCardID);
-                  sequenceViewModel.setUserTwoLastPlacedCard(parsedData.users[1].lastCardID);
                 }
                 console.log("🔑 시간 초과. ", data.message);
                 break;
@@ -252,7 +248,7 @@ class SequenceWebSocketService {
             }
         }
     } catch (error) {
-        console.error("❌ 데이터 처리 중 오류 발생:", error);
+        console.log("❌ 데이터 처리 중 오류 발생:", error);
     }
   };
 
