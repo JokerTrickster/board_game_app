@@ -415,7 +415,7 @@ const GameDetailScreen: React.FC = () => {
                     {/* 혼자하기 버튼 (이미지 + 텍스트) */}
                     <Button
                         onPress={handleSoloPlay}
-                        disabled={game.title === '슬라임전쟁'} // 슬라임전쟁이면 비활성화
+                        disabled={game.title === '슬라임전쟁' || game.title === '시퀀스' || game.title === '개굴작'} // 혼자하기 불가능한 게임들 비활성화
                         text="혼자하기"
                         containerStyle={styles.aloneButton}
                         textStyle={styles.soloButtonText}
