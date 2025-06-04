@@ -68,8 +68,36 @@ const SlimeWarResultScreen: React.FC = () => {
                         </View>
                     </View>
 
-                    <View style={styles.roundInfo}>
-                        <Text style={styles.roundTitle}>결 과</Text>
+
+                    {/* 결과 텍스트 컨테이너 */}
+                    <View style={styles.resultScoreContainer}>
+                      <Text style={styles.resultScoreTitle}>
+                        최종 점수 및 승패
+                      </Text>
+                      <View style={styles.resultScoreRow}>
+                        <Text style={styles.resultScoreName}>{myName}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text style={styles.resultScoreValue}>{myScore}점</Text>
+                          <Text style={[
+                            styles.resultScoreStatus,
+                            myResult === 'Winner' ? styles.winnerText : styles.loserText
+                          ]}>
+                            {myResult}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.resultScoreRow}>
+                        <Text style={styles.resultScoreName}>{opponentName}</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                          <Text style={styles.resultScoreValue}>{opponentScore}점</Text>
+                          <Text style={[
+                            styles.resultScoreStatus,
+                            opponentResult === 'Winner' ? styles.winnerText : styles.loserText
+                          ]}>
+                            {opponentResult}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
 
                     {/* 두 유저의 점수 및 승패 표시 */}
@@ -77,13 +105,13 @@ const SlimeWarResultScreen: React.FC = () => {
                       <View style={styles.profilesContainer}>
                         {/* 내 정보 */}
                         <View style={styles.profileRow}>
-                          <View style={styles.profileIconContainer} >
+                          <View style={styles.profileIconContainer}>
                             <Image
                               source={require('../../../assets/icons/find-it/medal.png')}
                               style={styles.medalIcon}
                             />
                           </View>
-                          <View style={styles.profileImageContainer} >
+                          <View style={styles.profileImageContainer}>
                             <Image
                               source={require('../../../assets/images/home/default_profile.png')}
                               style={styles.profileImage}
@@ -93,20 +121,22 @@ const SlimeWarResultScreen: React.FC = () => {
                           <View style={styles.profileScoreContainer}>
                             <Image
                               source={require('../../../assets/icons/find-it/coin.png')}
-                              style={styles.profileScoreIcon}
+                              style={styles.coinIcon}
                             />
-                            <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
+                            <Text style={[styles.profileScore, { color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }]}>
+                              {myScore}점
+                            </Text>
                           </View>
                         </View>
                         {/* 상대 정보 */}
                         <View style={styles.profileRow}>
-                          <View style={styles.profileTwoIconContainer} >
+                          <View style={styles.profileTwoIconContainer}>
                             <Image
                               source={require('../../../assets/icons/find-it/medal2.png')}
                               style={styles.medalTwoIcon}
                             />
                           </View>
-                          <View style={styles.profileImageContainer} >
+                          <View style={styles.profileImageContainer}>
                             <Image
                               source={require('../../../assets/images/home/default_profile.png')}
                               style={styles.profileImage}
@@ -116,42 +146,14 @@ const SlimeWarResultScreen: React.FC = () => {
                           <View style={styles.profileTwoScoreContainer}>
                             <Image
                               source={require('../../../assets/icons/find-it/coin.png')}
-                              style={styles.profileScoreIcon}
+                              style={styles.coinIcon}
                             />
-                            <Text style={styles.profileScore}>{isSuccess ? "+500" : "-100"}</Text>
+                            <Text style={[styles.profileScore, { color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }]}>
+                              {opponentScore}점
+                            </Text>
                           </View>
                         </View>
                       </View>
-                    </View>
-
-                    {/* 결과 바로 밑에 추가되는 스코어 영역 */}
-                    <View style={{
-                      marginTop: 24,
-                      padding: 14,
-                      backgroundColor: '#f6faff',
-                      borderRadius: 14,
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.08,
-                      shadowRadius: 4,
-                      elevation: 2,
-                      alignItems: 'flex-start'
-                    }}>
-                      <Text style={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        marginBottom: 6,
-                        color: '#1a237e',
-                        letterSpacing: 1
-                      }}>
-                        최종 점수 및 승패
-                      </Text>
-                      <Text style={{ fontSize: 15, marginBottom: 2 }}>
-                        {myName} : {myScore} / <Text style={{ fontWeight: 'bold', color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{myResult}</Text>
-                      </Text>
-                      <Text style={{ fontSize: 15 }}>
-                        {opponentName} : {opponentScore} / <Text style={{ fontWeight: 'bold', color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }}>{opponentResult}</Text>
-                      </Text>
                     </View>
                 </View>
                 <View style={styles.ResultButtonContainer}>
