@@ -73,7 +73,7 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
 
                         <View style={styles.profileInfo}>
                             <Text style={styles.nickname}>{user?.name || '보린이'}</Text>
-                            <Text style={styles.title}>보드게임 매니아</Text>
+                            <Text style={styles.title}>초보자</Text>
                         </View>
                     </ImageBackground>
                 </View>

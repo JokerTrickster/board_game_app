@@ -68,6 +68,8 @@ export default StyleSheet.create({
     coin: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
     },
     coinIcon: {
         width: scale(110),
