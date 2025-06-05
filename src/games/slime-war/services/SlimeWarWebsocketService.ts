@@ -222,6 +222,21 @@ class SlimeWarWebSocketService {
                 case "HERO":
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
                     console.log("🔑 영웅 카드 사용. ", parsedData);
+                    if (parsedData.users[0].id === this.userID) {
+                        if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                        else if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                    } else {
+                        if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                        else if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                    }
                     break;
                 case "MOVE":
                     
@@ -236,6 +251,21 @@ class SlimeWarWebSocketService {
                             console.log("🕒 게임 종료 대기 중...");
                         }
                     }
+                    if (parsedData.users[0].id === this.userID) {
+                        if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                        else if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                    } else {
+                        if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                        else if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                    }
                     
                     console.log("🔑 이동. ", parsedData);
                     break;
@@ -243,6 +273,21 @@ class SlimeWarWebSocketService {
                 case "TIME_OUT":
                     slimeWarViewModel.updateGameState(parsedData.slimeWarGameInfo.round);
                     console.log("🔑 시간 초과. ", parsedData);
+                    if (parsedData.users[0].id === this.userID) {
+                        if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                        else if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                    } else {
+                        if (parsedData.users[1].lastCardID !== 0) {
+                            slimeWarViewModel.setMyLastPlacedCard(parsedData.users[1].lastCardID);
+                        }
+                        else if (parsedData.users[0].lastCardID !== 0) {
+                            slimeWarViewModel.setOpponentLastPlacedCard(parsedData.users[0].lastCardID);
+                        }
+                    }
                     break;
                 case "NEXT_ROUND":
                     // parsedData.users에 유저 둘다 이동이 불가능하다면 GAME_OVER 이벤트 호출 

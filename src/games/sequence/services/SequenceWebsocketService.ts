@@ -100,7 +100,7 @@ class SequenceWebSocketService {
                     sequenceViewModel.setOwnedMapIDs(parsedData.users[0].ownedMapIDs);
                     sequenceViewModel.setOpponentColorType(parsedData.users[1].colorType);
                     sequenceViewModel.setOpponentID(parsedData.users[1].id);
-                    sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[1].ownedMapIDs);
+                  sequenceViewModel.setOpponentOwnedMapIDs(parsedData.users[1].ownedMapIDs);  
                 } else {
                     sequenceViewModel.setOpponentColorType(parsedData.users[0].colorType);
                     sequenceViewModel.setOpponentID(parsedData.users[0].id);
@@ -163,11 +163,29 @@ class SequenceWebSocketService {
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
                 }
+                if (parsedData.users) {
+                  parsedData.users.forEach((user: any) => {
+                    if (user.id === this.userID) {
+                      sequenceViewModel.setMyLastPlacedCard(user.lastCardID);
+                    } else {
+                      sequenceViewModel.setOpponentSequences(user.lastCardID);
+                    } 
+                  });
+                }
                 break;
             case "TIME_OUT":
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
                 }
+              if (parsedData.users) {
+                parsedData.users.forEach((user: any) => {
+                  if (user.id === this.userID) {
+                    sequenceViewModel.setMyLastPlacedCard(user.lastCardID);
+                  } else {
+                    sequenceViewModel.setOpponentSequences(user.lastCardID);
+                  }
+                });
+              }
                 console.log("🔑 시간 초과. ", data.message);
                 break;
             case "GAME_OVER":

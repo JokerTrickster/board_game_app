@@ -25,6 +25,7 @@ export default StyleSheet.create({
     },
     profileContainer: {
         marginTop: verticalScale(50),
+        position: 'relative',
     },
     profileBorder: {
         width: scale(200),
@@ -46,6 +47,7 @@ export default StyleSheet.create({
     },
     profileInfo: {
         justifyContent: 'center',
+        marginBottom: verticalScale(5),
     },
     nickname: {
         fontSize: scale(16),
@@ -243,5 +245,24 @@ export default StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.5)',
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 2,
+    },
+    lastCardContainer: {
+        position: 'absolute',
+        bottom: verticalScale(-45),
+        left: '40%',
+        transform: [{ translateX: -scale(15) }],
+        width: scale(40),
+        height: scale(50),
+        borderRadius: scale(6),
+        borderWidth: scale(2),
+        borderColor: '#BFA276',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1,
+    },
+    lastCardImage: {
+        width: scale(40),
+        height: scale(40),
+        resizeMode: 'contain',
     },
 });

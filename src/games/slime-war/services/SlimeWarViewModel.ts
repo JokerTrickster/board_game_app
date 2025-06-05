@@ -20,6 +20,8 @@ class SlimeWarViewModel {
     userID = 0;
     opponentID = 0;
     opponentCanMove = false;
+    myLastPlacedCard = 0;
+    opponentLastPlacedCard = 0;
     myTurn = 0;
     isMyTurn = false;
 
@@ -46,7 +48,15 @@ class SlimeWarViewModel {
             setOpponentID: action,
             setMyTurn: action,
             setOpponentCanMove: action,
+            setMyLastPlacedCard: action,
+            setOpponentLastPlacedCard: action,
         });
+    }
+    setMyLastPlacedCard(card: any) {
+        this.myLastPlacedCard = card;
+    }
+    setOpponentLastPlacedCard(card: any) {
+        this.opponentLastPlacedCard = card;
     }
 
     setMyTurn(turn: number) {
