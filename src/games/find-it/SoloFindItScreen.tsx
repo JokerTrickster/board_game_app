@@ -338,9 +338,6 @@ const SoloFindItScreen: React.FC = observer(() => {
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
         // 아래 콘솔은 절대 지우지마라 
-        console.log('이미지 클릭 좌표', finalX, finalY);
-        console.log('현재 남은 정답 좌표 ', correctPositions);
-        // 이미 클릭한 정답 위치인지 확인
         for (const click of soloFindItViewModel.correctClicks) {
             const correctPosX = parseFloat((click.x * scaleX).toFixed(2));
             const correctPosY = parseFloat((click.y * scaleY).toFixed(2));

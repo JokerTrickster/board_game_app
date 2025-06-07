@@ -42,7 +42,6 @@ class FrogService {
             throw new Error('Access token not found');
         }
         try {
-            console.log("api base url   ", API_BASE_URL);
             const response = await fetch(`${API_BASE_URL}/frog/v0.1/game/rank`, {
                 method: 'GET',
                 headers: {

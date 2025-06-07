@@ -7,6 +7,7 @@ import findItViewModel from '../games/find-it/services/FindItViewModel';
 import {findItService} from './FindItService';
 import {WS_BASE_URL} from '../config';
 import GameDetailScreen from '../screens/GameDetailScreen';
+import gameViewModel from '../games/find-it/services/FindItViewModel';
 class FindItWebSocketService {
     private accessToken: string | null = null;
     private userID: number | null = null;
@@ -68,7 +69,6 @@ class FindItWebSocketService {
     }
 
     handleMessage = async (eventType: string, resData: any) => {
-        console.log("📩 서버 응답:", resData);
         const navigation = webSocketService.getNavigation();
         let data;
         try {
@@ -86,7 +86,6 @@ class FindItWebSocketService {
                 data.users.forEach((user: any) => {
                     // ✅ 정답 처리 (각 유저의 correctPositions)
                     if (Array.isArray(user.correctPositions) && user.correctPositions.length > 0) {
-                        console.log(`⭕ 유저 ${user.id} 정답 추가:`, user.correctPositions);
 
                         user.correctPositions.forEach((pos: any) => {
                             // ✅ pos가 배열인지, 객체인지 확인
@@ -102,10 +101,16 @@ class FindItWebSocketService {
                             }
 
                             // ✅ 중복 확인: 이미 저장된 정답인지 체크
-                            const isAlreadyAdded = findItViewModel.correctClicks.some(
+                            const isAlreadyAdded = findItViewModel.myCorrectClicks.some(
+                                (click) => findItViewModel.isNearby(click.x, click.y, x, y, 5) // 좌표 반경 내 존재 여부 확인
+                            );
+                            const isAlreadyAddedOpponent = findItViewModel.opponentCorrectClicks.some(
                                 (click) => findItViewModel.isNearby(click.x, click.y, x, y, 5) // 좌표 반경 내 존재 여부 확인
                             );
 
+                            if (!isAlreadyAdded && !isAlreadyAddedOpponent) {
+                                findItViewModel.addCorrectClick(x, y, user.id);
+                            }
                             if (!isAlreadyAdded) {
                                 findItViewModel.addCorrectClick(x, y, user.id);
                             }
@@ -115,7 +120,6 @@ class FindItWebSocketService {
                     // ✅ 오답 처리 (모든 유저에게 동일한 오답 표시)
                     if (data.gameInfo && data.gameInfo.wrongPosition && 
                         (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
-                        console.log(`❌ 유저 ${user.id} 오답 표시:`, data.gameInfo.wrongPosition);
                         findItViewModel.addWrongClick(
                             data.gameInfo.wrongPosition.x,
                             data.gameInfo.wrongPosition.y,
@@ -141,14 +145,13 @@ class FindItWebSocketService {
                     if (data.gameInfo) {
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setRound(data.gameInfo.round);
+                        gameViewModel.setUserID(this.userID as number);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
-                        console.log("this.gameStarted", this.gameStarted);
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
 
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
-                                console.log("방장이 게임 시작한다. ");
                                 this.sendStartEvent();
                             } else {
                                 console.log("🕒 게임 시작 대기 중...");

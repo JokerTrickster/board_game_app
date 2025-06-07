@@ -290,7 +290,6 @@ const FindItScreen: React.FC = observer(() => {
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
 
         runOnJS(sendClickToServer)(finalX, finalY);
-        console.log(`📌 [클릭 좌표] (${finalX}, ${finalY})`);
 
         if (findItViewModel.isAlreadyClicked(finalX, finalY)) return;
         findItWebSocketService.sendSubmitPosition(finalX, finalY);
@@ -333,7 +332,7 @@ const FindItScreen: React.FC = observer(() => {
     // 5개의 체크박스 중 맞춘 개수만큼 앞에서부터 check_box.png로 변경
     const renderCheckBoxes = () => {
         const total = 5;
-        const correctCount = findItViewModel.correctClicks.length;
+        const correctCount = findItViewModel.myCorrectClicks.length + findItViewModel.opponentCorrectClicks.length;
         return (
             <View style={styles.checkBoxContainer}>
                 {Array.from({ length: total }, (_, i) => (
@@ -472,11 +471,36 @@ const FindItScreen: React.FC = observer(() => {
                                     ) : (
                                         <Text>이미지를 불러오는 중...</Text>
                                     )}
-                                    {findItViewModel.correctClicks.map((pos, index) => (
-                                        <AnimatedCircle key={`correct-normal-${index}`} x={pos.x} y={pos.y} />
-                                    ))}
+                                    {/* 내 정답 표시 */}
+                                    {findItViewModel.myCorrectClicks.map((pos, index) => {
+                                        return (
+                                            <AnimatedCircle 
+                                                key={`correct-normal-my-${index}`} 
+                                                x={pos.x} 
+                                                y={pos.y} 
+                                                isUser1={true}  // 명시적으로 true 설정
+                                            />
+                                        );
+                                    })}
+                                    {/* 상대방 정답 표시 */}
+                                    {findItViewModel.opponentCorrectClicks.map((pos, index) => {
+                                        return (
+                                            <AnimatedCircle 
+                                                key={`correct-normal-opponent-${index}`} 
+                                                x={pos.x} 
+                                                y={pos.y} 
+                                                isUser1={false}  // 명시적으로 false 설정
+                                            />
+                                        );
+                                    })}
+                                    {/* 오답 표시 */}
                                     {findItViewModel.wrongClicks.map((pos, index) => (
-                                        <AnimatedX key={`wrong-${index}`} x={pos.x} y={pos.y} />
+                                        <AnimatedX 
+                                            key={`wrong-${index}`} 
+                                            x={pos.x} 
+                                            y={pos.y} 
+                                            isUser1={pos.userID === findItViewModel.userID}
+                                        />
                                     ))}
                                     {findItViewModel.missedPositions.map((pos, index) => (
                                         <View key={`missed-normal-${index}`} style={[styles.missedCircle, { left: pos.x - 15, top: pos.y - 15 }]} />
@@ -529,15 +553,37 @@ const FindItScreen: React.FC = observer(() => {
                                     <Text>이미지를 불러오는 중...</Text>
                                 )}
 
-                                {/* ✅ 정답 표시 */}
-                
-                                {findItViewModel.correctClicks.map((pos, index) => (
-                                    <AnimatedCircle key={`correct-${index}`} x={pos.x} y={pos.y} />
-                                ))}
+                                {/* 내 정답 표시 */}
+                                {findItViewModel.myCorrectClicks.map((pos, index) => {
+                                    return (
+                                        <AnimatedCircle 
+                                            key={`correct-abnormal-my-${index}`} 
+                                            x={pos.x} 
+                                            y={pos.y} 
+                                            isUser1={true}  // 명시적으로 true 설정
+                                        />
+                                    );
+                                })}
+                                {/* 상대방 정답 표시 */}
+                                {findItViewModel.opponentCorrectClicks.map((pos, index) => {
+                                    return (
+                                        <AnimatedCircle 
+                                            key={`correct-abnormal-opponent-${index}`} 
+                                            x={pos.x} 
+                                            y={pos.y} 
+                                            isUser1={false}  // 명시적으로 false 설정
+                                        />
+                                    );
+                                })}
 
-                                {/* ✅ 오답 표시 */}
+                                {/* 오답 표시 */}
                                 {findItViewModel.wrongClicks.map((pos, index) => (
-                                    <AnimatedX key={`wrong-abnormal-${index}`} x={pos.x} y={pos.y} />
+                                    <AnimatedX 
+                                        key={`wrong-abnormal-${index}`} 
+                                        x={pos.x} 
+                                        y={pos.y} 
+                                        isUser1={pos.userID === findItViewModel.userID}
+                                    />
                                 ))}
                                 {/* ✅ 못 맞춘 좌표 표시 (4초간) */}
                                 {findItViewModel.missedPositions.map((pos, index) => (

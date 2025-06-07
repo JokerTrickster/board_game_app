@@ -210,7 +210,7 @@ class FrogWebSocketService {
                      //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
                      // ✅ 게임 결과 화면으로 이동
                      if (navigation) {
-                         navigation.navigate('SequenceResult', { isSuccess: isSuccess });
+                         navigation.navigate('SequenceResult', { isSuccess: isSuccess, myScore: result[0].score, opponentScore: result[1].score });
                      }
                 break;
             case "SUCCESS_LOAN":
@@ -239,7 +239,6 @@ class FrogWebSocketService {
         if (parsedData.FrogGameInfo && parsedData.FrogGameInfo.gameOver === true) {
             try {
                 const result = await frogService.fetchGameResult();
-                console.log('게임 결과:', result);
                 // TODO: 결과를 화면에 전달하거나 상태에 저장
             } catch (err) {
                 console.error('게임 결과 조회 실패:', err);

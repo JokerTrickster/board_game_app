@@ -9,7 +9,9 @@ class GameViewModel {
     timer = 60; // 초 단위 타이머
     round = 1; // 현재 라운드
     gameOver = false; // 게임 종료 여부
-    correctClicks: { x: number; y: number; userID:number}[] = []; // 맞춘 위치 저장
+    userID = 0; // 유저 ID
+    myCorrectClicks: { x: number; y: number; userID: number }[] = []; // 내가 맞춘 위치 저장
+    opponentCorrectClicks: { x: number; y: number; userID: number }[] = []; // 상대방이 맞춘 위치 저장
     wrongClicks: { x: number; y: number; userID: number }[] = []; // 틀린 위치 저장
     missedPositions: { x: number; y: number }[] = []; // ✅ 못 맞춘 좌표 상태 추가
     isClickable = true; // 연속 클릭 방지
@@ -42,7 +44,12 @@ class GameViewModel {
             setRoundFailEffect: action,
             setTimer: action,
             setMissedPositions: action,
+            setUserID: action,
         });
+    }
+
+    setUserID(id: number) {
+        this.userID = id;
     }
 
     setMissedPositions(positions: { x: number; y: number }[]) {
@@ -61,7 +68,8 @@ class GameViewModel {
     /** 특정 좌표가 이미 클릭된 위치인지 확인 */
     isAlreadyClicked(x: number, y: number): boolean {
         return (
-            this.correctClicks.some(click => this.isNearby(click.x, click.y, x, y)) ||
+            this.myCorrectClicks.some(click => this.isNearby(click.x, click.y, x, y)) ||
+            this.opponentCorrectClicks.some(click => this.isNearby(click.x, click.y, x, y)) ||
             this.wrongClicks.some(click => this.isNearby(click.x, click.y, x, y))
         );
     }
@@ -74,7 +82,11 @@ class GameViewModel {
     /** ✅ 정답 클릭 저장 (유저 ID 포함) */
     addCorrectClick(x: number, y: number, userID: number) {
         if (this.isAlreadyClicked(x, y)) return; // 이미 클릭된 영역이면 무시
-        this.correctClicks.push({ x, y, userID });
+        if (userID === this.userID) {
+            this.myCorrectClicks.push({ x, y, userID });
+        } else {
+            this.opponentCorrectClicks.push({ x, y, userID });
+        }
         
         // 정답 클릭 후 1초 동안 클릭 방지
         this.isClickable = false;
@@ -86,6 +98,7 @@ class GameViewModel {
     /** ✅ 오답 클릭 저장 (유저 ID 포함, 3초 후 삭제) */
     addWrongClick(x: number, y: number, userID: number) {
         if (this.isAlreadyClicked(x, y)) return; // 중복 클릭 방지
+
         this.isClickable = false;
 
         const wrongClick = { id: Date.now().toString(), x, y, userID };
@@ -212,11 +225,13 @@ class GameViewModel {
     }
 
     initClicks() {
-        this.correctClicks = [];
+        this.myCorrectClicks = [];
+        this.opponentCorrectClicks = [];
         this.wrongClicks = [];
     }
     resetGameState() {
-        this.correctClicks = [];
+        this.myCorrectClicks = [];
+        this.opponentCorrectClicks = [];
         this.wrongClicks = [];
         this.roundClearEffect = false;
         this.roundFailEffect = false;

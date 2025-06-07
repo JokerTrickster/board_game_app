@@ -113,7 +113,6 @@ class SoloGameViewModel {
                 runInAction(() => {
                     this.life -= (5 - this.correctClicks.length);
                 });
-                console.log("남은 생명력 : ", this.life);
                 //타임아웃 이벤트 처리
                 if (this.life <= 0) {
                     runInAction(() => {

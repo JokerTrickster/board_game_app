@@ -16,21 +16,28 @@ interface AnimatedCircleProps {
     x: number;
     y: number;
     startAngle?: number; // 시작 각도를 props로 받을 수 있도록 추가
+    isUser1?: boolean; // 유저 구분을 위한 prop 추가
 }
 
-const CircleAnimation: React.FC<AnimatedCircleProps> = ({ x, y, startAngle = -270 }) => {
-    const CIRCLE_LENGTH = Math.PI * 40; // 원의 둘레 (반지름 20)
+const CircleAnimation: React.FC<AnimatedCircleProps> = ({ 
+    x, 
+    y, 
+    startAngle = -270,
+    isUser1 = true 
+}) => {
+    const CIRCLE_LENGTH = Math.PI * 40;
     const progress = useSharedValue(0);
     const strokeOffset = useSharedValue(CIRCLE_LENGTH);
 
+    // 유저별 색상 설정 - fill 제거
+    const strokeColor = isUser1 ? '#00FF00' : '#0000FF';
+
     useEffect(() => {
-        // 원이 그려지는 애니메이션
         strokeOffset.value = withTiming(0, {
             duration: 1000,
             easing: Easing.bezier(0.25, 0.1, 0.25, 1),
         });
 
-        // 페이드인 애니메이션
         progress.value = withSpring(1, {
             damping: 10,
             stiffness: 80,
@@ -62,13 +69,13 @@ const CircleAnimation: React.FC<AnimatedCircleProps> = ({ x, y, startAngle = -27
                     cx={20}
                     cy={20}
                     r={18}
-                    stroke="red"
+                    stroke={strokeColor}
                     strokeWidth={4}
-                    fill="transparent"
+                    fill="transparent"  // 배경색 제거
                     strokeDasharray={`${CIRCLE_LENGTH}, ${CIRCLE_LENGTH}`}
                     animatedProps={animatedProps}
                     strokeLinecap="round"
-                    transform={`rotate(${startAngle}, 20, 20)`} // 회전 중심점(20, 20)을 기준으로 회전
+                    transform={`rotate(${startAngle}, 20, 20)`}
                 />
             </Svg>
         </Animated.View>

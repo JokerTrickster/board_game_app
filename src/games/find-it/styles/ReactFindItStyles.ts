@@ -352,4 +352,62 @@ export const styles = StyleSheet.create({
         marginHorizontal: scale(8),
         resizeMode: 'contain',
     },
+
+    // 유저1(내) 정답 원 스타일
+    correctCircleUser1: {
+        position: 'absolute',
+        width: scale(30),
+        height: scale(30),
+        borderRadius: scale(15),
+        borderWidth: scale(3),
+        borderColor: '#4CAF50', // 초록색
+        backgroundColor: 'rgba(76, 175, 80, 0.2)', // 연한 초록색 배경
+    },
+
+    // 유저2(상대방) 정답 원 스타일
+    correctCircleUser2: {
+        position: 'absolute',
+        width: scale(30),
+        height: scale(30),
+        borderRadius: scale(15),
+        borderWidth: scale(3),
+        borderColor: '#2196F3', // 파란색
+        backgroundColor: 'rgba(33, 150, 243, 0.2)', // 연한 파란색 배경
+    },
+
+    // 유저1(내) 오답 X 컨테이너 스타일
+    wrongXContainerUser1: {
+        position: 'absolute',
+        width: scale(30),
+        height: scale(30),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(244, 67, 54, 0.1)', // 연한 빨간색 배경
+    },
+
+    // 유저2(상대방) 오답 X 컨테이너 스타일
+    wrongXContainerUser2: {
+        position: 'absolute',
+        width: scale(30),
+        height: scale(30),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(156, 39, 176, 0.1)', // 연한 보라색 배경
+    },
+
+    // 유저1(내) 오답 X 선 스타일
+    wrongXLineUser1: {
+        position: 'absolute',
+        width: scale(30),
+        height: verticalScale(5),
+        backgroundColor: '#F44336', // 빨간색
+    },
+
+    // 유저2(상대방) 오답 X 선 스타일
+    wrongXLineUser2: {
+        position: 'absolute',
+        width: scale(30),
+        height: verticalScale(5),
+        backgroundColor: '#9C27B0', // 보라색
+    },
 });
