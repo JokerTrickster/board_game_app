@@ -415,7 +415,7 @@ const SlimeWarScreen: React.FC = observer(() => {
   return (
     <ImageBackground
       source={require('../../../assets/icons/slime-war/common/background.png')}
-      style={{ flex: 1, width: '100%', height: '100%' }}
+      style={baseStyles.container}
       resizeMode="cover"
     >
       <SafeAreaView style={[baseStyles.container, { backgroundColor: 'transparent' }]}>
@@ -558,22 +558,22 @@ const SlimeWarScreen: React.FC = observer(() => {
           transparent={true}
           animationType="fade"
         >
-          <View style={modalStyles.modalOverlay}>
-            <View style={modalStyles.modalContent}>
-              <Text style={modalStyles.modalTitle}>
+          <View style={baseStyles.modalOverlay}>
+            <View style={baseStyles.modalContent}>
+              <Text style={baseStyles.modalTitle}>
                 {slimeWarViewModel.gameResult?.isSuccess ? '승리!' : '패배!'}
               </Text>
-              <Text style={modalStyles.modalScore}>
+              <Text style={baseStyles.modalScore}>
                 내 점수: {slimeWarViewModel.gameResult?.myScore}
               </Text>
-              <Text style={modalStyles.modalScore}>
+              <Text style={baseStyles.modalScore}>
                 상대방 점수: {slimeWarViewModel.gameResult?.opponentScore}
               </Text>
               <TouchableOpacity
-                style={modalStyles.modalButton}
+                style={baseStyles.modalButton}
                 onPress={handleGoToResult}
               >
-                <Text style={modalStyles.modalButtonText}>결과 화면으로 이동</Text>
+                <Text style={baseStyles.modalButtonText}>결과 화면으로 이동</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -581,45 +581,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       </SafeAreaView>
     </ImageBackground>
   );
-});
-
-// 모달 관련 스타일만 별도로 정의
-const modalStyles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: '80%',
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  modalScore: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  modalButton: {
-    backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 20,
-    width: '100%',
-    alignItems: 'center',
-  },
-  modalButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
 });
 
 export default SlimeWarScreen;
