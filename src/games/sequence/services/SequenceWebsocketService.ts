@@ -128,6 +128,7 @@ class SequenceWebSocketService {
         // 게임 정보 처리
         if (parsedData.sequenceGameInfo) {
             console.log("게임 정보:", parsedData.sequenceGameInfo);
+            this.roomID = parsedData.sequenceGameInfo.roomID;
             await gameService.setRoomID(parsedData.sequenceGameInfo.roomID);
             await gameService.setRound(parsedData.sequenceGameInfo.round);
             
@@ -163,29 +164,45 @@ class SequenceWebSocketService {
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
                 }
-                if (parsedData.users) {
-                  parsedData.users.forEach((user: any) => {
-                    if (user.id === this.userID) {
-                      sequenceViewModel.setMyLastPlacedCard(user.lastCardID);
-                    } else {
-                      sequenceViewModel.setOpponentSequences(user.lastCardID);
-                    } 
-                  });
-                }
+                  if (parsedData.users) {
+                    if (parsedData.users[0].id === this.userID) {
+                      if (parsedData.users[0].lastCardID !== 0) {
+                          sequenceViewModel.setMyLastPlacedCard(parsedData.users[0].lastCardID);
+                      }
+                      else if (parsedData.users[1].lastCardID !== 0) {
+                        sequenceViewModel.setOpponentLastPlacedCard(parsedData.users[1].lastCardID);
+                      }
+                  } else {
+                      if (parsedData.users[1].lastCardID !== 0) {
+                        sequenceViewModel.setMyLastPlacedCard(parsedData.users[1].lastCardID);
+                      }
+                      else if (parsedData.users[0].lastCardID !== 0) {
+                        sequenceViewModel.setOpponentLastPlacedCard(parsedData.users[0].lastCardID);
+                      }
+                  }
+                  }
                 break;
             case "TIME_OUT":
                 if (parsedData.sequenceGameInfo) {
                   sequenceViewModel.updateGameState(parsedData.sequenceGameInfo.round);
                 }
-              if (parsedData.users) {
-                parsedData.users.forEach((user: any) => {
-                  if (user.id === this.userID) {
-                    sequenceViewModel.setMyLastPlacedCard(user.lastCardID);
-                  } else {
-                    sequenceViewModel.setOpponentSequences(user.lastCardID);
-                  }
-                });
-              }
+                if (parsedData.users) {
+                  if (parsedData.users[0].id === this.userID) {
+                    if (parsedData.users[0].lastCardID !== 0) {
+                        sequenceViewModel.setMyLastPlacedCard(parsedData.users[0].lastCardID);
+                    }
+                    else if (parsedData.users[1].lastCardID !== 0) {
+                      sequenceViewModel.setOpponentLastPlacedCard(parsedData.users[1].lastCardID);
+                    }
+                } else {
+                    if (parsedData.users[1].lastCardID !== 0) {
+                      sequenceViewModel.setMyLastPlacedCard(parsedData.users[1].lastCardID);
+                    }
+                    else if (parsedData.users[0].lastCardID !== 0) {
+                      sequenceViewModel.setOpponentLastPlacedCard(parsedData.users[0].lastCardID);
+                    }
+                }
+                }
                 console.log("🔑 시간 초과. ", data.message);
                 break;
             case "GAME_OVER":
