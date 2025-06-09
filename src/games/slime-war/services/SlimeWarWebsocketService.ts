@@ -311,12 +311,14 @@ class SlimeWarWebSocketService {
                         // 내 점수와 상대방 점수 계산
                         const myScore = slimeWarViewModel.calculateScore(this.userID as number);
                         const opponentScore = slimeWarViewModel.calculateScore(slimeWarViewModel.opponentID);
-                        
+                        let myScoreString = slimeWarViewModel.calculateScoreString(this.userID as number);
+                        let opponentScoreString = slimeWarViewModel.calculateScoreString(slimeWarViewModel.opponentID);
                         // 결과 결정 (1: 승리, 0: 패배)
                         const result = myScore > opponentScore ? 1 : 0;
+                        myScoreString += " = " + myScore.toString();
+                        opponentScoreString += " = " + opponentScore.toString();
 
                         // 게임 종료 결과 전송
-                        console.log(this.roomID , "roomID");
                         await slimeWarService.sendGameOverResult(
                             this.roomID as number,
                             this.userID as number,
@@ -327,20 +329,20 @@ class SlimeWarWebSocketService {
                         // 웹소켓 종료
                         this.disconnect();
                         
-                        // 게임 결과 화면으로 이동
-                        if (navigation) {
-                            console.log("🔑 게임 결과 화면으로 이동");
-                            navigation.navigate('SlimeWarResult', { 
-                                isSuccess: result === 1,
-                                myScore: myScore,
-                                opponentScore: opponentScore
-                            });
-                        }
+                        // 게임 종료 상태 설정
+                        slimeWarViewModel.setGameOver({
+                            isSuccess: result === 1,
+                            myScore: myScoreString,
+                            opponentScore: opponentScoreString
+                        });
+
                     } catch (error) {
                         console.error('Error in game over handling:', error);
-                        if (navigation) {
-                            navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
-                        }
+                        slimeWarViewModel.setGameOver({
+                            isSuccess: false,
+                            myScore: "0",
+                            opponentScore: "0"
+                        });
                     }
                     break;
                 case "MATCH_CANCEL":
@@ -351,7 +353,7 @@ class SlimeWarWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
+                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: "0", opponentScore: "0" });    
                     }
                     break;
                 case "ERROR":
@@ -359,7 +361,7 @@ class SlimeWarWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: 0, opponentScore: 0 });    
+                        navigation.navigate('SlimeWarResult', { isSuccess: false, myScore: "0", opponentScore: "0" });    
                     }
                     break;
                 default:

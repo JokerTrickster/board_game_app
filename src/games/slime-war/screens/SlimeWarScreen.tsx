@@ -1,7 +1,7 @@
 import SystemMessage from '../../../components/common/SystemMessage';
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground, BackHandler } from 'react-native';
-import styles from '../styles/SlimeWarStyles';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground, BackHandler, Modal, StyleSheet } from 'react-native';
+import baseStyles from '../styles/SlimeWarStyles';
 import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
 import { observer } from 'mobx-react-lite';
@@ -9,7 +9,10 @@ import { slimeWarViewModel } from '../services/SlimeWarViewModel';
 import SlimeWarMultiHeader from '../../../components/SlimeWarMultiHeader';
 import cardData from '../../../assets/data/cards.json';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/navigationTypes';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const GRID_SIZE = 9; // 0~8까지 9칸
 
@@ -94,7 +97,7 @@ const SlimeWarScreen: React.FC = observer(() => {
   const [timer, setTimer] = useState(TURN_TIME);
   const timerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [buttonCooldown, setButtonCooldown] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   // 타이머 관련 useEffect만 남기고, 타이머 UI는 삭제
   useEffect(() => {
@@ -270,8 +273,8 @@ const SlimeWarScreen: React.FC = observer(() => {
           <View
             key={`cell-${col}-${row}`}
             style={[
-              isEven ? styles.cellEven : styles.cellOdd,
-              isKing && styles.kingCell
+              isEven ? baseStyles.cellEven : baseStyles.cellOdd,
+              isKing && baseStyles.kingCell
             ]}
           >
             {isKing && (
@@ -295,7 +298,7 @@ const SlimeWarScreen: React.FC = observer(() => {
         );
       }
       rows.push(
-        <View key={`row-${row}`} style={styles.row}>
+        <View key={`row-${row}`} style={baseStyles.row}>
           {cells}
         </View>
       );
@@ -402,64 +405,71 @@ const SlimeWarScreen: React.FC = observer(() => {
     }
   };
 
+  const handleGoToResult = () => {
+    if (slimeWarViewModel.gameResult) {
+      navigation.navigate('SlimeWarResult', slimeWarViewModel.gameResult);
+      slimeWarViewModel.resetGameOver();
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../../assets/icons/slime-war/common/background.png')}
-      style={{ flex: 1, width: '100%', height: '100%' }}
+      style={baseStyles.container}
       resizeMode="cover"
     >
-      <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
+      <SafeAreaView style={[baseStyles.container, { backgroundColor: 'transparent' }]}>
         {/* 헤더에 timer 전달 */}
         <SlimeWarMultiHeader timer={timer} />
 
         {/* 나무 + 격자 */}
-        <View style={styles.topContainer}>
+        <View style={baseStyles.topContainer}>
           
           <Image
             source={require('../../../assets/icons/slime-war/common/background_tree.png')}
-            style={styles.treeImage}
+            style={baseStyles.treeImage}
           />
           
-          <View style={styles.boardContainer}>
+          <View style={baseStyles.boardContainer}>
             {renderGrid()}
           </View>
         </View>
         
         {/* 패 영역 */}
-        <View style={styles.handsContainer}>
+        <View style={baseStyles.handsContainer}>
           {/* 상단: 남은 슬라임, 상대방 카드, 상대방 히어로 */}
-          <View style={styles.opponentHandContainer}>
+          <View style={baseStyles.opponentHandContainer}>
             {/* 남은 슬라임수 */}
             <View style={{ alignItems: 'center', marginRight: 12 }}>
               <Image source={require('../../../assets/icons/slime-war/common/rest_slime.png')} style={{ width: 36, height: 36 }} />
-              <Text style={styles.restSlimeText}>
+              <Text style={baseStyles.restSlimeText}>
                 x {slimeWarViewModel.remainingSlime}
               </Text>
             </View>
             {/* 상대방 카드 스크롤 */}
             <ScrollView
               horizontal
-              contentContainerStyle={[styles.handScrollView, { flexGrow: 1 }]}
+              contentContainerStyle={[baseStyles.handScrollView, { flexGrow: 1 }]}
               showsHorizontalScrollIndicator={false}
               style={{ flex: 1 }}
             >
               {opponentHand.map((item, index) => (
-                <View key={`opponent-card-${item.id ?? index}`} style={styles.opponentCard}>
+                <View key={`opponent-card-${item.id ?? index}`} style={baseStyles.opponentCard}>
                   <Image
                     source={getCardImageSource(item.id ?? item)}
-                    style={styles.opponentCardImage}
+                    style={baseStyles.opponentCardImage}
                     resizeMode="contain"
                   />
                 </View>
               ))}
               {/* 상대방 히어로 카드 */}
-              <View style={[styles.opponentCard, styles.heroCardContainer]}>
+              <View style={[baseStyles.opponentCard, baseStyles.heroCardContainer]}>
                 <Image
                   source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
-                  style={styles.cardImage}
+                  style={baseStyles.cardImage}
                   resizeMode="contain"
                 />
-                <Text style={styles.heroCardText}>
+                <Text style={baseStyles.heroCardText}>
                   {slimeWarViewModel.opponentHeroCount ?? 0}
                 </Text>
               </View>
@@ -467,11 +477,11 @@ const SlimeWarScreen: React.FC = observer(() => {
           </View>
 
           {/* 하단: 내 카드, 내 히어로 */}
-          <View style={styles.userHandContainer}>
+          <View style={baseStyles.userHandContainer}>
             {/* 내 카드 스크롤 */}
             <ScrollView
               horizontal
-              contentContainerStyle={[styles.handScrollView, { flexGrow: 1 }]}
+              contentContainerStyle={[baseStyles.handScrollView, { flexGrow: 1 }]}
               showsHorizontalScrollIndicator={false}
               style={{ flex: 1 }}
             >
@@ -481,39 +491,39 @@ const SlimeWarScreen: React.FC = observer(() => {
                   onPress={() => handleCardPress(cardId)}
                   disabled={!slimeWarViewModel.isMyTurn}
                   style={[
-                    styles.card,
-                    movableCards.includes(cardId) && styles.movableCard,
-                    heroCards.includes(cardId) && styles.heroCard,
-                    isMoveMode && styles.moveModeCard,
-                    isCardSelectMode === 'HERO' && styles.heroModeCard,
+                    baseStyles.card,
+                    movableCards.includes(cardId) && baseStyles.movableCard,
+                    heroCards.includes(cardId) && baseStyles.heroCard,
+                    isMoveMode && baseStyles.moveModeCard,
+                    isCardSelectMode === 'HERO' && baseStyles.heroModeCard,
                   ]}
                 >
                   <Image
                     source={getCardImageSource(cardId)}
-                    style={styles.cardImage}
+                    style={baseStyles.cardImage}
                     resizeMode="contain"
                   />
                   {movableCards.includes(cardId) && (
-                    <View style={styles.movableIndicator}>
-                      <Text style={styles.movableText}>이동 가능</Text>
+                    <View style={baseStyles.movableIndicator}>
+                      <Text style={baseStyles.movableText}>이동 가능</Text>
                     </View>
                   )}
                   {heroCards.includes(cardId) && (slimeWarViewModel.userHeroCount ?? 0) > 0 && (
-                    <View style={styles.heroIndicator}>
-                      <Text style={styles.heroText}>흡수 가능</Text>
+                    <View style={baseStyles.heroIndicator}>
+                      <Text style={baseStyles.heroText}>흡수 가능</Text>
                     </View>
                   )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
             {/* 내 히어로 카드 */}
-            <View style={[styles.card, styles.heroCardContainer]}>
+            <View style={[baseStyles.card, baseStyles.heroCardContainer]}>
               <Image
                 source={slimeWarViewModel.userColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
-                style={styles.cardImage}
+                style={baseStyles.cardImage}
                 resizeMode="contain"
               />
-              <Text style={styles.heroCardText}>
+              <Text style={baseStyles.heroCardText}>
                 {slimeWarViewModel.userHeroCount ?? 0}
               </Text>
             </View>
@@ -521,13 +531,13 @@ const SlimeWarScreen: React.FC = observer(() => {
         </View>
         
         {/* 버튼 영역 */}
-        <View style={styles.buttonContainer}>
+        <View style={baseStyles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, !canDrawCard && { opacity: 0.5 }]}
+            style={[baseStyles.button, !canDrawCard && { opacity: 0.5 }]}
             onPress={handleGetCard}
             disabled={!canDrawCard}
           >
-            <Text style={[styles.buttonText, !canDrawCard && { color: '#999999' }]}>더미</Text>
+            <Text style={[baseStyles.buttonText, !canDrawCard && { color: '#999999' }]}>더미</Text>
           </TouchableOpacity>
         </View>
 
@@ -536,11 +546,38 @@ const SlimeWarScreen: React.FC = observer(() => {
         ) : null}
 
         {/* 턴 상태 표시 */}
-        <View style={styles.turnIndicator}>
-          <Text style={styles.turnText}>
+        <View style={baseStyles.turnIndicator}>
+          <Text style={baseStyles.turnText}>
             {slimeWarViewModel.isMyTurn ? '내 턴입니다' : '상대방 턴입니다'}
           </Text>
         </View>
+
+        {/* 게임 종료 모달 */}
+        <Modal
+          visible={slimeWarViewModel.isGameOver}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={baseStyles.modalOverlay}>
+            <View style={baseStyles.modalContent}>
+              <Text style={baseStyles.modalTitle}>
+                {slimeWarViewModel.gameResult?.isSuccess ? '승리!' : '패배!'}
+              </Text>
+              <Text style={baseStyles.modalScore}>
+                내 점수: {slimeWarViewModel.gameResult?.myScore}
+              </Text>
+              <Text style={baseStyles.modalScore}>
+                상대방 점수: {slimeWarViewModel.gameResult?.opponentScore}
+              </Text>
+              <TouchableOpacity
+                style={baseStyles.modalButton}
+                onPress={handleGoToResult}
+              >
+                <Text style={baseStyles.modalButtonText}>결과 화면으로 이동</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </ImageBackground>
   );

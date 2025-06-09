@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, StyleSheet, Modal } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import SystemMessage from '../../../components/common/SystemMessage';
 import styles from '../styles/SequenceStyles';
@@ -7,6 +7,9 @@ import { sequenceViewModel } from '../services/SequenceViewModel';
 import { sequenceWebSocketService } from '../services/SequenceWebsocketService';
 import SequenceMultiHeader from '../../../components/SequenceMultiHeader';
 import sequenceCards from '../../../assets/data/sequnce_cards.json';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/navigationTypes';
 
 const GRID_SIZE = 10; // 10x10 격자
 const TURN_TIME = 30; // 턴당 제한 시간(초)
@@ -136,23 +139,16 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
             tempSeq.push(curMapID);
             if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
 
-            // 가로/세로/대각선 방향 체크
-            const isHorizontal = direction.row === 0 && direction.col !== 0;
-            const isVertical = direction.col === 0 && direction.row !== 0;
-            const isStraightLine = isHorizontal || isVertical;
+            if (usedSequenceCount >= 2) {
+              break;
+            }
+            
 
-            // 가로/세로는 10개, 대각선은 5개
-            const requiredLength = isStraightLine ? 10 : 5;
-
-            if (tempSeq.length === requiredLength) {
-              // 특수칩 2개 이상 불인정, 이미 만들어진 시퀀스 칩 2개 이상 불인정
-              if (specialCount <= 1 && usedSequenceCount <= 1) {
-                const displaySeq = tempSeq.filter(id => !SPECIAL_MAP_IDS.includes(id));
-                // 실제 칩이 4개 이상일 때만 인정
-                if (displaySeq.length >= 4) {
-                  displaySeq.forEach(id => checked.add(id));
-                  sequences.push(displaySeq);
-                }
+            if (tempSeq.length >= 4) {
+              if (tempSeq.length == 4 && specialCount === 1){
+                sequences.push(tempSeq);
+              }else if (tempSeq.length == 5 && specialCount === 0){
+                sequences.push(tempSeq);
               }
               // 다음 시퀀스 탐색을 위해 초기화
               tempSeq = [];
@@ -180,6 +176,8 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
   return sequences;
 };
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [buttonCooldown, setButtonCooldown] = useState(false);
@@ -196,6 +194,8 @@ const SequenceScreen: React.FC = observer(() => {
   // 마지막으로 사용한 카드들을 저장할 상태 추가
   const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
   const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
+
+  const navigation = useNavigation<NavigationProp>();
 
   // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
   useEffect(() => {
@@ -431,6 +431,13 @@ const SequenceScreen: React.FC = observer(() => {
     ));
   };
 
+  const handleGoToResult = () => {
+    if (sequenceViewModel.gameResult) {
+      navigation.navigate('SequenceResult', sequenceViewModel.gameResult);
+      sequenceViewModel.resetGameOver();
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../../assets/images/sequence/background.png')}
@@ -446,10 +453,6 @@ const SequenceScreen: React.FC = observer(() => {
             {sequenceViewModel.isMyTurn ? '내 턴' : '상대방 턴'}
           </Text>
         </View>
-
-        /* 플레이어가 마지막으로 선택한 카드 정보 보여준다. 이미지 표시 */
-      
-      
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>
@@ -498,6 +501,33 @@ const SequenceScreen: React.FC = observer(() => {
             onHide={() => setSystemMessage('')} 
           />
         ) : null}
+
+        {/* 게임 종료 모달 */}
+        <Modal
+          visible={sequenceViewModel.isGameOver}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {sequenceViewModel.gameResult?.isSuccess ? '승리!' : '패배!'}
+              </Text>
+              <Text style={styles.modalScore}>
+                내 점수: {sequenceViewModel.gameResult?.myScore}
+              </Text>
+              <Text style={styles.modalScore}>
+                상대방 점수: {sequenceViewModel.gameResult?.opponentScore}
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleGoToResult}
+              >
+                <Text style={styles.modalButtonText}>결과 화면으로 이동</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </ImageBackground>
   );

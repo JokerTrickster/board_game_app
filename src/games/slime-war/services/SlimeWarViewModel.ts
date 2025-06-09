@@ -1,4 +1,4 @@
-import { makeAutoObservable, action } from 'mobx';
+import { makeAutoObservable, action, observable } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SlimeWarViewModel {
     hero = 4;
@@ -24,6 +24,12 @@ class SlimeWarViewModel {
     opponentLastPlacedCard = 0;
     myTurn = 0;
     isMyTurn = false;
+    @observable isGameOver: boolean = false;
+    @observable gameResult: {
+        isSuccess: boolean;
+        myScore: string;
+        opponentScore: string;
+    } | null = null;
 
     constructor() {
         makeAutoObservable(this, {
@@ -50,6 +56,8 @@ class SlimeWarViewModel {
             setOpponentCanMove: action,
             setMyLastPlacedCard: action,
             setOpponentLastPlacedCard: action,
+            setGameOver: action,
+            resetGameOver: action,
         });
     }
     setMyLastPlacedCard(card: any) {
@@ -233,6 +241,35 @@ class SlimeWarViewModel {
         }
 
         return totalScore;
+    }
+    calculateScoreString(userId: number): string {
+        const gameMap = this.gameMap;
+        const visited: boolean[][] = Array(10).fill(0).map(() => Array(10).fill(false));
+        let totalScore = "";
+
+        // 모든 칸을 순회하면서 연결된 슬라임 그룹 찾기
+        for (let y = 1; y <= 9; y++) {
+            for (let x = 1; x <= 9; x++) {
+                if (!visited[y][x] && gameMap[x][y] === userId) {
+                    const groupSize = this.findConnectedSlimes(gameMap, x, y, userId, visited);
+                    totalScore += groupSize * groupSize + " "; // 제곱하여 점수 계산
+                }
+            }
+        }
+
+        return totalScore.trim();
+    }
+
+    @action
+    setGameOver(result: { isSuccess: boolean; myScore: string; opponentScore: string }) {
+        this.isGameOver = true;
+        this.gameResult = result;
+    }
+
+    @action
+    resetGameOver() {
+        this.isGameOver = false;
+        this.gameResult = null;
     }
 }
 

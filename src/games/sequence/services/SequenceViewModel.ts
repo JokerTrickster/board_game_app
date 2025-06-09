@@ -1,4 +1,4 @@
-import { makeAutoObservable, action } from 'mobx';
+import { makeAutoObservable, action, observable } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SequenceViewModel {
     timer = 30; // 초 단위 타이머
@@ -21,6 +21,13 @@ class SequenceViewModel {
     opponentLastPlacedCard = null;
     mySequences: number[][] = [];      // 내 시퀀스 목록
     opponentSequences: number[][] = []; // 상대방 시퀀스 목록
+
+    @observable isGameOver: boolean = false;
+    @observable gameResult: {
+        isSuccess: boolean;
+        myScore: number;
+        opponentScore: number;
+    } | null = null;
 
     constructor() {
         makeAutoObservable(this, {
@@ -46,6 +53,8 @@ class SequenceViewModel {
             setOpponentLastPlacedCard: action,
             setMySequences: action,
             setOpponentSequences: action,
+            setGameOver: action,
+            resetGameOver: action,
         });
     }
     
@@ -189,6 +198,18 @@ class SequenceViewModel {
 
     setOpponentSequences(sequences: number[][]) {
         this.opponentSequences = sequences;
+    }
+
+    @action
+    setGameOver(result: { isSuccess: boolean; myScore: number; opponentScore: number }) {
+        this.isGameOver = true;
+        this.gameResult = result;
+    }
+
+    @action
+    resetGameOver() {
+        this.isGameOver = false;
+        this.gameResult = null;
     }
 }
 
