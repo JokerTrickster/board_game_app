@@ -219,26 +219,25 @@ class SequenceWebSocketService {
                         this.roomID as number,
                         this.userID as number,
                         myScore,
-                      result,
-                        
+                        result,
                     );
 
                     // 웹소켓 종료
                     this.disconnect();
                     
-                    // 게임 결과 화면으로 이동
-                  if (navigation) {
-                        navigation.navigate('SequenceResult', { 
-                            isSuccess: result === 1,
-                            myScore: myScore,
-                            opponentScore: opponentScore
-                        });
-                    }
+                    // 게임 종료 상태 설정
+                    sequenceViewModel.setGameOver({
+                        isSuccess: result === 1,
+                        myScore: myScore,
+                        opponentScore: opponentScore
+                    });
                 } catch (error) {
                     console.error('Error in game over handling:', error);
-                    if (navigation) {
-                        navigation.navigate('SequenceResult', { isSuccess: false, myScore: 0, opponentScore: 0 });  
-                    }
+                    sequenceViewModel.setGameOver({
+                        isSuccess: false,
+                        myScore: 0,
+                        opponentScore: 0
+                    });
                 }
                 break;
             case "MATCH_CANCEL":

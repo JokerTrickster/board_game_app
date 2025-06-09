@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Image, ImageBackground, StyleSheet, Modal } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import SystemMessage from '../../../components/common/SystemMessage';
 import styles from '../styles/SequenceStyles';
@@ -7,6 +7,9 @@ import { sequenceViewModel } from '../services/SequenceViewModel';
 import { sequenceWebSocketService } from '../services/SequenceWebsocketService';
 import SequenceMultiHeader from '../../../components/SequenceMultiHeader';
 import sequenceCards from '../../../assets/data/sequnce_cards.json';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../navigation/navigationTypes';
 
 const GRID_SIZE = 10; // 10x10 격자
 const TURN_TIME = 30; // 턴당 제한 시간(초)
@@ -180,6 +183,8 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
   return sequences;
 };
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 const SequenceScreen: React.FC = observer(() => {
   const [systemMessage, setSystemMessage] = useState<string>('');
   const [buttonCooldown, setButtonCooldown] = useState(false);
@@ -196,6 +201,8 @@ const SequenceScreen: React.FC = observer(() => {
   // 마지막으로 사용한 카드들을 저장할 상태 추가
   const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
   const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
+
+  const navigation = useNavigation<NavigationProp>();
 
   // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
   useEffect(() => {
@@ -431,6 +438,13 @@ const SequenceScreen: React.FC = observer(() => {
     ));
   };
 
+  const handleGoToResult = () => {
+    if (sequenceViewModel.gameResult) {
+      navigation.navigate('SequenceResult', sequenceViewModel.gameResult);
+      sequenceViewModel.resetGameOver();
+    }
+  };
+
   return (
     <ImageBackground
       source={require('../../../assets/images/sequence/background.png')}
@@ -446,10 +460,6 @@ const SequenceScreen: React.FC = observer(() => {
             {sequenceViewModel.isMyTurn ? '내 턴' : '상대방 턴'}
           </Text>
         </View>
-
-        /* 플레이어가 마지막으로 선택한 카드 정보 보여준다. 이미지 표시 */
-      
-      
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>
@@ -498,6 +508,33 @@ const SequenceScreen: React.FC = observer(() => {
             onHide={() => setSystemMessage('')} 
           />
         ) : null}
+
+        {/* 게임 종료 모달 */}
+        <Modal
+          visible={sequenceViewModel.isGameOver}
+          transparent={true}
+          animationType="fade"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>
+                {sequenceViewModel.gameResult?.isSuccess ? '승리!' : '패배!'}
+              </Text>
+              <Text style={styles.modalScore}>
+                내 점수: {sequenceViewModel.gameResult?.myScore}
+              </Text>
+              <Text style={styles.modalScore}>
+                상대방 점수: {sequenceViewModel.gameResult?.opponentScore}
+              </Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={handleGoToResult}
+              >
+                <Text style={styles.modalButtonText}>결과 화면으로 이동</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </ImageBackground>
   );
