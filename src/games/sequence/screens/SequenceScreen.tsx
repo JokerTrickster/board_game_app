@@ -139,23 +139,16 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
             tempSeq.push(curMapID);
             if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
 
-            // 가로/세로/대각선 방향 체크
-            const isHorizontal = direction.row === 0 && direction.col !== 0;
-            const isVertical = direction.col === 0 && direction.row !== 0;
-            const isStraightLine = isHorizontal || isVertical;
+            if (usedSequenceCount >= 2) {
+              break;
+            }
+            
 
-            // 가로/세로는 10개, 대각선은 5개
-            const requiredLength = isStraightLine ? 10 : 5;
-
-            if (tempSeq.length === requiredLength) {
-              // 특수칩 2개 이상 불인정, 이미 만들어진 시퀀스 칩 2개 이상 불인정
-              if (specialCount <= 1 && usedSequenceCount <= 1) {
-                const displaySeq = tempSeq.filter(id => !SPECIAL_MAP_IDS.includes(id));
-                // 실제 칩이 4개 이상일 때만 인정
-                if (displaySeq.length >= 4) {
-                  displaySeq.forEach(id => checked.add(id));
-                  sequences.push(displaySeq);
-                }
+            if (tempSeq.length >= 4) {
+              if (tempSeq.length == 4 && specialCount === 1){
+                sequences.push(tempSeq);
+              }else if (tempSeq.length == 5 && specialCount === 0){
+                sequences.push(tempSeq);
               }
               // 다음 시퀀스 탐색을 위해 초기화
               tempSeq = [];
