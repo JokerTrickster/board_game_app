@@ -132,6 +132,7 @@ const SequenceResultScreen: React.FC = () => {
                     <TouchableOpacity
                         style={styles.resultButton}
                         onPress={goToHome}
+                        activeOpacity={0.8}
                     >
                         <Text style={styles.resultButtonText}>홈으로</Text>
                     </TouchableOpacity>
