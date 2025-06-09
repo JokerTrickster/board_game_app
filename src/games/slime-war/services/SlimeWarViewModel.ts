@@ -1,4 +1,4 @@
-import { makeAutoObservable, action } from 'mobx';
+import { makeAutoObservable, action, observable } from 'mobx';
 import cardData from '../../../assets/data/cards.json';
 class SlimeWarViewModel {
     hero = 4;
@@ -24,6 +24,12 @@ class SlimeWarViewModel {
     opponentLastPlacedCard = 0;
     myTurn = 0;
     isMyTurn = false;
+    @observable isGameOver: boolean = false;
+    @observable gameResult: {
+        isSuccess: boolean;
+        myScore: number;
+        opponentScore: number;
+    } | null = null;
 
     constructor() {
         makeAutoObservable(this, {
@@ -50,6 +56,8 @@ class SlimeWarViewModel {
             setOpponentCanMove: action,
             setMyLastPlacedCard: action,
             setOpponentLastPlacedCard: action,
+            setGameOver: action,
+            resetGameOver: action,
         });
     }
     setMyLastPlacedCard(card: any) {
@@ -233,6 +241,18 @@ class SlimeWarViewModel {
         }
 
         return totalScore;
+    }
+
+    @action
+    setGameOver(result: { isSuccess: boolean; myScore: number; opponentScore: number }) {
+        this.isGameOver = true;
+        this.gameResult = result;
+    }
+
+    @action
+    resetGameOver() {
+        this.isGameOver = false;
+        this.gameResult = null;
     }
 }
 
