@@ -252,7 +252,11 @@ class SlimeWarViewModel {
             for (let x = 1; x <= 9; x++) {
                 if (!visited[y][x] && gameMap[x][y] === userId) {
                     const groupSize = this.findConnectedSlimes(gameMap, x, y, userId, visited);
-                    totalScore += groupSize * groupSize + " "; // 제곱하여 점수 계산
+                    if (totalScore === "") {
+                        totalScore += "(" + groupSize + " * " + groupSize + ")"; // 제곱하여 점수 계산
+                    } else {
+                        totalScore += " + (" + groupSize + " * " + groupSize + ")"; // 제곱하여 점수 계산
+                    }
                 }
             }
         }

@@ -474,11 +474,6 @@ const SequenceScreen: React.FC = observer(() => {
           styles.handContainer,
           sequenceViewModel.isMyTurn && styles.activeHandContainer
         ]}>
-          {sequenceViewModel.isMyTurn && (
-            <View style={styles.turnIndicator}>
-              <Text style={styles.turnIndicatorText}>내 차례</Text>
-            </View>
-          )}
           <View style={styles.handScrollView}>
             {playerHand.map((cardID: number, index: number) => {
               const cardInfo = getCardInfoById(cardID);

@@ -1,9 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 import { scale, verticalScale } from 'react-native-size-matters';
 
-const { width, height } = Dimensions.get('window');
-const guidelineBaseWidth = 414;
-const guidelineBaseHeight = 736;
+const { width } = Dimensions.get('window');
 
 export default StyleSheet.create({
     // 전체 배경 이미지 스타일
@@ -243,40 +241,5 @@ export default StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.3)',
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 2,
-    },
-    roundInfo: {
-        flexDirection: 'column',
-        width: '100%',
-        paddingHorizontal: scale(23),
-        paddingTop: verticalScale(10),
-        paddingBottom: verticalScale(20),
-        borderRadius: scale(8),
-        alignItems: 'center',
-    },
-    roundTitle: {
-        fontSize: scale(13),
-        fontWeight: '600',
-        color: '#444',
-        borderWidth: scale(2),
-        width: scale(100),
-        textAlign: 'center',
-        backgroundColor: '#BFA276',
-        borderRadius: scale(5),
-        top: verticalScale(10),
-        zIndex: 1,
-    },
-    profileScoreIcon: {
-        width: scale(20),
-        height: scale(20),
-        marginRight: scale(4),
-        resizeMode: 'contain',
-    },
-    profilesTwoContainer: {
-        backgroundColor: '#F0E3C3',
-        borderRadius: scale(10),
-        borderWidth: scale(2),
-        borderColor: '#BFA276',
-        padding: scale(10),
-        marginTop: verticalScale(8),
     },
 });
