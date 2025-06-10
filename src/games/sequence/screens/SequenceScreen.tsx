@@ -195,6 +195,9 @@ const SequenceScreen: React.FC = observer(() => {
   const [myLastUsedCards, setMyLastUsedCards] = useState<number[]>([]);
   const [opponentLastUsedCards, setOpponentLastUsedCards] = useState<number[]>([]);
 
+  // 상대방이 마지막으로 놓은 칩의 mapID를 저장할 상태 추가
+  const [opponentLastChipMapID, setOpponentLastChipMapID] = useState<number | null>(null);
+
   const navigation = useNavigation<NavigationProp>();
 
   // 내 칩만으로 시퀀스 체크 및 게임 종료 조건 확인
@@ -248,6 +251,14 @@ const SequenceScreen: React.FC = observer(() => {
       }
     }
   }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
+
+  // 상대방 칩 사용 추적을 위한 useEffect 수정
+  useEffect(() => {
+    if (sequenceViewModel.opponentOwnedMapIDs.length > 0) {
+      const lastMapID = sequenceViewModel.opponentOwnedMapIDs[sequenceViewModel.opponentOwnedMapIDs.length - 1];
+      setOpponentLastChipMapID(lastMapID);
+    }
+  }, [sequenceViewModel.opponentOwnedMapIDs]);
 
   // 칩 이미지 반환 함수
   const getChipImage = (colorType: number) => {
@@ -374,7 +385,6 @@ const SequenceScreen: React.FC = observer(() => {
 
   // 맵 렌더링
   const renderGrid = () => {
-    // 시퀀스에 포함된 mapID를 Set으로 만들어 빠른 체크
     const mySequenceMapIDs = new Set(mySequences.flat());
     const opponentSequenceMapIDs = new Set(opponentSequences.flat());
 
@@ -382,12 +392,11 @@ const SequenceScreen: React.FC = observer(() => {
       <View key={`row-${rowIdx}`} style={styles.row}>
         {rowArr.map(({ mapID, row, col }) => {
           const cardInfo = sequenceCards.find(card => card.mapID === mapID);
-          // 내 턴일 때만 유효한 위치 표시
           const isValid = sequenceViewModel.isMyTurn && validMapIDs.includes(mapID);
           const isInMySequence = mySequenceMapIDs.has(mapID);
           const isInOpponentSequence = opponentSequenceMapIDs.has(mapID);
+          const isOpponentLastChip = mapID === opponentLastChipMapID;
 
-          // 칩 이미지 결정
           let chip = null;
           if (sequenceViewModel.ownedMapIDs.includes(mapID)) {
             chip = getChipImage(sequenceViewModel.userColorType);
@@ -403,7 +412,8 @@ const SequenceScreen: React.FC = observer(() => {
                 styles.cell,
                 isValid && styles.validCell,
                 isInMySequence && styles.mySequenceCell,
-                isInOpponentSequence && styles.opponentSequenceCell
+                isInOpponentSequence && styles.opponentSequenceCell,
+                isOpponentLastChip && styles.opponentLastChipCell
               ]}
               onPress={() => handleCellPress(row, col)}
               activeOpacity={0.8}
