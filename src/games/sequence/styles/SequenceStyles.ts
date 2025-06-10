@@ -123,6 +123,8 @@ export default StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
+    borderWidth: 2,
+    borderRadius: 12,
   },
   handScrollView: {
     flexDirection: 'row',
@@ -284,5 +286,15 @@ export default StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  opponentLastChipCell: {
+    borderWidth: 2,
+    borderColor: '#FFD700', // 금색 테두리
+    borderRadius: 4,
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 3,
   },
 }); 

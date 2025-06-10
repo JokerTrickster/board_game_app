@@ -462,18 +462,18 @@ const SlimeWarScreen: React.FC = observer(() => {
                   />
                 </View>
               ))}
-              {/* 상대방 히어로 카드 */}
-              <View style={[baseStyles.opponentCard, baseStyles.heroCardContainer]}>
-                <Image
-                  source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
-                  style={baseStyles.cardImage}
-                  resizeMode="contain"
-                />
-                <Text style={baseStyles.heroCardText}>
-                  {slimeWarViewModel.opponentHeroCount ?? 0}
-                </Text>
-              </View>
             </ScrollView>
+            {/* 상대방 히어로 카드 - 스크롤 바깥, 고정 위치로 이동 */}
+            <View style={[baseStyles.opponentCard, baseStyles.heroCardContainer, { marginLeft: 8 }]}>
+              <Image
+                source={slimeWarViewModel.opponentColorType === 0 ? require('../../../assets/icons/slime-war/common/hero_blue.png') : require('../../../assets/icons/slime-war/common/hero_red.png')}
+                style={baseStyles.cardImage}
+                resizeMode="contain"
+              />
+              <Text style={baseStyles.heroCardText}>
+                {slimeWarViewModel.opponentHeroCount ?? 0}
+              </Text>
+            </View>
           </View>
 
           {/* 하단: 내 카드, 내 히어로 */}
