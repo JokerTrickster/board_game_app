@@ -6,7 +6,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 // 보드 가로는 화면의 98%, 세로는 10x(셀 높이)로 맞춤
 const BOARD_WIDTH = SCREEN_WIDTH * 0.98;
 const CELL_WIDTH = BOARD_WIDTH / 10;
-const CELL_HEIGHT = CELL_WIDTH * 1.35; // 세로를 더 길게(예: 1.35배, 필요시 더 조정)
+const CELL_HEIGHT = CELL_WIDTH * 1.3; // 세로를 더 길게(예: 1.35배, 필요시 더 조정)
 
 const BOARD_HEIGHT = CELL_HEIGHT * 10;
 
@@ -67,7 +67,7 @@ export default StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     marginVertical: 8,
-    marginTop: 10,
+    marginTop: 20,
     borderWidth: 2,
     marginLeft:5,
     borderColor: '#b8c1ec',
