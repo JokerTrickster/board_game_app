@@ -129,32 +129,45 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
 
         while (true) {
           const curMapID = coordToMapId(r, c);
-          if (
-            (ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID))
-          ) {
+          //소유하고 있거나 스펠셜 좌표인지 체크 
+          if ((ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID))) {
             // 이미 시퀀스로 인정된 칩인지 체크
             if (checked.has(curMapID)) {
               usedSequenceCount++;
+            }else{
+              //새로 추가해야될 칩이라면 좌표 추가
+              tempSeq.push(curMapID);
             }
-            tempSeq.push(curMapID);
-            if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
-
+            //이미 시퀀스로 인정된 칩이 2개 이상이면 종료
             if (usedSequenceCount >= 2) {
               break;
             }
-            
+            //스펠셜 좌표인지 체크
+            if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
 
+            // 시퀀스 길이가 4 이상일 때 검사
             if (tempSeq.length >= 4) {
-              if (tempSeq.length == 4 && specialCount === 1){
-                sequences.push(tempSeq);
-              }else if (tempSeq.length == 5 && specialCount === 0){
-                sequences.push(tempSeq);
-              }
-              // 다음 시퀀스 탐색을 위해 초기화
-              tempSeq = [];
-              specialCount = 0;
-              usedSequenceCount = 0;
-              break; // 한 번 찾으면 해당 방향은 break
+                // 특수 카드가 1개이고 길이가 4인 경우
+                if (tempSeq.length === 4 && specialCount === 1) {
+                    sequences.push([...tempSeq]);
+                    tempSeq.forEach(id => checked.add(id));
+                }
+                // 특수 카드가 없고 길이가 5인 경우
+                else if (tempSeq.length === 5 && specialCount === 0) {
+                    sequences.push([...tempSeq]);
+                    tempSeq.forEach(id => checked.add(id));
+                }
+                // 일반 시퀀스 (모든 카드가 사용되지 않은 경우)
+                else if (tempSeq.every(id => !checked.has(id))) {
+                    sequences.push([...tempSeq]);
+                    tempSeq.forEach(id => checked.add(id));
+                }
+
+                // 다음 시퀀스 탐색을 위한 초기화
+                tempSeq = [];
+                specialCount = 0;
+                usedSequenceCount = 0;
+                break; // 한 방향에서 시퀀스를 찾으면 다음 방향으로
             }
 
             // 다음 칸으로 이동

@@ -254,4 +254,53 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
+    // 결과 점수 컨테이너
+    resultScoreContainer: {
+        width: '90%',
+        backgroundColor: '#F0E3C3',
+        borderRadius: scale(10),
+        padding: scale(15),
+        marginVertical: verticalScale(20),
+        borderWidth: scale(2),
+        borderColor: '#BFA276',
+    },
+    resultScoreTitle: {
+        fontSize: scale(18),
+        fontWeight: 'bold',
+        color: '#444',
+        textAlign: 'center',
+        marginBottom: verticalScale(10),
+    },
+    resultScoreRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: verticalScale(8),
+        borderBottomWidth: scale(1),
+        borderBottomColor: '#BFA276',
+    },
+    resultScoreName: {
+        fontSize: scale(16),
+        fontWeight: '600',
+        color: '#444',
+    },
+    resultScoreValueContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    resultScoreValue: {
+        fontSize: scale(16),
+        fontWeight: 'bold',
+        color: '#444',
+        marginRight: scale(10),
+    },
+    winnerText: {
+        fontSize: scale(14),
+        fontWeight: 'bold',
+        color: '#2ecc40',
+        backgroundColor: '#fff',
+        paddingHorizontal: scale(8),
+        paddingVertical: scale(4),
+        borderRadius: scale(5),
+    },
 });

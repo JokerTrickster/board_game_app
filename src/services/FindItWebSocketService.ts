@@ -302,18 +302,42 @@ class FindItWebSocketService {
                 case "GAME_CLEAR":
                     // ✅ 웹소켓 종료
                     this.disconnect();
-                    // ✅ 게임 결과 화면으로 이동
-                    if (navigation) {
-                        findItService.deductCoin(500);
-                        navigation.navigate('MultiFindItResult', { isSuccess: true });
+                    // ✅ 게임 결과 정보 가져오기
+                    try {
+                        const result = await findItService.getGameResult(this.roomID as number);
+                        // ✅ 게임 결과 화면으로 이동
+                        if (navigation) {
+                            findItService.deductCoin(500);
+                            navigation.navigate('MultiFindItResult', { 
+                                isSuccess: true,
+                                gameResult: result 
+                            });
+                        }
+                    } catch (error) {
+                        console.error('게임 결과 조회 실패:', error);
+                        if (navigation) {
+                            navigation.navigate('MultiFindItResult', { isSuccess: true, gameResult: null });
+                        }
                     }
                     break;
                 case "GAME_OVER":
                     // ✅ 웹소켓 종료
                     this.disconnect();
-                    // ✅ 게임 결과 화면으로 이동
-                    if (navigation) {
-                        navigation.navigate('MultiFindItResult', { isSuccess: false });
+                    // ✅ 게임 결과 정보 가져오기
+                    try {
+                        const result = await findItService.getGameResult(this.roomID as number);
+                        // ✅ 게임 결과 화면으로 이동
+                        if (navigation) {
+                            navigation.navigate('MultiFindItResult', { 
+                                isSuccess: false,
+                                gameResult: result 
+                            });
+                        }
+                    } catch (error) {
+                        console.error('게임 결과 조회 실패:', error);
+                        if (navigation) {
+                            navigation.navigate('MultiFindItResult', { isSuccess: false, gameResult: null });
+                        }
                     }
                     break;
                 case "MATCH_CANCEL":
@@ -324,7 +348,7 @@ class FindItWebSocketService {
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
-                        navigation.navigate('MultiFindItResult', { isSuccess: false });
+                        navigation.navigate('MultiFindItResult', { isSuccess: false, gameResult: null });
                     }
                     break;
                 default:
