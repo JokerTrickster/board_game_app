@@ -24,11 +24,10 @@ export default StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: verticalScale(50),
         width: '90%',
         borderWidth: scale(1),
         borderRadius: scale(10),
-        marginBottom: verticalScale(100),
+        marginBottom: verticalScale(80),
         backgroundColor: '#F5EDD8',
     },
 
@@ -155,7 +154,7 @@ export default StyleSheet.create({
     },
     medalTwoIcon: {
         marginVertical: scale(10),
-        marginLeft: scale(10),
+        marginLeft: scale(5),
         zIndex: 2,
     },
     profileImageContainer: {
@@ -192,10 +191,10 @@ export default StyleSheet.create({
         width: scale(80),
         borderColor: '#FFF',
         borderRadius: scale(5),
-        marginLeft: scale(20),
-        // opacity: 1,
+        marginLeft: 'auto',  // 오른쪽으로 고정
+        marginRight: scale(20),
         flexDirection: 'row',
-        borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
+        borderTopLeftRadius: scale(10),
         borderBottomLeftRadius: scale(10),
     },
     profileTwoScoreContainer: {
@@ -203,10 +202,8 @@ export default StyleSheet.create({
         width: scale(80),
         borderColor: '#FFF',
         borderRadius: scale(5),
-        marginLeft: scale(20),
-        // opacity: 1,
         flexDirection: 'row',
-        borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
+        borderTopLeftRadius: scale(10),
         borderBottomLeftRadius: scale(10),
     },
     profileScoreIcon: {
@@ -222,7 +219,7 @@ export default StyleSheet.create({
     ResultButtonContainer: {
         width: '40%',
         height: verticalScale(45),
-        bottom: verticalScale(80),
+        bottom: verticalScale(50),
     },
     resultButton: {
         alignItems: 'center',

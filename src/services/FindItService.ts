@@ -126,9 +126,9 @@ class FindItService {
     /**
      * 게임 결과 정보를 가져오는 API 호출 함수
      * @param roomID 결과를 조회할 방 ID
-     * @returns Promise resolving to { round: number, users: { name: string, totalCorrectCount: number }[] }
+     * @returns Promise resolving to { users: { userID: number, score: number, result: number }[] }
      */
-    async getGameResult(roomID: number): Promise<{ round: number, users: { name: string, totalCorrectCount: number }[] }> {
+    async getGameResult(roomID: number): Promise<{  users: { userID: number, score: number, result: number }[] }> {
         const token = await AsyncStorage.getItem('accessToken');
         if (!token) {
             throw new Error('Access token not found');
@@ -142,13 +142,15 @@ class FindItService {
                 },
                 body: JSON.stringify({ roomID }),
             });
+            console.log(roomID);
+            console.log(response);
             if (!response.ok) {
                 throw new Error(`서버 요청 실패: ${response.status}`);
             }
             const data = await response.json();
             // 응답 데이터 검증
+            console.log("모야 데이터 모야 ",data);
             if (
-                typeof data.round !== 'number' ||
                 !Array.isArray(data.users)
             ) {
                 throw new Error('Invalid response from server');

@@ -4,7 +4,7 @@ import eventEmitter from './EventEmitter';
 
 class GameService {
     private roomID: number | null = null;
-    private users: any[] = [];
+    public users: any[] = [];
     private imageID: number | null = null;
     private gameInfo: any = {};
     private round: number | null = null;

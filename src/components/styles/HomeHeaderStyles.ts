@@ -70,7 +70,7 @@ export default StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'relative',
-        width: scale(160),
+        width: scale(100),
     },
     coinIcon: {
         width: scale(110),
@@ -84,7 +84,7 @@ export default StyleSheet.create({
         color: '#000',
         fontWeight: 'bold',
         position: 'absolute',
-        right: scale(10),
+        right: scale(0),
         minWidth: scale(50),
         textAlign: 'right',
     },

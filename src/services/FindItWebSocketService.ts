@@ -165,6 +165,7 @@ class FindItWebSocketService {
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
                         gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
+                        this.roomID = data.gameInfo.roomID;
                         gameService.setRound(data.gameInfo.round);
                         gameService.setPassword(data.gameInfo.password);
                         console.log("함께하기 비밀번호 : ", data.gameInfo.password);
@@ -301,7 +302,6 @@ class FindItWebSocketService {
                     break;
                 case "GAME_CLEAR":
                     // ✅ 웹소켓 종료
-                    this.disconnect();
                     // ✅ 게임 결과 정보 가져오기
                     try {
                         const result = await findItService.getGameResult(this.roomID as number);
@@ -319,10 +319,12 @@ class FindItWebSocketService {
                             navigation.navigate('MultiFindItResult', { isSuccess: true, gameResult: null });
                         }
                     }
+                    this.disconnect();
+
                     break;
                 case "GAME_OVER":
                     // ✅ 웹소켓 종료
-                    this.disconnect();
+
                     // ✅ 게임 결과 정보 가져오기
                     try {
                         const result = await findItService.getGameResult(this.roomID as number);
@@ -339,6 +341,8 @@ class FindItWebSocketService {
                             navigation.navigate('MultiFindItResult', { isSuccess: false, gameResult: null });
                         }
                     }
+                    this.disconnect();
+
                     break;
                 case "MATCH_CANCEL":
                     console.log("🚫 매칭 취소:", data.message);

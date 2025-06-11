@@ -84,7 +84,7 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                     style={styles.coinIcon}
                 />
                 <Text style={styles.coinCount} numberOfLines={1}>
-                    {user?.coin?.toLocaleString() ?? '0'}
+                    {user?.coin?.toLocaleString() ?? '10000'}
                 </Text>
             </View>
 

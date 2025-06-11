@@ -6,14 +6,15 @@ import MultiHeader from '../../components/MultiHeader';
 import { RootStackParamList } from '../../navigation/navigationTypes';
 import findItViewModel from './services/FindItViewModel';
 import { BackHandler } from 'react-native';
+import { gameService } from '../../services/GameService';
 
 type MultiFindItResultRouteProp = RouteProp<RootStackParamList, 'MultiFindItResult'>;
 
 interface GameResult {
-    round: number;
     users: {
-        name: string;
-        totalCorrectCount: number;
+        userID: number;
+        score: number;
+        result: number;
     }[];
 }
 
@@ -26,6 +27,9 @@ const MultiFindItResultScreen: React.FC = () => {
         findItViewModel.resetGameState();
         navigation.navigate('Loading', { nextScreen: 'Home' });
     };
+    const getUserName = (userID: number) => {
+        return gameService.users.find((user: any) => user.id === userID)?.name;
+    }
 
     // 백 버튼 처리
     useEffect(() => {
@@ -38,7 +42,7 @@ const MultiFindItResultScreen: React.FC = () => {
     const getWinner = () => {
         if (!gameResult?.users) return null;
         return gameResult.users.reduce((prev: GameResult['users'][0], current: GameResult['users'][0]) => 
-            (prev.totalCorrectCount > current.totalCorrectCount) ? prev : current
+            (prev.score > current.score) ? prev : current
         );
     };
 
@@ -71,17 +75,14 @@ const MultiFindItResultScreen: React.FC = () => {
 
                     {/* 결과 점수 표시 */}
                     <View style={styles.resultScoreContainer}>
-                        <Text style={styles.resultScoreTitle}>최종 점수</Text>
+                        <Text style={styles.resultScoreTitle}>맞춘 개수</Text>
                         {gameResult?.users.map((user: GameResult['users'][0], index: number) => (
                             <View key={index} style={styles.resultScoreRow}>
-                                <Text style={styles.resultScoreName}>{user.name}</Text>
+                                <Text style={styles.resultScoreName}>{getUserName(user.userID)}</Text>
                                 <View style={styles.resultScoreValueContainer}>
                                     <Text style={styles.resultScoreValue}>
-                                        {user.totalCorrectCount}개
+                                        {user.score}개
                                     </Text>
-                                    {winner?.name === user.name && (
-                                        <Text style={styles.winnerText}>Winner!</Text>
-                                    )}
                                 </View>
                             </View>
                         ))}
@@ -116,7 +117,7 @@ const MultiFindItResultScreen: React.FC = () => {
                                             style={styles.profileImage}
                                         />
                                     </View>
-                                    <Text style={styles.profileName}>{user.name}</Text>
+                                    <Text style={styles.profileName}>{getUserName(user.userID)}</Text>
                                     <View style={[
                                         styles.profileScoreContainer,
                                         index === 1 && styles.profileTwoScoreContainer
@@ -126,7 +127,7 @@ const MultiFindItResultScreen: React.FC = () => {
                                             style={styles.profileScoreIcon}
                                         />
                                         <Text style={styles.profileScore}>
-                                            {user.totalCorrectCount}개
+                                            {isSuccess ? 500 : -100}
                                         </Text>
                                     </View>
                                 </View>
