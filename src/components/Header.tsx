@@ -79,12 +79,13 @@ const Header: React.FC<{ userData?: any }> = ({ userData }) => {
                 </View>
 
             <View style={styles.coin}>
-                {/* coin 이미지 */}
                 <Image
                     source={require('../assets/icons/home/coin.png')}
                     style={styles.coinIcon}
                 />
-                <Text style={styles.coinCount}>{user?.coin ?? 100}</Text>
+                <Text style={styles.coinCount} numberOfLines={1}>
+                    {user?.coin?.toLocaleString() ?? '0'}
+                </Text>
             </View>
 
 

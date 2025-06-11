@@ -122,6 +122,42 @@ class FindItService {
             return false;
         }
     }
+
+    /**
+     * 게임 결과 정보를 가져오는 API 호출 함수
+     * @param roomID 결과를 조회할 방 ID
+     * @returns Promise resolving to { round: number, users: { name: string, totalCorrectCount: number }[] }
+     */
+    async getGameResult(roomID: number): Promise<{ round: number, users: { name: string, totalCorrectCount: number }[] }> {
+        const token = await AsyncStorage.getItem('accessToken');
+        if (!token) {
+            throw new Error('Access token not found');
+        }
+        try {
+            const response = await fetch(`${API_BASE_URL}/find-it/v0.1/game/result`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'tkn': token,
+                },
+                body: JSON.stringify({ roomID }),
+            });
+            if (!response.ok) {
+                throw new Error(`서버 요청 실패: ${response.status}`);
+            }
+            const data = await response.json();
+            // 응답 데이터 검증
+            if (
+                typeof data.round !== 'number' ||
+                !Array.isArray(data.users)
+            ) {
+                throw new Error('Invalid response from server');
+            }
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 export const findItService = new FindItService();
