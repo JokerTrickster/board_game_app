@@ -73,7 +73,13 @@ const MultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                     style={styles.profileImage}
                 />
                 <View style={styles.profileInfo}>
-                    <Text style={styles.nickname}>{profile1.name || '보린이'}</Text>
+                    <Text style={[
+                        styles.nickname,
+                        profile1.name === '나' && styles.activePlayerName,
+                        profile2.name === '상대' && styles.activePlayerName
+                    ]}>
+                        {profile1.name || '보린이'}
+                    </Text>
                 </View>
             </View>
 
@@ -93,7 +99,13 @@ const MultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                     style={styles.profileImage}
                 />
                 <View style={styles.profileInfo}>
-                    <Text style={styles.nickname}>{profile2.name || '보린이'}</Text>
+                    <Text style={[
+                        styles.nickname,
+                        profile2.name === '상대' && styles.activePlayerName,
+                        profile1.name === '나' && styles.activePlayerName
+                    ]}>
+                        {profile2.name || '보린이'}
+                    </Text>
                 </View>
             </View>
         </View>

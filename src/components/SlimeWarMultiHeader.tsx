@@ -147,7 +147,13 @@ const SlimeWarMultiHeader: React.FC<{ userData?: any; timer: number }> = ({ user
                     style={styles.profileImage}
                 />
                 <View style={styles.profileInfo}>
-                    <Text style={styles.nickname}>{profile1.name || '보린이'}</Text>
+                    <Text style={[
+                        styles.nickname,
+                        slimeWarViewModel.isMyTurn && profile1.name === '나' && styles.activePlayerName,
+                        !slimeWarViewModel.isMyTurn && profile2.name === '상대' && styles.activePlayerName
+                    ]}>
+                        {profile1.name || '보린이'}
+                    </Text>
                 </View>
                 {/* 마지막 사용 카드 표시 */}
                 {myLastCard && (
@@ -189,7 +195,13 @@ const SlimeWarMultiHeader: React.FC<{ userData?: any; timer: number }> = ({ user
                     style={styles.profileImage}
                 />
                 <View style={styles.profileInfo}>
-                    <Text style={styles.nickname}>{profile2.name || '보린이'}</Text>
+                    <Text style={[
+                        styles.nickname,
+                        slimeWarViewModel.isMyTurn && profile2.name === '상대' && styles.activePlayerName,
+                        !slimeWarViewModel.isMyTurn && profile1.name === '나' && styles.activePlayerName
+                    ]}>
+                        {profile2.name || '보린이'}
+                    </Text>
                 </View>
                 {/* 마지막 사용 카드 표시 */}
                 {opponentLastCard && (

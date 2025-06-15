@@ -46,14 +46,16 @@ export default StyleSheet.create({
         borderRadius: scale(10),
     },
     profileInfo: {
-        justifyContent: 'center',
-        marginBottom: verticalScale(5),
+        backgroundColor: '#F0E3C3',  // 기본 배경색
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 8,
+        marginTop: 5,
     },
     nickname: {
-        fontSize: scale(16),
-        fontWeight: 'bold',
-        paddingBottom: verticalScale(5),
-        textAlign: 'center',
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#5F4B32',
     },
     // 가운데 영역 스타일
     centerContainer: {
@@ -264,5 +266,12 @@ export default StyleSheet.create({
         width: scale(40),
         height: scale(40),
         resizeMode: 'contain',
+    },
+    activePlayerName: {
+        color: '#4CAF50',  // 활성 플레이어 이름 색상
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(76, 175, 80, 0.3)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
 });
