@@ -208,6 +208,7 @@ class SlimeWarWebSocketService {
                     break;
                 case "START":
                     slimeWarService.deductCoin(-100);
+                    console.log("🔑 게임 시작. ", parsedData);
                     if (navigation) {
                         navigation.navigate('Loading', { nextScreen: 'SlimeWar' });
                     }

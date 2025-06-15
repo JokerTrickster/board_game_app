@@ -55,8 +55,6 @@ const MultiFindItResultScreen: React.FC = () => {
             imageStyle={styles.backgroundImage}
         >
             <View style={styles.container}>
-                <MultiHeader />
-
                 <View style={styles.resultContainer}>
                     <View style={styles.clearConatiner}>
                         <Image
