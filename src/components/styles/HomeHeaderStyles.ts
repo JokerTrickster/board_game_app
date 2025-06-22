@@ -194,9 +194,18 @@ export default StyleSheet.create({
         marginBottom: verticalScale(15),
     },
     settingItem: {
-        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: verticalScale(10),
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    settingText: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#333',
     },
     slider: {
         width: '80%',
@@ -238,5 +247,9 @@ export default StyleSheet.create({
     background: {
         flex: 1,
         resizeMode: 'cover',
+    },
+    switchContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });
