@@ -1,6 +1,6 @@
-export const API_BASE_URL = 'https://dev-frog-api.jokertrickster.com';
+export const API_BASE_URL = 'http://13.203.37.93:8080';
 // export const API_BASE_URL = 'http://10.0.2.2:8080';
-export const WS_BASE_URL = 'wss://dev-frog-api.jokertrickster.com';
+export const WS_BASE_URL = 'ws://13.203.37.93:8080';
 // export const WS_BASE_URL = 'ws://10.0.2.2:8080';
 
 export const GOOGLE_SIGNIN_CONFIG = {
