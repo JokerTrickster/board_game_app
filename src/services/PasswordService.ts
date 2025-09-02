@@ -9,8 +9,17 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             return await response.json();
         } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
             throw new Error('인증 코드 요청 중 오류가 발생했습니다.');
         }
     }
@@ -22,8 +31,17 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, code, password }),
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             return await response.json();
         } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
             throw new Error('인증 코드 검증 중 오류가 발생했습니다.');
         }
     }
@@ -35,8 +53,17 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             return await response.json();
         } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            }
             throw new Error('비밀번호 변경 중 오류가 발생했습니다.');
         }
     }

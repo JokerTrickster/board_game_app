@@ -63,10 +63,11 @@ export const AuthService = {
         }
     },
 
-    // ✅ 로그아웃 (토큰, 유저 ID 삭제)
+    // ✅ 로그아웃 (모든 토큰, 유저 ID 삭제)
     logout: async () => {
         try {
             await AsyncStorage.removeItem(ACCESS_TOKEN_KEY);
+            await AsyncStorage.removeItem(REFRESH_TOKEN_KEY);
             await AsyncStorage.removeItem(USER_ID_KEY);
         } catch (error) {
             console.error('로그아웃 실패:', error);

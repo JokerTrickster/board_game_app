@@ -15,6 +15,24 @@ const LoginScreen: React.FC = () => {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
+        // 입력 값 검증
+        if (!email.trim()) {
+            Alert.alert('입력 오류', '이메일을 입력해주세요.');
+            return;
+        }
+        
+        if (!password.trim()) {
+            Alert.alert('입력 오류', '비밀번호를 입력해주세요.');
+            return;
+        }
+        
+        // 이메일 형식 검증
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Alert.alert('입력 오류', '올바른 이메일 형식을 입력해주세요.');
+            return;
+        }
+        
         const result = await LoginService.login(email, password);
         if (result.success) {
             navigation.replace('Home');
@@ -27,7 +45,7 @@ const LoginScreen: React.FC = () => {
         try {
             const response = await GoogleSignin.signIn();
 
-            if (!response.data?.serverAuthCode) {
+            if (!response.data || !response.data.serverAuthCode) {
                 Alert.alert('구글 로그인 실패', '로그인 정보를 가져오는 데 실패했습니다.');
                 return;
             }

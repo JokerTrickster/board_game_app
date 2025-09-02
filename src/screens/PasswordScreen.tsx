@@ -29,7 +29,7 @@ const PasswordScreen: React.FC = () => {
             interval = setInterval(() => setTimer(prev => prev - 1), 1000);
         }
         return () => clearInterval(interval);
-    }, [isEmailSent, timer]);
+    }, [isEmailSent]);
 
     const handleRequestCode = async () => {
         try {
