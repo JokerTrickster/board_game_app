@@ -1,0 +1,15 @@
+name: Auto Label
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  label:
+    permissions:
+      pull-requests: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          configuration-path: .github/labeler.yml
