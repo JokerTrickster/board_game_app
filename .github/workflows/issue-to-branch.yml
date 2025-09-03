@@ -1,0 +1,77 @@
+name: Issue to Branch
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  create-branch:
+    if: contains(github.event.issue.labels.*.name, 'stage/ready')
+    permissions:
+      contents: write
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide branch name
+        id: meta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => l.name);
+            const isEpic = labels.includes('type/epic');
+            const prefix = isEpic ? 'epic' : 'task';
+            const num = issue.number;
+            const slug = issue.title.toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 40);
+            const branch = `${prefix}/${num}-${slug}`;
+            core.setOutput('branch', branch);
+
+      - name: Get default branch SHA
+        id: head
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: repo } = await github.rest.repos.get(context.repo);
+            const base = repo.default_branch; // ex) 'main'
+            const { data: ref } = await github.rest.git.getRef({
+              owner: context.repo.owner, repo: context.repo.repo,
+              ref: `heads/${base}`
+            });
+            core.setOutput('base', base);
+            core.setOutput('sha', ref.object.sha);
+
+      - name: Create ref if not exists
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = '${{ steps.meta.outputs.branch }}';
+            try {
+              await github.rest.git.getRef({
+                owner: context.repo.owner, repo: context.repo.repo, ref: `heads/${branch}`
+              });
+              core.info(`Branch exists: ${branch}`);
+            } catch (e) {
+              if (e.status === 404) {
+                await github.rest.git.createRef({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  ref: `refs/heads/${branch}`, sha: '${{ steps.head.outputs.sha }}'
+                });
+                core.info(`✅ Created branch ${branch}`);
+              } else throw e;
+            }
+
+      - name: Comment checkout hint
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = '${{ steps.meta.outputs.branch }}';
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number,
+              body: [
+                `브랜치가 준비됐어요: \`${branch}\``,
+                '```bash',
+                `git fetch origin`,
+                `git checkout -b ${branch} origin/${branch}`,
+                '```'
+              ].join('\n')
+            });

@@ -1,0 +1,65 @@
+# Auto-labeling configuration for GitHub PRs
+# This file defines rules for automatically labeling pull requests based on changed files
+
+# Documentation updates
+"type/docs":
+  - any: ["**/*.md", "docs/**"]
+
+# Configuration files
+"type/config":
+  - any: ["**/*.yml", "**/*.yaml", "**/*.json", "**/*.xml", "**/*.config.*"]
+
+# Source code changes
+"type/feature":
+  - any: ["src/**/*.{ts,tsx,js,jsx}"]
+
+# Game-specific changes
+"game/find-it":
+  - any: ["src/games/find-it/**"]
+
+"game/frog":
+  - any: ["src/games/frog/**"]
+
+"game/slime-war":
+  - any: ["src/games/slime-war/**"]
+
+"game/sequence":
+  - any: ["src/games/sequence/**"]
+
+# Component changes
+"ui/components":
+  - any: ["src/components/**"]
+
+# Screen changes  
+"ui/screens":
+  - any: ["src/screens/**"]
+
+# Service layer changes
+"backend/services":
+  - any: ["src/services/**"]
+
+# Styling changes
+"ui/styles":
+  - any: ["src/styles/**", "**/*.style.{ts,tsx,js,jsx}"]
+
+# Testing
+"type/test":
+  - any: ["**/*.test.{ts,tsx,js,jsx}", "**/__tests__/**", "**/*.spec.{ts,tsx,js,jsx}"]
+
+# Build and dependencies
+"type/build":
+  - any: ["package.json", "package-lock.json", "yarn.lock", "android/**", "ios/**"]
+
+# GitHub workflows and CI/CD
+"type/ci":
+  - any: [".github/**"]
+
+# Assets and media
+"type/assets":
+  - any: ["src/assets/**", "**/*.{png,jpg,jpeg,gif,svg,ico}"]
+
+# Large changes (affecting many files)
+"size/large":
+  - any: ["**/*"]
+    all-globs-to-any-file: true
+    min-count: 20
