@@ -2,22 +2,6 @@
 
 > Think carefully and implement the most concise solution that changes as little code as possible.
 
-## Project Information
-- **Repository**: JokerTrickster/board_game_app
-- **GitHub URL**: https://github.com/JokerTrickster/board_game_app
-- **Project**: board_game_app
-
-## CCPM Integration (Claude Code PM)
-This project uses CCPM for structured project management with AI agents. 
-
-### Quick Commands:
-- `/pm:prd-new feature-name` - Create new Product Requirements Document
-- `/pm:prd-parse feature-name` - Convert PRD to implementation plan
-- `/pm:epic-oneshot feature-name` - Decompose and sync to GitHub issues
-- `/pm:issue-start 1234` - Start working on GitHub issue with specialized agent
-- `/pm:next` - Get next priority task with context
-- `/pm:status` - Overall project dashboard
-
 ## USE SUB-AGENTS FOR CONTEXT OPTIMIZATION
 
 ### 1. Always use the file-analyzer sub-agent when asked to read files.
@@ -53,6 +37,7 @@ Using the test-runner agent ensures:
 - Do not move on to the next test until the current test is complete.
 - If the test fails, consider checking if the test is structured correctly before deciding we need to refactor the codebase.
 - Tests to be verbose so we can use them for debugging.
+
 
 ## Tone and Behavior
 
