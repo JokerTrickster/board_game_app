@@ -207,7 +207,7 @@ const GameDetailScreen: React.FC = () => {
 
             soloGameViewModel.resetGameState();
             const gameInfoList = await findItService.fetchSoloPlayGameInfo(10);
-            (navigation as any).navigate("Loading", { nextScreen: 'SoloFindIt', params: { gameInfoList } });
+            (navigation as any).navigate('SoloFindIt', { gameInfoList });
 
         } catch (error: any) {
             Alert.alert("Error", error.message);

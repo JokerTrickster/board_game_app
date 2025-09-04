@@ -156,7 +156,7 @@ class SequenceWebSocketService {
             case "START":
                 sequenceService.deductCoin(-100);
                 if (navigation) {
-                    navigation.navigate('Loading', { nextScreen: 'Sequence' });
+                    navigation.navigate('Sequence');
                 }
                 this.handleGameStart(parsedData);
                 break;

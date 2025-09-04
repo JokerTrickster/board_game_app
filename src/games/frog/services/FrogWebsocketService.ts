@@ -164,7 +164,7 @@ class FrogWebSocketService {
           case "START":
               frogService.deductCoin(-100);
               if (navigation) {
-                navigation.navigate('Loading', { nextScreen: 'Frog' });
+                navigation.navigate('Frog');
               }
               this.handleStartEvent(parsedData);
               break;

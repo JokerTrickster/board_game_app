@@ -206,7 +206,7 @@ class FindItWebSocketService {
                 case "START":
                     findItService.deductCoin(-100);
                     if (navigation) {
-                        navigation.navigate('Loading', { nextScreen: 'FindIt' });
+                        navigation.navigate('FindIt');
                     }
                     this.handleGameStart(data);
                     // ✅ 게임 정보 저장

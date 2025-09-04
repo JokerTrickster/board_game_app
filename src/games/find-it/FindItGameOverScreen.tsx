@@ -60,7 +60,7 @@ const FindItGameOverScreen: React.FC = observer(() => {
 
                         <TouchableOpacity
                             style={styles.mainButton}
-                                onPress={() => navigation.navigate('Loading', { nextScreen: 'Home' })}>
+                                onPress={() => navigation.navigate('Home')}>
                             <Text style={styles.mainButtonText}>메인 화면으로</Text>
                         </TouchableOpacity>
                     </>
