@@ -2,13 +2,13 @@
 allowed-tools: Bash
 ---
 
-# Custom: PRD Full
+# Custom: PRD Create
 
 Complete PRD to Epic workflow with branch creation and GitHub synchronization.
 
 ## Usage
 ```
-/custom:prd-full <feature_name> [options]
+/custom:prd-create <feature_name> [options]
 ```
 
 ## Description
@@ -35,7 +35,7 @@ This command executes a complete end-to-end workflow:
 Execute the comprehensive PRD workflow:
 
 ```bash
-bash .claude/scripts/custom/prd-full.sh $ARGUMENTS
+bash .claude/scripts/custom/prd-create.sh $ARGUMENTS
 ```
 
 ## Workflow Steps
@@ -72,7 +72,7 @@ epic/<feature_name>     # Epic branch from base branch
 
 ## Output Format
 ```
-🚀 PRD Full Workflow Starting: feature-name
+🚀 PRD Create Workflow Starting: feature-name
 
 📋 Step 1: Context Initialization
 ===============================
@@ -115,7 +115,7 @@ Task Issues:  #124-#128
 Epic Branch:  epic/feature-name
 Task Branches: 5 branches created
 
-✅ PRD Full Workflow Complete - Ready for Development
+✅ PRD Create Workflow Complete - Ready for Development
 ```
 
 ## Error Handling
@@ -128,10 +128,10 @@ Task Branches: 5 branches created
 ## Examples
 ```bash
 # Basic workflow
-/custom:prd-full user-authentication
+/custom:prd-create user-authentication
 
 # With all options
-/custom:prd-full payment-integration \
+/custom:prd-create payment-integration \
   --reset-context \
   --base main \
   --task-branches per-task \
@@ -140,7 +140,7 @@ Task Branches: 5 branches created
   --repo "myorg/myproject"
 
 # Minimal branches
-/custom:prd-full quick-feature \
+/custom:prd-create quick-feature \
   --task-branches none
 ```
 
