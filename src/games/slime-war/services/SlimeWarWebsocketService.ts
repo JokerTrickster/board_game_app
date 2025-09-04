@@ -210,7 +210,7 @@ class SlimeWarWebSocketService {
                     slimeWarService.deductCoin(-100);
                     console.log("🔑 게임 시작. ", parsedData);
                     if (navigation) {
-                        navigation.navigate('Loading', { nextScreen: 'SlimeWar' });
+                        navigation.navigate('SlimeWar');
                     }
                     this.handleGameStart(parsedData);
                     // ✅ 게임 정보 저장

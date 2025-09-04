@@ -13,7 +13,7 @@ const FrogResultScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<FrogResultRouteProp>();
     const goToHome = () => {
-        navigation.navigate('Loading', { nextScreen: 'Home' });
+        navigation.navigate('Home');
     };
     const { isSuccess } = route.params || { isSuccess: false };
 
