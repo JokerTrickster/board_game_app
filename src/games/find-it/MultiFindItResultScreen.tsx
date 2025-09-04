@@ -25,7 +25,7 @@ const MultiFindItResultScreen: React.FC = () => {
 
     const goToHome = () => {
         findItViewModel.resetGameState();
-        navigation.navigate('Loading', { nextScreen: 'Home' });
+        navigation.navigate('Home');
     };
     const getUserName = (userID: number) => {
         return gameService.users.find((user: any) => user.id === userID)?.name;

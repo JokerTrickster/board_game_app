@@ -12,7 +12,7 @@ const SequenceResultScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<SequenceResultRouteProp>();
     const goToHome = () => {
-        navigation.navigate('Loading', { nextScreen: 'Home' });
+        navigation.navigate('Home');
     };
     const { isSuccess, myScore, opponentScore } = route.params || { isSuccess: false, myScore: 0, opponentScore: 0 };
 
