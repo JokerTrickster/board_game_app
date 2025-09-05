@@ -1,20 +1,20 @@
 // Slime War Game MVVM Components Export
 
 // Models
-export { 
-  SlimeWarGameModel, 
-  GameCanStartRule, 
-  CanPlaceCardRule, 
-  CanMoveCardRule 
+export {
+  SlimeWarGameModel,
+  GameCanStartRule,
+  CanPlaceCardRule,
+  CanMoveCardRule,
 } from './models/SlimeWarGameModel';
-export type { 
-  BoardPosition, 
-  GameCard, 
-  Player, 
-  BoardCell, 
-  GameSession, 
-  GameConfig, 
-  GameResult 
+export type {
+  BoardPosition,
+  GameCard,
+  Player,
+  BoardCell,
+  GameSession,
+  GameConfig,
+  GameResult,
 } from './models/SlimeWarGameModel';
 
 // ViewModels

@@ -1,14 +1,14 @@
 import { action, computed, observable } from 'mobx';
 import { BaseViewModel } from '../../../infrastructure/mvvm/BaseViewModel';
-import { 
-  HomeModel, 
-  GameItem, 
-  HomeUserProfile, 
-  HomeStats, 
+import {
+  HomeModel,
+  GameItem,
+  HomeUserProfile,
+  HomeStats,
   AppNotification,
   QuickAction,
   UserCanPlayGameRule,
-  CanAccessFeaturesRule
+  CanAccessFeaturesRule,
 } from '../models/HomeModel';
 import { LoginService } from '../../../services/LoginService';
 import { gameService } from '../../../services/GameService';
@@ -140,7 +140,7 @@ export class HomeViewModel extends BaseViewModel {
           experience: response.user.experience || 0,
           totalGamesPlayed: response.user.totalGamesPlayed || 0,
           favoriteGames: response.user.favoriteGames || [],
-          achievements: response.user.achievements || []
+          achievements: response.user.achievements || [],
         };
 
         this.homeModel.setUserProfile(homeProfile);
@@ -175,10 +175,10 @@ export class HomeViewModel extends BaseViewModel {
 
     return this.executeAsync(async () => {
       this.homeModel.toggleFavoriteGame(gameId);
-      
+
       // Sync with server if needed
       // await this.syncFavoritesToServer();
-      
+
       return true;
     }) !== null;
   }
@@ -192,7 +192,7 @@ export class HomeViewModel extends BaseViewModel {
   public async loadGameList(): Promise<boolean> {
     return this.executeAsync(async () => {
       const games = await gameService.fetchGameList();
-      
+
       // Convert to GameItem format
       const gameItems: GameItem[] = games.map(game => ({
         id: game.id || 0,
@@ -202,13 +202,13 @@ export class HomeViewModel extends BaseViewModel {
         category: game.category || 'other',
         playerCount: {
           min: game.minPlayers || 1,
-          max: game.maxPlayers || 4
+          max: game.maxPlayers || 4,
         },
         playTime: game.playTime || 30,
         difficulty: game.difficulty || 'medium',
         isActive: game.isActive !== false,
         isNew: game.isNew || false,
-        isFavorite: false // Will be set based on user profile
+        isFavorite: false, // Will be set based on user profile
       }));
 
       this.homeModel.setGameList(gameItems);
@@ -268,16 +268,16 @@ export class HomeViewModel extends BaseViewModel {
       'FindIt': 'FindIt',
       'SlimeWar': 'SlimeWar',
       'Sequence': 'Sequence',
-      'Frog': 'Frog'
+      'Frog': 'Frog',
     };
 
     const route = routeMapping[game.name] || 'GameDetail';
     const params = route === 'GameDetail' ? { game: game.name } : undefined;
 
-    return { 
-      canPlay: true, 
-      route, 
-      params 
+    return {
+      canPlay: true,
+      route,
+      params,
     };
   }
 
@@ -295,7 +295,7 @@ export class HomeViewModel extends BaseViewModel {
         totalUsers: Math.floor(Math.random() * 10000) + 1000,
         activeGames: this.homeModel.gameList.filter(g => g.isActive).length,
         todayGames: Math.floor(Math.random() * 100),
-        weeklyRanking: Math.floor(Math.random() * 1000) + 1
+        weeklyRanking: Math.floor(Math.random() * 1000) + 1,
       };
 
       this.homeModel.setHomeStats(stats);
@@ -332,7 +332,7 @@ export class HomeViewModel extends BaseViewModel {
       message: '보드게임 앱에 오신 것을 환영합니다. 다양한 게임을 즐겨보세요!',
       type: 'info',
       timestamp: new Date(),
-      isRead: false
+      isRead: false,
     };
 
     this.homeModel.addNotification(welcomeNotification);
@@ -386,7 +386,7 @@ export class HomeViewModel extends BaseViewModel {
 
     return {
       route: action.route,
-      params: action.params
+      params: action.params,
     };
   }
 
@@ -413,12 +413,12 @@ export class HomeViewModel extends BaseViewModel {
           this.loadUserProfile(),
           this.loadGameList(),
           this.loadHomeStats(),
-          this.loadNotifications()
+          this.loadNotifications(),
         ]);
 
         // At least user profile and games should load successfully
         const success = profileLoaded && gamesLoaded;
-        
+
         if (success) {
           this.clearOldNotifications();
         }
@@ -438,7 +438,7 @@ export class HomeViewModel extends BaseViewModel {
     return this.executeAsync(async () => {
       const [statsLoaded, notificationsLoaded] = await Promise.all([
         this.loadHomeStats(),
-        this.loadNotifications()
+        this.loadNotifications(),
       ]);
 
       return statsLoaded || notificationsLoaded;
@@ -453,7 +453,7 @@ export class HomeViewModel extends BaseViewModel {
   @action
   public setOnlineStatus(isOnline: boolean): void {
     this.homeModel.setOnlineStatus(isOnline);
-    
+
     if (isOnline) {
       // Auto refresh when coming back online
       this.softRefresh();
@@ -509,7 +509,7 @@ export class HomeViewModel extends BaseViewModel {
       favoriteGamesCount: this.homeModel.userProfile?.favoriteGames.length || 0,
       unreadNotifications: this.homeModel.unreadNotificationCount,
       lastRefresh: this.homeModel.lastRefreshTime,
-      currentLevel: this.homeModel.userProfile?.level || 1
+      currentLevel: this.homeModel.userProfile?.level || 1,
     };
   }
 

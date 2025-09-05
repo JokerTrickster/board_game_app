@@ -20,8 +20,8 @@ class CommonAudioManagerClass {
   }
 
   private initializeAudioSystem() {
-    if (this.isInitialized) return;
-    
+    if (this.isInitialized) {return;}
+
     // Enable playback in silent mode on iOS
     Sound.setCategory('Playback');
     this.isInitialized = true;
@@ -44,7 +44,7 @@ class CommonAudioManagerClass {
 
   private async loadSound(config: SoundConfig): Promise<Sound> {
     const { filename, numberOfLoops = 0, volume = 1.0 } = config;
-    
+
     // Check if we're already loading this sound
     if (this.loadingPromises.has(filename)) {
       return this.loadingPromises.get(filename)!;
@@ -96,7 +96,7 @@ class CommonAudioManagerClass {
       this.backgroundMusic = await this.loadSound({
         filename: 'basic_background_music.mp3',
         numberOfLoops: -1, // Loop indefinitely
-        volume: 0.7
+        volume: 0.7,
       });
 
       this.backgroundMusic.play((success) => {
@@ -129,7 +129,7 @@ class CommonAudioManagerClass {
       this.gameBackgroundMusic = await this.loadSound({
         filename: 'find_it_background_music.mp3',
         numberOfLoops: -1, // Loop indefinitely
-        volume: 0.6
+        volume: 0.6,
       });
 
       this.gameBackgroundMusic.play((success) => {
@@ -155,7 +155,7 @@ class CommonAudioManagerClass {
     // Clean initialization that prevents memory leaks
     await Promise.all([
       this.stopGameBackgroundMusic(),
-      this.stopBackgroundMusic()
+      this.stopBackgroundMusic(),
     ]);
   }
 
@@ -179,7 +179,7 @@ class CommonAudioManagerClass {
 
   setVolume(type: 'background' | 'game', volume: number) {
     const clampedVolume = Math.max(0, Math.min(1, volume));
-    
+
     if (type === 'background' && this.backgroundMusic) {
       this.backgroundMusic.setVolume(clampedVolume);
     } else if (type === 'game' && this.gameBackgroundMusic) {
@@ -215,11 +215,11 @@ class CommonAudioManagerClass {
 
     // Wait for any pending loads to complete and then cleanup
     await Promise.all(Array.from(this.loadingPromises.values()));
-    
+
     // Clean up all audio resources
     await Promise.all([
       this.stopBackgroundMusic(),
-      this.stopGameBackgroundMusic()
+      this.stopGameBackgroundMusic(),
     ]);
 
     this.loadingPromises.clear();

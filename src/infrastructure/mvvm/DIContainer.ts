@@ -70,7 +70,7 @@ export class DIContainer {
   ): void {
     const name = typeof identifier === 'string' ? identifier : identifier.name;
     this.instances.set(name, instance);
-    
+
     // Also register as a factory that returns the instance
     this.services.set(name, {
       factory: () => instance,
@@ -84,7 +84,7 @@ export class DIContainer {
    */
   resolve<T>(identifier: string | ServiceIdentifier<T>): T {
     const name = typeof identifier === 'string' ? identifier : identifier.name;
-    
+
     // Check if we have a cached instance for singletons
     if (this.instances.has(name)) {
       return this.instances.get(name);
@@ -97,7 +97,7 @@ export class DIContainer {
 
     // Resolve dependencies
     const dependencies = descriptor.dependencies?.map(dep => this.resolve(dep)) || [];
-    
+
     // Create instance
     const instance = descriptor.factory(...dependencies);
 
@@ -142,7 +142,7 @@ export class DIContainer {
    */
   createChild(): DIContainer {
     const child = new DIContainer();
-    
+
     // Copy services from parent (not instances, so child can have its own)
     for (const [name, descriptor] of this.services) {
       child.services.set(name, { ...descriptor });

@@ -1,10 +1,10 @@
 // Home Screen MVVM Components Export
 
 // Models
-export { 
+export {
   HomeModel,
   UserCanPlayGameRule,
-  CanAccessFeaturesRule
+  CanAccessFeaturesRule,
 } from './models/HomeModel';
 export type {
   GameItem,
@@ -12,7 +12,7 @@ export type {
   Achievement,
   HomeStats,
   AppNotification,
-  QuickAction
+  QuickAction,
 } from './models/HomeModel';
 
 // ViewModels

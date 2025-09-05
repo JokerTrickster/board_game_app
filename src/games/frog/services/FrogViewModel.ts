@@ -61,7 +61,7 @@ class FrogViewModel {
     setRound(round: number) {
         this.round = round;
     }
-    
+
 
     setUserID(userID: number) {
         this.userID = userID;
@@ -69,7 +69,7 @@ class FrogViewModel {
     setOpponentID(opponentID: number) {
         this.opponentID = opponentID;
     }
-    
+
     /*
      * 슬라임 포지션을 이용하여 게임 맵을 초기화합니다.
      * @param users - 슬라임 정보를 포함하는 사용자 배열. 각 사용자는 userID와 0부터 80까지의 슬라임 위치 배열(slimePositions)을 가집니다.
@@ -77,7 +77,7 @@ class FrogViewModel {
     setGameMap(users: any[]) {
         // 게임 맵 초기화
         const initialMap = Array(10).fill(null).map(() => Array(10).fill(null));
-        
+
         // users 배열이 있는 경우에만 처리
         if (Array.isArray(users)) {
             users.forEach(user => {
@@ -92,7 +92,7 @@ class FrogViewModel {
                 }
             });
         }
-        
+
         this.gameMap = initialMap;
     }
     updateGameState( round: number) {
@@ -102,7 +102,7 @@ class FrogViewModel {
     setCardList(cardList: any[]) {
         this.cardList = cardList;
     }
- 
+
     /** 타이머 값을 설정하는 함수 */
     setTimer(value: number) {
         this.timer = value;
@@ -112,8 +112,8 @@ class FrogViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
-    
-    
+
+
     /** 타이머 색상을 업데이트하는 함수 */
     updateTimerColor(color: string) {
         this.timerColor = color;
@@ -173,7 +173,7 @@ class FrogViewModel {
         this.isMyTurn = (currentRound % 2 === turn);
     }
 
-    
+
 }
 
 export const frogViewModel = new FrogViewModel();

@@ -65,7 +65,7 @@ export default StyleSheet.create({
     nickname: {
         fontSize: scale(16),
         fontWeight: 'bold',
-        
+
     },
     title: {
         fontSize: scale(16),
@@ -98,7 +98,7 @@ export default StyleSheet.create({
     },
     profile: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     settingsIcon: {
         padding: scale(10),
@@ -108,7 +108,7 @@ export default StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-around',
-        marginTop: verticalScale(10)
+        marginTop: verticalScale(10),
     },
     gameCard: {
         width: '45%',
@@ -133,7 +133,7 @@ export default StyleSheet.create({
     gameTitle: {
         marginTop: verticalScale(10),
         fontWeight: 'bold',
-        fontSize: scale(20)
+        fontSize: scale(20),
     },
     hashtagContainer: {
         flexDirection: 'row',
@@ -145,7 +145,7 @@ export default StyleSheet.create({
         fontSize: scale(12),
         backgroundColor: '#eee',
         padding: scale(2),
-        borderRadius: scale(5)
+        borderRadius: scale(5),
     },
     matchButton: {
         backgroundColor: '#6f96ff',
@@ -180,7 +180,7 @@ export default StyleSheet.create({
     },
     matchButtonText: {
         color: '#fff',
-        fontSize: scale(18)
+        fontSize: scale(18),
     },
     // 모달 스타일
     modalOverlay: {

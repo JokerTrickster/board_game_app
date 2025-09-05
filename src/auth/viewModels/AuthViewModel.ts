@@ -1,15 +1,15 @@
 import { action, computed, observable } from 'mobx';
 import { BaseViewModel } from '../../infrastructure/mvvm/BaseViewModel';
-import { 
-  AuthModel, 
-  LoginCredentials, 
-  GoogleLoginData, 
+import {
+  AuthModel,
+  LoginCredentials,
+  GoogleLoginData,
   SignUpData,
   UserProfile,
   AuthTokens,
   UserCanLoginRule,
   UserCanSignUpRule,
-  CanRequestEmailVerificationRule
+  CanRequestEmailVerificationRule,
 } from '../models/AuthModel';
 import { LoginService } from '../../services/LoginService';
 import { SignUpService } from '../../services/SignUpService';
@@ -18,7 +18,7 @@ import { AuthService } from '../../services/AuthService';
 export class AuthViewModel extends BaseViewModel {
   @observable private authModel: AuthModel;
   @observable public rememberMe: boolean = false;
-  
+
   // Timer intervals
   private verificationTimerInterval: NodeJS.Timeout | null = null;
   private requestCooldownInterval: NodeJS.Timeout | null = null;
@@ -88,7 +88,7 @@ export class AuthViewModel extends BaseViewModel {
       this.authModel.setAuthState('authenticating');
 
       const result = await LoginService.login(credentials.email, credentials.password);
-      
+
       if (result.success) {
         // Fetch user data after successful login
         const userID = await AuthService.getUserID();
@@ -99,19 +99,19 @@ export class AuthViewModel extends BaseViewModel {
               userID,
               email: credentials.email,
               name: userData.user?.name || '',
-              profileImage: userData.profileImage
+              profileImage: userData.profileImage,
             };
 
             const tokens: AuthTokens = {
               accessToken: await AuthService.getAccessToken() || '',
-              refreshToken: await AuthService.getRefreshToken() || undefined
+              refreshToken: await AuthService.getRefreshToken() || undefined,
             };
 
             this.authModel.setCurrentUser(userProfile);
             this.authModel.setTokens(tokens);
           }
         }
-        
+
         this.authModel.setAuthState('authenticated');
         return true;
       } else {
@@ -131,7 +131,7 @@ export class AuthViewModel extends BaseViewModel {
       this.authModel.setAuthState('authenticating');
 
       const result = await LoginService.googleLogin(data.idToken);
-      
+
       if (result.success) {
         // Fetch user data after successful Google login
         const userID = await AuthService.getUserID();
@@ -142,19 +142,19 @@ export class AuthViewModel extends BaseViewModel {
               userID,
               email: userData.user?.email || '',
               name: userData.user?.name || '',
-              profileImage: userData.profileImage
+              profileImage: userData.profileImage,
             };
 
             const tokens: AuthTokens = {
               accessToken: await AuthService.getAccessToken() || '',
-              refreshToken: await AuthService.getRefreshToken() || undefined
+              refreshToken: await AuthService.getRefreshToken() || undefined,
             };
 
             this.authModel.setCurrentUser(userProfile);
             this.authModel.setTokens(tokens);
           }
         }
-        
+
         this.authModel.setAuthState('authenticated');
         return true;
       } else {
@@ -180,7 +180,7 @@ export class AuthViewModel extends BaseViewModel {
       this.authModel.setAuthState('authenticating');
 
       const result = await SignUpService.signUp(data.email, data.name, data.password, data.authCode);
-      
+
       this.authModel.setAuthState('unauthenticated');
       return true; // Successful signup, user needs to login
     }) !== null;
@@ -214,12 +214,12 @@ export class AuthViewModel extends BaseViewModel {
             userID,
             email: userData.user?.email || '',
             name: userData.user?.name || '',
-            profileImage: userData.profileImage
+            profileImage: userData.profileImage,
           };
 
           const tokens: AuthTokens = {
             accessToken,
-            refreshToken: await AuthService.getRefreshToken() || undefined
+            refreshToken: await AuthService.getRefreshToken() || undefined,
           };
 
           this.authModel.setCurrentUser(userProfile);
@@ -248,12 +248,12 @@ export class AuthViewModel extends BaseViewModel {
 
     return this.executeAsync(async () => {
       await SignUpService.requestEmailVerification(email);
-      
+
       this.authModel.setEmailVerification({
         email,
         code: '',
         isVerified: false,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
       });
 
       this.startVerificationTimer();
@@ -268,12 +268,12 @@ export class AuthViewModel extends BaseViewModel {
   public async verifyEmailCode(email: string, code: string): Promise<boolean> {
     return this.executeAsync(async () => {
       await SignUpService.verifyEmailCode(email, code);
-      
+
       this.authModel.setEmailVerification({
         email,
         code,
         isVerified: true,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
       });
 
       this.clearTimers();
@@ -292,7 +292,7 @@ export class AuthViewModel extends BaseViewModel {
     this.verificationTimerInterval = setInterval(() => {
       const newTime = this.authModel.verificationTimer - 1;
       this.authModel.updateVerificationTimer(newTime);
-      
+
       if (newTime <= 0) {
         this.clearTimers();
       }
@@ -315,7 +315,7 @@ export class AuthViewModel extends BaseViewModel {
       this.authModel.setNicknameValidation(true, null, '확인 중...');
 
       const result = await SignUpService.checkNickname(name);
-      
+
       this.authModel.setNicknameValidation(
         false,
         result.isAvailable,

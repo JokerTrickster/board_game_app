@@ -41,7 +41,7 @@ class FeedbackService {
       batchSize: 10,
       flushInterval: 30000,
     };
-    
+
     this.errorReporting = ErrorReportingService.getInstance();
     this.analytics = AnalyticsService.getInstance();
   }
@@ -58,22 +58,22 @@ class FeedbackService {
    */
   public async initialize(config: Partial<FeedbackServiceConfig> = {}) {
     this.config = { ...this.config, ...config };
-    
+
     try {
       // Initialize sub-services
       if (this.config.enableErrorReporting) {
         await this.errorReporting.initialize(this.config.userId);
       }
-      
+
       if (this.config.enableAnalytics) {
         await this.analytics.initialize(this.config.userId);
       }
 
       // Load user consent settings
       await this.loadUserConsents();
-      
+
       this.isInitialized = true;
-      
+
       // Track initialization
       if (this.config.enableAnalytics) {
         await this.analytics.track('feedback_service_initialized', {
@@ -95,11 +95,11 @@ class FeedbackService {
    */
   public async setUser(userId: string) {
     this.config.userId = userId;
-    
+
     if (this.config.enableErrorReporting) {
       await this.errorReporting.initialize(userId);
     }
-    
+
     if (this.config.enableAnalytics) {
       await this.analytics.initialize(userId);
     }
@@ -116,7 +116,7 @@ class FeedbackService {
     try {
       // Store feedback locally
       await this.storeFeedbackLocally(feedback);
-      
+
       // Track feedback submission
       if (this.config.enableAnalytics) {
         await this.analytics.track('feedback_submitted', {
@@ -133,14 +133,14 @@ class FeedbackService {
       return true;
     } catch (error) {
       console.error('Failed to submit feedback:', error);
-      
+
       if (this.config.enableErrorReporting) {
         await this.errorReporting.reportError(error as Error, {
           screen: 'FeedbackService',
           action: 'submit_feedback',
         });
       }
-      
+
       return false;
     }
   }
@@ -157,11 +157,11 @@ class FeedbackService {
       extra?: any;
     }
   ) {
-    if (!this.isInitialized || !this.config.enableErrorReporting) return;
+    if (!this.isInitialized || !this.config.enableErrorReporting) {return;}
 
     try {
       await this.errorReporting.reportError(error, context);
-      
+
       // Also track as analytics event
       if (this.config.enableAnalytics) {
         await this.analytics.trackError(error, context);
@@ -178,7 +178,7 @@ class FeedbackService {
     eventType: string,
     properties: Record<string, any> = {}
   ) {
-    if (!this.isInitialized || !this.config.enableAnalytics) return;
+    if (!this.isInitialized || !this.config.enableAnalytics) {return;}
 
     try {
       await this.analytics.track(eventType, properties);
@@ -191,14 +191,14 @@ class FeedbackService {
    * Track screen view
    */
   public async trackScreenView(screenName: string) {
-    if (!this.isInitialized) return;
+    if (!this.isInitialized) {return;}
 
     try {
       // Set current screen for error reporting context
       if (this.config.enableErrorReporting) {
         this.errorReporting.setCurrentScreen(screenName);
       }
-      
+
       // Track screen view in analytics
       if (this.config.enableAnalytics) {
         await this.analytics.trackScreenView(screenName);
@@ -212,8 +212,8 @@ class FeedbackService {
    * Set user action context for error reporting
    */
   public setLastAction(action: string, data?: any) {
-    if (!this.isInitialized || !this.config.enableErrorReporting) return;
-    
+    if (!this.isInitialized || !this.config.enableErrorReporting) {return;}
+
     this.errorReporting.setLastAction(action, data);
   }
 
@@ -253,11 +253,11 @@ class FeedbackService {
   public async setUserConsent(consent: boolean) {
     try {
       await AsyncStorage.setItem('user_consent_feedback', consent.toString());
-      
+
       if (this.config.enableErrorReporting) {
         await this.errorReporting.setUserConsent(consent);
       }
-      
+
       if (this.config.enableAnalytics) {
         await this.analytics.setUserConsent(consent);
       }
@@ -282,11 +282,11 @@ class FeedbackService {
       const consent = await AsyncStorage.getItem('user_consent_feedback');
       if (consent !== null) {
         const hasConsent = consent === 'true';
-        
+
         if (this.config.enableErrorReporting) {
           await this.errorReporting.setUserConsent(hasConsent);
         }
-        
+
         if (this.config.enableAnalytics) {
           await this.analytics.setUserConsent(hasConsent);
         }
@@ -308,10 +308,10 @@ class FeedbackService {
     try {
       const existingFeedbacks = await this.getStoredFeedbacks();
       existingFeedbacks.push(feedback);
-      
+
       // Keep only last 50 feedbacks
       const recentFeedbacks = existingFeedbacks.slice(-50);
-      
+
       await AsyncStorage.setItem('user_feedbacks', JSON.stringify(recentFeedbacks));
     } catch (error) {
       console.error('Failed to store feedback locally:', error);
@@ -381,7 +381,7 @@ class FeedbackService {
    */
   private findCommonIssues(errorMessages: string[]): Array<{ issue: string; count: number; category: string }> {
     const issueMap = new Map<string, number>();
-    
+
     errorMessages.forEach(message => {
       // Normalize error message (remove specific details)
       const normalized = this.normalizeErrorMessage(message);
@@ -440,7 +440,7 @@ class FeedbackService {
       if (this.config.enableAnalytics) {
         await this.analytics.cleanup();
       }
-      
+
       console.log('FeedbackService cleanup completed');
     } catch (error) {
       console.error('Failed to cleanup FeedbackService:', error);

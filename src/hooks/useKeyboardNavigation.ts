@@ -28,7 +28,7 @@ export const useKeyboardNavigation = ({
   // Check if screen reader is active
   useEffect(() => {
     checkScreenReaderStatus();
-    
+
     const listener = AccessibilityInfo.addEventListener(
       'screenReaderChanged',
       checkScreenReaderStatus
@@ -55,8 +55,8 @@ export const useKeyboardNavigation = ({
 
   // Focus management
   const focusElement = (index: number) => {
-    if (index < 0 || index >= elements.length) return;
-    
+    if (index < 0 || index >= elements.length) {return;}
+
     const element = elements[index];
     if (element.ref.current) {
       try {
@@ -65,10 +65,10 @@ export const useKeyboardNavigation = ({
         if (reactTag) {
           AccessibilityInfo.setAccessibilityFocus?.(reactTag);
         }
-        
+
         // Update current focus index
         setCurrentFocusIndex(index);
-        
+
         // Callback for focus change
         if (onFocusChange) {
           onFocusChange(index, element);
@@ -107,10 +107,10 @@ export const useKeyboardNavigation = ({
 
   // Handle keyboard events (for external keyboard support)
   const handleKeyPress = (event: any) => {
-    if (!isKeyboardNavigationActive) return false;
+    if (!isKeyboardNavigationActive) {return false;}
 
     const { key } = event.nativeEvent || event;
-    
+
     switch (key) {
       case 'Tab':
         if (enableTabNavigation) {
@@ -122,7 +122,7 @@ export const useKeyboardNavigation = ({
           return true;
         }
         break;
-        
+
       case 'ArrowDown':
       case 'ArrowRight':
         if (enableArrowNavigation) {
@@ -130,7 +130,7 @@ export const useKeyboardNavigation = ({
           return true;
         }
         break;
-        
+
       case 'ArrowUp':
       case 'ArrowLeft':
         if (enableArrowNavigation) {
@@ -138,15 +138,15 @@ export const useKeyboardNavigation = ({
           return true;
         }
         break;
-        
+
       case 'Home':
         focusFirst();
         return true;
-        
+
       case 'End':
         focusLast();
         return true;
-        
+
       case 'Enter':
       case ' ': // Space key
         // Activate current focused element
@@ -157,7 +157,7 @@ export const useKeyboardNavigation = ({
         }
         break;
     }
-    
+
     return false;
   };
 
@@ -177,7 +177,7 @@ export const useKeyboardNavigation = ({
     focusFirst,
     focusLast,
     handleKeyPress,
-    
+
     // Accessibility helpers
     getAccessibilityProps: (index: number) => ({
       accessible: true,
@@ -210,16 +210,16 @@ export const useFocusTrap = (isActive: boolean, elements: FocusableElement[]) =>
   }, [isActive]);
 
   const handleKeyPress = (event: any) => {
-    if (!isActive) return false;
-    
+    if (!isActive) {return false;}
+
     const handled = navigation.handleKeyPress(event);
-    
+
     // Prevent focus from escaping the trap
     if (handled) {
       event.preventDefault?.();
       event.stopPropagation?.();
     }
-    
+
     return handled;
   };
 

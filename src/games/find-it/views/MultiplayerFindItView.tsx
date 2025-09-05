@@ -75,7 +75,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
 
   const startTimerAnimation = () => {
     timerAnimation.current?.stop();
-    
+
     if (viewModel.timer > 0 && viewModel.isMyTurn) {
       timerAnimation.current = RNAnimated.timing(timerWidth, {
         toValue: 0,
@@ -87,14 +87,14 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
   };
 
   const handleImagePress = (event: any) => {
-    if (!viewModel.isClickable || !viewModel.isMyTurn || !viewModel.gameStarted) return;
+    if (!viewModel.isClickable || !viewModel.isMyTurn || !viewModel.gameStarted) {return;}
 
     const { locationX, locationY } = event.nativeEvent;
-    
+
     // Convert to image coordinates considering zoom and pan
     const imageX = (locationX - offsetX.value) / scale.value;
     const imageY = (locationY - offsetY.value) / scale.value;
-    
+
     viewModel.handleMultiplayerClick(imageX, imageY);
   };
 
@@ -108,7 +108,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
     const newScale = Math.max(scale.value / 1.2, MIN_SCALE);
     scale.value = withTiming(newScale);
     lastScale.value = newScale;
-    
+
     if (newScale === MIN_SCALE) {
       offsetX.value = withTiming(0);
       offsetY.value = withTiming(0);
@@ -118,8 +118,8 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
   };
 
   const handleUseItem = (itemType: 'hint' | 'timerStop') => {
-    if (!viewModel.isMyTurn || !viewModel.gameStarted) return;
-    
+    if (!viewModel.isMyTurn || !viewModel.gameStarted) {return;}
+
     viewModel.useMultiplayerItem(itemType);
   };
 
@@ -139,7 +139,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
       if (scale.value > 1) {
         const maxOffsetX = ((scale.value - 1) * IMAGE_FRAME_WIDTH) / 2;
         const maxOffsetY = ((scale.value - 1) * IMAGE_FRAME_HEIGHT) / 2;
-        
+
         offsetX.value = Math.max(
           -maxOffsetX,
           Math.min(maxOffsetX, lastOffsetX.value + event.translationX)
@@ -195,7 +195,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
 
       {/* Players Info */}
       <View style={styles.playersContainer}>
-        {viewModel.players.map(player => 
+        {viewModel.players.map(player =>
           renderPlayerInfo(player, player.userID === viewModel.userID)
         )}
       </View>
@@ -211,8 +211,8 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
       {viewModel.isConnected && !viewModel.gameStarted && (
         <View style={styles.gameStatus}>
           <Text style={styles.gameStatusText}>
-            {viewModel.allPlayersReady 
-              ? 'Waiting for game to start...' 
+            {viewModel.allPlayersReady
+              ? 'Waiting for game to start...'
               : 'Waiting for players...'}
           </Text>
           {viewModel.gameCanStart && (
@@ -235,7 +235,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
       <View style={styles.gameArea}>
         <View ref={imageRef} style={styles.imageFrame}>
           <GestureDetector gesture={composedGesture}>
-            <TouchableWithoutFeedback 
+            <TouchableWithoutFeedback
               onPress={handleImagePress}
               disabled={!viewModel.isMyTurn || !viewModel.gameStarted}
             >
@@ -248,7 +248,7 @@ const MultiplayerFindItView: React.FC<MultiplayerFindItViewProps> = observer(({
                     resizeMode="contain"
                   />
                 )}
-                
+
                 {/* Overlay Image */}
                 {viewModel.currentImages.abnormal && (
                   <Image

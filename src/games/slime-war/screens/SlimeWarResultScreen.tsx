@@ -28,7 +28,7 @@ const SlimeWarResultScreen: React.FC = () => {
 
     useEffect(() => {
         const backAction = () => {
-            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면,
             // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
             return true;
         };
@@ -61,7 +61,7 @@ const SlimeWarResultScreen: React.FC = () => {
                         />
                         <View style={styles.clearTextContainer}>
                             <Text style={styles.clearText}>
-                                {isSuccess ? "클리어!" : "게임오버"}
+                                {isSuccess ? '클리어!' : '게임오버'}
                             </Text>
                         </View>
                     </View>
@@ -78,7 +78,7 @@ const SlimeWarResultScreen: React.FC = () => {
                           <Text style={styles.resultScoreValue}>{myScore}점</Text>
                           <Text style={[
                             styles.resultScoreStatus,
-                            myResult === 'Winner' ? styles.winnerText : styles.loserText
+                            myResult === 'Winner' ? styles.winnerText : styles.loserText,
                           ]}>
                             {myResult}
                           </Text>
@@ -90,7 +90,7 @@ const SlimeWarResultScreen: React.FC = () => {
                           <Text style={styles.resultScoreValue}>{opponentScore}점</Text>
                           <Text style={[
                             styles.resultScoreStatus,
-                            opponentResult === 'Winner' ? styles.winnerText : styles.loserText
+                            opponentResult === 'Winner' ? styles.winnerText : styles.loserText,
                           ]}>
                             {opponentResult}
                           </Text>

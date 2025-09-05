@@ -33,7 +33,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
   @observable public currentTurn: number = 1;
   @observable public gameStarted: boolean = false;
   @observable public isConnected: boolean = false;
-  
+
   // WebSocket event handlers
   private eventHandlers: Map<string, Function> = new Map();
 
@@ -73,12 +73,12 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
     await this.executeAsync(async () => {
       this.roomID = roomID;
       this.userID = userID;
-      
+
       this.logger.info('Joining multiplayer room', { roomID, userID, userName });
 
       // Connect to WebSocket
       await this.connectToWebSocket();
-      
+
       // Send join room event
       this.sendWebSocketEvent('join_room', {
         roomID,
@@ -139,7 +139,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
    */
   @action
   public async useMultiplayerItem(itemType: 'hint' | 'timerStop'): Promise<void> {
-    if (!this.isMyTurn || !this.gameStarted) return;
+    if (!this.isMyTurn || !this.gameStarted) {return;}
 
     await this.executeAsync(async () => {
       // Send item use to server
@@ -174,7 +174,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
 
       this.disconnectFromWebSocket();
       this.resetMultiplayerState();
-      
+
       this.logger.info('Left multiplayer room');
     });
   }
@@ -216,7 +216,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
     this.updateState(() => {
       this.isConnected = false;
     });
-    
+
     // Don't disconnect the global WebSocket service as it might be used elsewhere
     // Just clear our event handlers
     this.eventHandlers.clear();
@@ -249,18 +249,18 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
     this.eventHandlers.set('room_joined', this.handleRoomJoined.bind(this));
     this.eventHandlers.set('player_joined', this.handlePlayerJoined.bind(this));
     this.eventHandlers.set('player_left', this.handlePlayerLeft.bind(this));
-    
+
     // Game events
     this.eventHandlers.set('game_started', this.handleGameStarted.bind(this));
     this.eventHandlers.set('game_ended', this.handleGameEnded.bind(this));
     this.eventHandlers.set('round_started', this.handleRoundStarted.bind(this));
     this.eventHandlers.set('round_ended', this.handleRoundEnded.bind(this));
-    
+
     // Player actions
     this.eventHandlers.set('click_confirmed', this.handleClickConfirmed.bind(this));
     this.eventHandlers.set('item_used', this.handleItemUsed.bind(this));
     this.eventHandlers.set('turn_changed', this.handleTurnChanged.bind(this));
-    
+
     // Error events
     this.eventHandlers.set('error', this.handleServerError.bind(this));
   }
@@ -272,7 +272,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
     this.roomID = data.roomID;
     this.players = data.players || [];
     this.gameStarted = data.gameStarted || false;
-    
+
     this.logger.info('Room joined successfully', data);
   }
 
@@ -284,14 +284,14 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
     } else {
       this.players.push(data);
     }
-    
+
     this.logger.info('Player joined room', data);
   }
 
   @action
   private handlePlayerLeft(data: any): void {
     this.players = this.players.filter(p => p.userID !== data.userID);
-    
+
     this.logger.info('Player left room', data);
   }
 
@@ -299,16 +299,16 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
   private handleGameStarted(data: any): void {
     this.gameStarted = true;
     this.currentTurn = data.firstTurn || 1;
-    
+
     // Initialize game with server data
     if (data.gameConfig) {
       this.initializeGame(data.gameConfig);
     }
-    
+
     if (this.isMyTurn) {
       this.startTimer();
     }
-    
+
     this.logger.info('Multiplayer game started', data);
   }
 
@@ -316,7 +316,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
   private handleGameEnded(data: any): void {
     this.gameStarted = false;
     this.stopTimer();
-    
+
     // Update final scores
     if (data.finalScores) {
       data.finalScores.forEach((scoreData: any) => {
@@ -326,7 +326,7 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
         }
       });
     }
-    
+
     this.logger.info('Multiplayer game ended', data);
   }
 
@@ -341,19 +341,19 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
         };
       });
     }
-    
+
     this.logger.info('Round started', data);
   }
 
   @action
   private handleRoundEnded(data: any): void {
     this.stopTimer();
-    
+
     // Show missed positions if provided
     if (data.missedPositions && this.gameModel) {
       this.gameModel.missedPositions = data.missedPositions;
     }
-    
+
     this.logger.info('Round ended', data);
   }
 
@@ -376,13 +376,13 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
   @action
   private handleTurnChanged(data: any): void {
     this.currentTurn = data.newTurn;
-    
+
     if (this.isMyTurn) {
       this.startTimer();
     } else {
       this.stopTimer();
     }
-    
+
     this.logger.info('Turn changed', { newTurn: data.newTurn, isMyTurn: this.isMyTurn });
   }
 
@@ -411,13 +411,13 @@ export class MultiplayerFindItViewModel extends FindItViewModel {
   // Override error handling for multiplayer context
   protected onError(error: Error): void {
     super.onError(error);
-    
+
     // Handle multiplayer-specific errors
     if (error.message.includes('WebSocket') || error.message.includes('connection')) {
       this.updateState(() => {
         this.isConnected = false;
       });
-      
+
       // Attempt to reconnect after delay
       setTimeout(() => {
         if (this.roomID && this.userID) {

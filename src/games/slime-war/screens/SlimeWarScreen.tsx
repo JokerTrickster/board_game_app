@@ -91,7 +91,7 @@ const SlimeWarScreen: React.FC = observer(() => {
   const [isCardSelectMode, setIsCardSelectMode] = React.useState<null | 'HERO' | 'MOVE'>(null);
   const [isMoveMode, setIsMoveMode] = useState(false);
   const [systemMessage, setSystemMessage] = useState<string>('');
-  
+
   const { safeGoBack } = useNavigationActions({
     enableBackHandler: true,
     showExitConfirmation: true,
@@ -109,7 +109,7 @@ const SlimeWarScreen: React.FC = observer(() => {
   // 타이머 관련 useEffect만 남기고, 타이머 UI는 삭제
   useEffect(() => {
     setTimer(TURN_TIME);
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) {clearInterval(timerRef.current);}
     timerRef.current = setInterval(() => {
       setTimer(prev => {
         if (prev <= 1) {
@@ -143,8 +143,8 @@ const SlimeWarScreen: React.FC = observer(() => {
 
   // 이동 가능한 카드 목록 계산
   const movableCards = React.useMemo(() => {
-    if (!slimeWarViewModel.isMyTurn) return [];
-    
+    if (!slimeWarViewModel.isMyTurn) {return [];}
+
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1], 1: [0, -1], 2: [1, -1],
       3: [-1, 0],  4: [1, 0],
@@ -153,12 +153,12 @@ const SlimeWarScreen: React.FC = observer(() => {
 
     return playerHand.filter((cardId: number) => {
       const cardInfo = cardData.find((c: any) => c.id === cardId);
-      if (!cardInfo) return false;
-      
+      if (!cardInfo) {return false;}
+
       const { direction, move } = cardInfo;
       const vector = directionMap[direction];
-      if (!vector) return false;
-      
+      if (!vector) {return false;}
+
       const currentIndex = slimeWarViewModel.kingIndex;
       let currentX = currentIndex % GRID_SIZE;
       let currentY = Math.floor(currentIndex / GRID_SIZE);
@@ -169,8 +169,8 @@ const SlimeWarScreen: React.FC = observer(() => {
 
       const newX = currentX + (vector[0] * move);
       const newY = currentY + (vector[1] * move);
-      
-      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
+
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {return false;}
       const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
       return targetCellValue === 0; // 빈 칸인 경우만 이동 가능
     });
@@ -179,8 +179,8 @@ const SlimeWarScreen: React.FC = observer(() => {
   // 흡수 가능한 카드 목록 계산
   const heroCards = React.useMemo(() => {
     // 내 턴이 아니거나 히어로 카드가 없으면 빈 배열 반환
-    if (!slimeWarViewModel.isMyTurn || (slimeWarViewModel.userHeroCount ?? 0) <= 0) return [];
-    
+    if (!slimeWarViewModel.isMyTurn || (slimeWarViewModel.userHeroCount ?? 0) <= 0) {return [];}
+
     const directionMap: { [key: number]: [number, number] } = {
       0: [-1, -1], 1: [0, -1], 2: [1, -1],
       3: [-1, 0],  4: [1, 0],
@@ -189,12 +189,12 @@ const SlimeWarScreen: React.FC = observer(() => {
 
     return playerHand.filter((cardId: number) => {
       const cardInfo = cardData.find((c: any) => c.id === cardId);
-      if (!cardInfo) return false;
-      
+      if (!cardInfo) {return false;}
+
       const { direction, move } = cardInfo;
       const vector = directionMap[direction];
-      if (!vector) return false;
-      
+      if (!vector) {return false;}
+
       const currentIndex = slimeWarViewModel.kingIndex;
       let currentX = currentIndex % GRID_SIZE;
       let currentY = Math.floor(currentIndex / GRID_SIZE);
@@ -205,8 +205,8 @@ const SlimeWarScreen: React.FC = observer(() => {
 
       const newX = currentX + (vector[0] * move);
       const newY = currentY + (vector[1] * move);
-      
-      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) return false;
+
+      if (newX < 1 || newX > GRID_SIZE || newY < 1 || newY > GRID_SIZE) {return false;}
       const targetCellValue = slimeWarViewModel.gameMap[newX][newY];
       return targetCellValue === slimeWarViewModel.opponentID;
     });
@@ -267,7 +267,7 @@ const SlimeWarScreen: React.FC = observer(() => {
             key={`cell-${col}-${row}`}
             style={[
               isEven ? baseStyles.cellEven : baseStyles.cellOdd,
-              isKing && baseStyles.kingCell
+              isKing && baseStyles.kingCell,
             ]}
           >
             {isKing && (
@@ -300,19 +300,19 @@ const SlimeWarScreen: React.FC = observer(() => {
   };
 
   const handleGetCard = () => {
-    if (buttonCooldown) return;
+    if (buttonCooldown) {return;}
     setButtonCooldown(true);
     setTimeout(() => setButtonCooldown(false), 1000);
     if (!slimeWarViewModel.isMyTurn) {
       setSystemMessage('지금은 당신의 턴이 아닙니다.');
       return;
     }
-    
+
     if (slimeWarViewModel.cardList.length >= 5) {
       setSystemMessage('카드가 5장 이상 있어 더 이상 카드를 가져올 수 없습니다.');
       return;
     }
-    
+
     try {
       (slimeWarWebSocketService as any).sendGetCardEvent();
       setSystemMessage('카드를 가져오는 중입니다...');
@@ -321,14 +321,14 @@ const SlimeWarScreen: React.FC = observer(() => {
       console.error('Error in handleGetCard:', error);
     }
   };
-  
+
   // 카드 클릭 핸들러 수정
   const handleCardPress = (cardId: number) => {
-    if (!slimeWarViewModel.isMyTurn) return;
+    if (!slimeWarViewModel.isMyTurn) {return;}
     // 이동 모드이거나 이동 가능한 카드인 경우
     if (movableCards.includes(cardId)) {
       const cardInfo = cardData.find((c: any) => c.id === cardId);
-      if (!cardInfo) return;
+      if (!cardInfo) {return;}
 
       const directionMap: { [key: number]: [number, number] } = {
         0: [-1, -1], 1: [0, -1], 2: [1, -1],
@@ -337,7 +337,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       };
 
       const vector = directionMap[cardInfo.direction];
-      if (!vector) return;
+      if (!vector) {return;}
 
       const currentIndex = slimeWarViewModel.kingIndex;
       let currentX = currentIndex % GRID_SIZE;
@@ -365,7 +365,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       setIsMoveMode(false);
     } else if ( heroCards.includes(cardId)) {
       const cardInfo = cardData.find((c: any) => c.id === cardId);
-      if (!cardInfo) return;
+      if (!cardInfo) {return;}
 
       const directionMap: { [key: number]: [number, number] } = {
         0: [-1, -1], 1: [0, -1], 2: [1, -1],
@@ -374,7 +374,7 @@ const SlimeWarScreen: React.FC = observer(() => {
       };
 
       const vector = directionMap[cardInfo.direction];
-      if (!vector) return;
+      if (!vector) {return;}
 
       const currentIndex = slimeWarViewModel.kingIndex;
       let currentX = currentIndex % GRID_SIZE;
@@ -417,17 +417,17 @@ const SlimeWarScreen: React.FC = observer(() => {
 
         {/* 나무 + 격자 */}
         <View style={baseStyles.topContainer}>
-          
+
           <Image
             source={require('../../../assets/icons/slime-war/common/background_tree.png')}
             style={baseStyles.treeImage}
           />
-          
+
           <View style={baseStyles.boardContainer}>
             {renderGrid()}
           </View>
         </View>
-        
+
         {/* 패 영역 */}
         <View style={baseStyles.handsContainer}>
           {/* 상단: 남은 슬라임, 상대방 카드, 상대방 히어로 */}
@@ -522,7 +522,7 @@ const SlimeWarScreen: React.FC = observer(() => {
             </View>
           </View>
         </View>
-        
+
         {/* 버튼 영역 */}
         <View style={baseStyles.buttonContainer}>
           <TouchableOpacity

@@ -16,7 +16,7 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
   viewModel,
   onCardPress,
   onCellPress,
-  onHintPress
+  onHintPress,
 }) => {
   const { width, height } = Dimensions.get('window');
   const cellSize = Math.min((width - 40) / 10, (height * 0.4) / 10);
@@ -39,7 +39,7 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
             const isMyCard = cellValue === viewModel.myUserID;
             const isOpponentCard = cellValue === viewModel.opponentID;
             const isEmpty = cellValue === 0;
-            
+
             return (
               <TouchableOpacity
                 key={`${x}-${y}`}
@@ -48,7 +48,7 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
                   { width: cellSize, height: cellSize },
                   isEmpty && styles.emptyCell,
                   isMyCard && styles.myCard,
-                  isOpponentCard && styles.opponentCard
+                  isOpponentCard && styles.opponentCard,
                 ]}
                 onPress={() => onCellPress?.(x, y)}
                 disabled={viewModel.isLoading}
@@ -90,7 +90,7 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
             key={index}
             style={[
               styles.cardItem,
-              viewModel.selectedCard?.id === card.id && styles.selectedCard
+              viewModel.selectedCard?.id === card.id && styles.selectedCard,
             ]}
             onPress={() => onCardPress?.(card)}
             disabled={viewModel.isLoading || !viewModel.isMyTurn}
@@ -113,7 +113,7 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
       >
         <Text style={styles.buttonText}>Hint</Text>
       </TouchableOpacity>
-      
+
       {viewModel.isMyTurn && (
         <View style={styles.turnIndicator}>
           <Text style={styles.turnText}>Your Turn</Text>
@@ -123,14 +123,14 @@ export const SlimeWarView: React.FC<SlimeWarViewProps> = observer(({
   );
 
   const renderGameResult = () => {
-    if (!viewModel.isGameOver || !viewModel.gameResult) return null;
+    if (!viewModel.isGameOver || !viewModel.gameResult) {return null;}
 
     return (
       <View style={styles.resultOverlay}>
         <View style={styles.resultContainer}>
           <Text style={[
             styles.resultTitle,
-            { color: viewModel.gameResult.isSuccess ? '#4CAF50' : '#F44336' }
+            { color: viewModel.gameResult.isSuccess ? '#4CAF50' : '#F44336' },
           ]}>
             {viewModel.gameResult.isSuccess ? 'Victory!' : 'Defeat'}
           </Text>

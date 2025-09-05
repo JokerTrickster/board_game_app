@@ -7,7 +7,7 @@ export type {
   NavigationHistoryEntry,
   AppState,
   NavigationStackState,
-  DeepLinkConfig
+  DeepLinkConfig,
 } from './models/NavigationModel';
 
 // ViewModels

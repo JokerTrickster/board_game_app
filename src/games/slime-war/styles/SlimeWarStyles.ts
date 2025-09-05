@@ -79,7 +79,7 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     marginRight: 5,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   opponentCard: {
     width: 40,
@@ -87,16 +87,16 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     marginRight: 5,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   cardText: {
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 10
+    marginBottom: 10,
   },
   button: {
     flex: 1,
@@ -110,7 +110,7 @@ export default StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     color: '#fff',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   kingMark: {
     width: 24,
@@ -183,7 +183,7 @@ export default StyleSheet.create({
   heroCardContainer: {
     marginLeft: 12,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   restSlimeText: {
     fontSize: 16,

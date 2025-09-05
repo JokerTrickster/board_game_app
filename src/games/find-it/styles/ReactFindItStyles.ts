@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
         fontSize: scale(18),
         fontWeight: 'bold',
         color: 'black',
-        textAlign: 'right'
+        textAlign: 'right',
     },
     // 기존 imageContainer 수정:
     normalImageContainer: {
@@ -153,10 +153,10 @@ export const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     wrongXRotate45: {
-        transform: [{ rotate: '45deg' }]
+        transform: [{ rotate: '45deg' }],
     },
     wrongXRotate135: {
-        transform: [{ rotate: '135deg' }]
+        transform: [{ rotate: '135deg' }],
     },
     infoContainer: {
         flexDirection: 'row',
@@ -204,7 +204,7 @@ export const styles = StyleSheet.create({
         fontSize: scale(30),
         fontWeight: 'bold',
         color: '#363010',
-        textAlign: 'center',  
+        textAlign: 'center',
     },
     clearEffectText: {
         fontSize: scale(30),
@@ -229,7 +229,7 @@ export const styles = StyleSheet.create({
         fontSize: scale(12),
         fontWeight: 'bold',
         color: '#363010',
-        textAlign: 'center',  
+        textAlign: 'center',
     },
     failEffectContainer: {
         flex: 1,

@@ -81,13 +81,13 @@ class GameViewModel {
     }
     /** ✅ 정답 클릭 저장 (유저 ID 포함) */
     addCorrectClick(x: number, y: number, userID: number) {
-        if (this.isAlreadyClicked(x, y)) return; // 이미 클릭된 영역이면 무시
+        if (this.isAlreadyClicked(x, y)) {return;} // 이미 클릭된 영역이면 무시
         if (userID === this.userID) {
             this.myCorrectClicks.push({ x, y, userID });
         } else {
             this.opponentCorrectClicks.push({ x, y, userID });
         }
-        
+
         // 정답 클릭 후 1초 동안 클릭 방지
         this.isClickable = false;
         setTimeout(() => {
@@ -97,7 +97,7 @@ class GameViewModel {
 
     /** ✅ 오답 클릭 저장 (유저 ID 포함, 3초 후 삭제) */
     addWrongClick(x: number, y: number, userID: number) {
-        if (this.isAlreadyClicked(x, y)) return; // 중복 클릭 방지
+        if (this.isAlreadyClicked(x, y)) {return;} // 중복 클릭 방지
 
         this.isClickable = false;
 
@@ -193,7 +193,7 @@ class GameViewModel {
             this.updateTimerColor('red');
 
             setTimeout(() => {
-                console.log("▶ 타이머 다시 시작!");
+                console.log('▶ 타이머 다시 시작!');
                 this.updateTimerColor('black');
                 this.startTimer();
             }, 5000);
@@ -204,17 +204,17 @@ class GameViewModel {
 
     setHintPosition(x: number, y: number) {
         this.hintPosition = { x, y };
-        console.log("힌트 좌표 저장", this.hintPosition);   
+        console.log('힌트 좌표 저장', this.hintPosition);
         setTimeout(() => {
             this.hintPosition = null;
         }, 1500);
     }
- 
+
     updateTimerColor(color: string) {
         this.timerColor = color;
     }
 
-   
+
     stopTimer() {
         this.timerStopped = true;
         this.remainingTime = 0;

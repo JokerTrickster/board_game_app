@@ -96,17 +96,17 @@ export class SlimeWarGameModel extends DomainModel {
   public timer: number;
   public isGameOver: boolean = false;
   public gameResult: GameResult | null = null;
-  
+
   // Players
   public players: Map<number, Player> = new Map();
   public currentTurn: number = 0;
   public myUserID: number = 0;
-  
+
   // Game board
   public gameMap: number[][] = [];
   public kingIndex: number = 0;
   public movableCards: GameCard[] = [];
-  
+
   // UI state
   public timerColor: string = 'black';
   public remainingSlime: number = 0;
@@ -146,7 +146,7 @@ export class SlimeWarGameModel extends DomainModel {
     if (x < 0 || x >= this.gameMap.length || y < 0 || y >= this.gameMap[0].length) {
       return false;
     }
-    
+
     this.gameMap[x][y] = cardId;
     this.touch();
     return true;
@@ -159,7 +159,7 @@ export class SlimeWarGameModel extends DomainModel {
     if (x < 0 || x >= this.gameMap.length || y < 0 || y >= this.gameMap[0].length) {
       return false;
     }
-    
+
     return this.gameMap[x][y] === 0; // Empty cell
   }
 
@@ -168,7 +168,7 @@ export class SlimeWarGameModel extends DomainModel {
    */
   getValidPositions(): BoardPosition[] {
     const positions: BoardPosition[] = [];
-    
+
     for (let x = 0; x < this.gameMap.length; x++) {
       for (let y = 0; y < this.gameMap[x].length; y++) {
         if (this.isValidPosition(x, y)) {
@@ -176,7 +176,7 @@ export class SlimeWarGameModel extends DomainModel {
         }
       }
     }
-    
+
     return positions;
   }
 
@@ -221,8 +221,8 @@ export class SlimeWarGameModel extends DomainModel {
    */
   updatePlayer(userID: number, updates: Partial<Player>): boolean {
     const player = this.players.get(userID);
-    if (!player) return false;
-    
+    if (!player) {return false;}
+
     Object.assign(player, updates);
     this.touch();
     return true;
@@ -270,11 +270,11 @@ export class SlimeWarGameModel extends DomainModel {
 
     // Place card on board
     this.setBoardCell(x, y, cardId);
-    
+
     // Remove card from player's hand
     player.cards.splice(cardIndex, 1);
     player.lastPlacedCard = cardId;
-    
+
     this.touch();
     return true;
   }
@@ -295,7 +295,7 @@ export class SlimeWarGameModel extends DomainModel {
     // Move card
     this.setBoardCell(fromX, fromY, 0);
     this.setBoardCell(toX, toY, cardId);
-    
+
     this.touch();
     return true;
   }
@@ -366,10 +366,10 @@ export class SlimeWarGameModel extends DomainModel {
     this.remainingSlime = 0;
     this.movableCards = [];
     this.timerColor = 'black';
-    
+
     // Reset board
     this.initializeGameBoard();
-    
+
     // Reset players
     for (const player of this.players.values()) {
       player.cards = [];
@@ -377,7 +377,7 @@ export class SlimeWarGameModel extends DomainModel {
       player.lastPlacedCard = undefined;
       player.canMove = false;
     }
-    
+
     this.touch();
   }
 
@@ -386,10 +386,10 @@ export class SlimeWarGameModel extends DomainModel {
    */
   calculateScore(userID: number): number {
     const player = this.getPlayer(userID);
-    if (!player) return 0;
+    if (!player) {return 0;}
 
     let score = 0;
-    
+
     // Score based on cards on board
     for (let x = 0; x < this.gameMap.length; x++) {
       for (let y = 0; y < this.gameMap[x].length; y++) {
@@ -401,13 +401,13 @@ export class SlimeWarGameModel extends DomainModel {
         }
       }
     }
-    
+
     // Score based on remaining cards
     score += player.cards.length * 5;
-    
+
     // Score based on hero count
     score += player.heroCount * 20;
-    
+
     return score;
   }
 
@@ -418,7 +418,7 @@ export class SlimeWarGameModel extends DomainModel {
     // Check if opponent has no cards and no pieces on board
     const opponent = this.getOpponent();
     const currentPlayer = this.getCurrentPlayer();
-    
+
     if (!opponent || !currentPlayer) {
       return { winner: null, reason: 'Invalid game state' };
     }
@@ -438,7 +438,7 @@ export class SlimeWarGameModel extends DomainModel {
       // Winner is player with higher score
       const myScore = this.calculateScore(this.myUserID);
       const opponentScore = this.calculateScore(opponent.userID);
-      
+
       if (myScore > opponentScore) {
         return { winner: this.myUserID, reason: 'Higher score on timeout' };
       } else if (opponentScore > myScore) {
@@ -539,7 +539,7 @@ export class CanPlaceCardRule implements BusinessRule<SlimeWarGameModel> {
 
     // Check if player has the card
     const player = model.getPlayer(this.playerID);
-    if (!player) return false;
+    if (!player) {return false;}
 
     return player.cards.some(card => card.id === this.cardId);
   }

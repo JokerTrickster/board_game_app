@@ -11,14 +11,14 @@ export type RootStackParamList = {
     Password: undefined;
     GameDetail: { game: string };
     Loading: { nextScreen: keyof RootStackParamList; params?: any }; // params를 선택적으로 추가
-    SoloFindItResult: { isSuccess: boolean ,gameInfoList: any[]}; 
-    MultiFindItResult: { isSuccess: boolean, gameResult: any };  
+    SoloFindItResult: { isSuccess: boolean ,gameInfoList: any[]};
+    MultiFindItResult: { isSuccess: boolean, gameResult: any };
     SlimeWarResult: {
         isSuccess: boolean;
         myScore: string;
         opponentScore: string;
-    };  
-    Sequence: undefined;    
+    };
+    Sequence: undefined;
     SequenceResult: { isSuccess: boolean, myScore: number, opponentScore: number };
     Frog: undefined;
     FrogResult: { isSuccess: boolean };

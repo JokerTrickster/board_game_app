@@ -11,7 +11,7 @@ const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
 export default StyleSheet.create({
-   
+
     imageWrapper: {
         width: '100%',
         flex: 1,
@@ -57,7 +57,7 @@ export default StyleSheet.create({
     gameTitle: {
         marginTop: verticalScale(5),
         fontWeight: '900', // Increased font weight for bolder text
-        fontSize: scale(20)
+        fontSize: scale(20),
     },
     hashtagContainer: {
         flexDirection: 'row',
@@ -69,7 +69,7 @@ export default StyleSheet.create({
         fontSize: scale(12),
         backgroundColor: '#eee',
         padding: scale(2),
-        borderRadius: scale(5)
+        borderRadius: scale(5),
     },
 
     categoryBorder: {
@@ -93,7 +93,7 @@ export default StyleSheet.create({
         fontSize: scale(12),
         color: '#000',
     },
-   
+
     hashtagText: {
         fontSize: scale(12),
         color: '#000',

@@ -7,7 +7,7 @@ class SequenceViewModel {
     timerInterval: NodeJS.Timeout | null = null; // 타이머 인터벌
     timerColor = 'black';
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
-    opponentCardList: any[] = []; // 상대방 카드 
+    opponentCardList: any[] = []; // 상대방 카드
     gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(1));
     userColorType = 0;
     opponentColorType = 0;
@@ -57,7 +57,7 @@ class SequenceViewModel {
             resetGameOver: action,
         });
     }
-    
+
     setOwnedMapIDs(ownedMapIDs: number[]) {
         this.ownedMapIDs = ownedMapIDs;
     }
@@ -93,7 +93,7 @@ class SequenceViewModel {
     setGameMap(users: any[]) {
         // 게임 맵 초기화
         const initialMap = Array(10).fill(null).map(() => Array(10).fill(null));
-        
+
         // users 배열이 있는 경우에만 처리
         if (Array.isArray(users)) {
             users.forEach(user => {
@@ -108,7 +108,7 @@ class SequenceViewModel {
                 }
             });
         }
-        
+
         this.gameMap = initialMap;
     }
     updateGameState( round: number) {
@@ -130,8 +130,8 @@ class SequenceViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
-    
-    
+
+
     /** 타이머 색상을 업데이트하는 함수 */
     updateTimerColor(color: string) {
         this.timerColor = color;

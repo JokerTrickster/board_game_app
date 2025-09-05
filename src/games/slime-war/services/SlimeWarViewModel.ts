@@ -11,7 +11,7 @@ class SlimeWarViewModel {
     remainingSlime = 0;
     canMoveCardList: any[] = [];
     cardList: any[] = [];       // 현재 소유하고 있는 본인 카드
-    opponentCardList: any[] = []; // 상대방 카드 
+    opponentCardList: any[] = []; // 상대방 카드
     gameMap: number[][] = Array(10).fill(null).map(() => Array(10).fill(0));
     userColorType = 0;
     opponentColorType = 0;
@@ -99,7 +99,7 @@ class SlimeWarViewModel {
         const GRID_SIZE = 9; // 그리드의 크기
 
         // 9x9 맵 생성: 모든 셀은 기본값 0으로 초기화
-        this.gameMap = Array.from({ length: GRID_SIZE+1 }, () => Array(GRID_SIZE+1).fill(0));
+        this.gameMap = Array.from({ length: GRID_SIZE + 1 }, () => Array(GRID_SIZE + 1).fill(0));
 
         // 각 사용자 별로 슬라임 위치 적용
         users.forEach(user => {
@@ -137,8 +137,8 @@ class SlimeWarViewModel {
     updateTimer(value: number) {
         this.timer = value;
     }
-    
-    
+
+
     /** 타이머 색상을 업데이트하는 함수 */
     updateTimerColor(color: string) {
         this.timerColor = color;
@@ -176,7 +176,7 @@ class SlimeWarViewModel {
     setKingIndex(index: number) {
         this.kingIndex = index;
     }
-   
+
 
     /** 게임 상태 초기화 함수 */
     resetGameState() {
@@ -205,7 +205,7 @@ class SlimeWarViewModel {
 
     // 연결된 슬라임 그룹을 찾는 함수
     private findConnectedSlimes(gameMap: number[][], startX: number, startY: number, targetUserId: number, visited: boolean[][]): number {
-        if (startX < 1 || startX > 9 || startY < 1 || startY > 9 || 
+        if (startX < 1 || startX > 9 || startY < 1 || startY > 9 ||
             visited[startY][startX] || gameMap[startX][startY] !== targetUserId) {
             return 0;
         }
@@ -245,17 +245,17 @@ class SlimeWarViewModel {
     calculateScoreString(userId: number): string {
         const gameMap = this.gameMap;
         const visited: boolean[][] = Array(10).fill(0).map(() => Array(10).fill(false));
-        let totalScore = "";
+        let totalScore = '';
 
         // 모든 칸을 순회하면서 연결된 슬라임 그룹 찾기
         for (let y = 1; y <= 9; y++) {
             for (let x = 1; x <= 9; x++) {
                 if (!visited[y][x] && gameMap[x][y] === userId) {
                     const groupSize = this.findConnectedSlimes(gameMap, x, y, userId, visited);
-                    if (totalScore === "") {
-                        totalScore += "(" + groupSize + " * " + groupSize + ")"; // 제곱하여 점수 계산
+                    if (totalScore === '') {
+                        totalScore += '(' + groupSize + ' * ' + groupSize + ')'; // 제곱하여 점수 계산
                     } else {
-                        totalScore += " + (" + groupSize + " * " + groupSize + ")"; // 제곱하여 점수 계산
+                        totalScore += ' + (' + groupSize + ' * ' + groupSize + ')'; // 제곱하여 점수 계산
                     }
                 }
             }

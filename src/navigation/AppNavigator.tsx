@@ -60,7 +60,7 @@ const AppNavigator: React.FC = () => {
     // Handle navigation ready state
     const handleNavigationReady = () => {
         setIsNavigationReady(true);
-        
+
         // Set navigation reference for WebSocket service
         webSocketService.setNavigation(navigationRef);
 
@@ -71,10 +71,10 @@ const AppNavigator: React.FC = () => {
 
     // Handle navigation state change
     const handleNavigationStateChange = (state: any) => {
-        if (!isNavigationReady) return;
+        if (!isNavigationReady) {return;}
 
         const navigationViewModel = globalContainer.resolve<NavigationViewModel>('NavigationViewModel');
-        
+
         // Get current route info
         if (state && state.routes && state.routes.length > 0) {
             const currentRoute = state.routes[state.index];
@@ -83,27 +83,27 @@ const AppNavigator: React.FC = () => {
     };
 
     return (
-        <NavigationContainer 
+        <NavigationContainer
             ref={navigationRef}
             onReady={handleNavigationReady}
             onStateChange={handleNavigationStateChange}
         >
-            <Stack.Navigator 
-                initialRouteName={initialRoute} 
+            <Stack.Navigator
+                initialRouteName={initialRoute}
                 screenOptions={{ headerShown: false }}
             >
                 {/* Authentication Screens */}
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="SignUp" component={SignUpScreen} />
-                
+
                 {/* Main Application Screens */}
                 <Stack.Screen name="Home" component={HomeScreen} />
-                
+
                 {/* Game Screens - MVVM */}
                 <Stack.Screen name="FindIt" component={FindItScreen} />
                 <Stack.Screen name="SoloFindIt" component={SoloFindItScreen} />
                 <Stack.Screen name="SlimeWar" component={SlimeWarScreen} />
-                
+
                 {/* Legacy Game Screens - To be migrated */}
                 <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
                 <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
@@ -113,7 +113,7 @@ const AppNavigator: React.FC = () => {
                 <Stack.Screen name="SequenceResult" component={SequenceResultScreen} />
                 <Stack.Screen name="Frog" component={FrogScreen} />
                 <Stack.Screen name="FrogResult" component={FrogResultScreen} />
-                
+
                 {/* Utility Screens */}
                 <Stack.Screen name="GameDetail" component={GameDetailScreen} />
                 <Stack.Screen name="Loading" component={LoadingScreen} />

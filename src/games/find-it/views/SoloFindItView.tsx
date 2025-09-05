@@ -76,7 +76,7 @@ const SoloFindItView: React.FC<SoloFindItViewProps> = observer(({
 
   const startTimerAnimation = () => {
     timerAnimation.current?.stop();
-    
+
     if (viewModel.timer > 0) {
       timerAnimation.current = RNAnimated.timing(timerWidth, {
         toValue: 0,
@@ -88,14 +88,14 @@ const SoloFindItView: React.FC<SoloFindItViewProps> = observer(({
   };
 
   const handleImagePress = (event: any) => {
-    if (!viewModel.isClickable) return;
+    if (!viewModel.isClickable) {return;}
 
     const { locationX, locationY } = event.nativeEvent;
-    
+
     // Convert to image coordinates considering zoom and pan
     const imageX = (locationX - offsetX.value) / scale.value;
     const imageY = (locationY - offsetY.value) / scale.value;
-    
+
     viewModel.handleClick(imageX, imageY, 1);
   };
 
@@ -109,7 +109,7 @@ const SoloFindItView: React.FC<SoloFindItViewProps> = observer(({
     const newScale = Math.max(scale.value / 1.2, MIN_SCALE);
     scale.value = withTiming(newScale);
     lastScale.value = newScale;
-    
+
     if (newScale === MIN_SCALE) {
       offsetX.value = withTiming(0);
       offsetY.value = withTiming(0);
@@ -134,7 +134,7 @@ const SoloFindItView: React.FC<SoloFindItViewProps> = observer(({
       if (scale.value > 1) {
         const maxOffsetX = ((scale.value - 1) * IMAGE_FRAME_WIDTH) / 2;
         const maxOffsetY = ((scale.value - 1) * IMAGE_FRAME_HEIGHT) / 2;
-        
+
         offsetX.value = Math.max(
           -maxOffsetX,
           Math.min(maxOffsetX, lastOffsetX.value + event.translationX)
@@ -196,7 +196,7 @@ const SoloFindItView: React.FC<SoloFindItViewProps> = observer(({
                     resizeMode="contain"
                   />
                 )}
-                
+
                 {/* Overlay Image */}
                 {viewModel.currentImages.abnormal && (
                   <Image

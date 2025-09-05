@@ -95,8 +95,8 @@ const FindItScreen: React.FC = observer(() => {
   }, [viewModel.gameCanStart]);
 
   const handleBack = (): boolean => {
-    if (viewModel.isLoading) return true; // Prevent back during loading
-    
+    if (viewModel.isLoading) {return true;} // Prevent back during loading
+
     // Show confirmation dialog for leaving multiplayer game
     // This would typically show a confirmation modal
     handleLeaveGame();
@@ -113,7 +113,7 @@ const FindItScreen: React.FC = observer(() => {
     try {
       // Leave the multiplayer room
       await viewModel.leaveRoom();
-      
+
       // Navigate back to lobby or main menu
       navigation.goBack();
     } catch (error) {
@@ -126,7 +126,7 @@ const FindItScreen: React.FC = observer(() => {
   const handleGameOver = () => {
     // In multiplayer, game over means all rounds completed or all players eliminated
     // Show final scores and results
-    
+
     const finalResults = {
       players: viewModel.players.map(p => ({
         name: p.name,
@@ -139,7 +139,7 @@ const FindItScreen: React.FC = observer(() => {
 
     // Navigate to results screen
     // navigation.navigate('MultiplayerGameResults', finalResults);
-    
+
     console.log('Multiplayer Game Over:', finalResults);
   };
 

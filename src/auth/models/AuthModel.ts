@@ -92,7 +92,7 @@ export class AuthModel extends DomainModel {
   } = {
     isChecking: false,
     isAvailable: null,
-    message: ''
+    message: '',
   };
 
   // Password validation
@@ -101,7 +101,7 @@ export class AuthModel extends DomainModel {
     errors: string[];
   } = {
     isValid: false,
-    errors: []
+    errors: [],
   };
 
   // Agreement states
@@ -116,7 +116,7 @@ export class AuthModel extends DomainModel {
     agreeAge: false,
     agreeTerms: false,
     agreePrivacy: false,
-    agreeMarketing: false
+    agreeMarketing: false,
   };
 
   constructor() {
@@ -160,7 +160,7 @@ export class AuthModel extends DomainModel {
    * Check if tokens are expired
    */
   areTokensExpired(): boolean {
-    if (!this.tokens?.expiresAt) return false;
+    if (!this.tokens?.expiresAt) {return false;}
     return new Date() > this.tokens.expiresAt;
   }
 
@@ -204,7 +204,7 @@ export class AuthModel extends DomainModel {
    * Check if verification code is expired
    */
   isVerificationExpired(): boolean {
-    if (!this.emailVerification?.expiresAt) return false;
+    if (!this.emailVerification?.expiresAt) {return false;}
     return new Date() > this.emailVerification.expiresAt;
   }
 
@@ -217,7 +217,7 @@ export class AuthModel extends DomainModel {
     this.nicknameValidation = {
       isChecking,
       isAvailable,
-      message
+      message,
     };
     this.touch();
   }
@@ -252,7 +252,7 @@ export class AuthModel extends DomainModel {
 
     this.passwordValidation = {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
     this.touch();
   }
@@ -267,8 +267,8 @@ export class AuthModel extends DomainModel {
 
     // Update agreeAll based on required agreements
     if (type !== 'agreeAll') {
-      this.agreements.agreeAll = this.agreements.agreeAge && 
-                                 this.agreements.agreeTerms && 
+      this.agreements.agreeAll = this.agreements.agreeAge &&
+                                 this.agreements.agreeTerms &&
                                  this.agreements.agreePrivacy;
     }
 
@@ -293,8 +293,8 @@ export class AuthModel extends DomainModel {
    * Check if required agreements are accepted
    */
   hasRequiredAgreements(): boolean {
-    return this.agreements.agreeAge && 
-           this.agreements.agreeTerms && 
+    return this.agreements.agreeAge &&
+           this.agreements.agreeTerms &&
            this.agreements.agreePrivacy;
   }
 
@@ -377,16 +377,16 @@ export class AuthModel extends DomainModel {
       tokens: this.tokens ? {
         accessToken: '***', // Don't expose tokens in serialization
         hasRefreshToken: !!this.tokens.refreshToken,
-        expiresAt: this.tokens.expiresAt
+        expiresAt: this.tokens.expiresAt,
       } : null,
       emailVerification: this.emailVerification,
       verificationTimer: this.verificationTimer,
       nicknameValidation: this.nicknameValidation,
       passwordValidation: {
         isValid: this.passwordValidation.isValid,
-        errorCount: this.passwordValidation.errors.length
+        errorCount: this.passwordValidation.errors.length,
       },
-      agreements: this.agreements
+      agreements: this.agreements,
     };
   }
 

@@ -63,11 +63,11 @@ const SoloFindItScreen: React.FC = observer(() => {
   }, [viewModel.isGameOver]);
 
   const handleBack = (): boolean => {
-    if (viewModel.isLoading) return true; // Prevent back during loading
-    
+    if (viewModel.isLoading) {return true;} // Prevent back during loading
+
     // Pause game and show confirmation
     viewModel.stopTimer();
-    
+
     // Navigate back to menu
     navigation.goBack();
     return true;
@@ -83,14 +83,14 @@ const SoloFindItScreen: React.FC = observer(() => {
     // Navigate to results screen or show game over modal
     // Pass game results to next screen
     const finalScore = viewModel.gameModel?.calculateScore() || 0;
-    
+
     // Example navigation to results screen
     // navigation.navigate('GameResults', {
     //   score: finalScore,
     //   round: viewModel.currentRound,
     //   gameType: 'solo'
     // });
-    
+
     console.log('Game Over - Score:', finalScore, 'Round:', viewModel.currentRound);
   };
 

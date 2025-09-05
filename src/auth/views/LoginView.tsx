@@ -1,13 +1,13 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  ImageBackground, 
-  Image, 
-  ActivityIndicator 
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ImageBackground,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
@@ -35,10 +35,10 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
   onLoginPress,
   onGoogleLoginPress,
   onSignUpPress,
-  onForgotPasswordPress
+  onForgotPasswordPress,
 }) => {
   const renderErrorMessage = () => {
-    if (!viewModel.error) return null;
+    if (!viewModel.error) {return null;}
 
     return (
       <View style={styles.errorContainer}>
@@ -48,7 +48,7 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
   };
 
   const renderLoadingOverlay = () => {
-    if (!viewModel.isLoading) return null;
+    if (!viewModel.isLoading) {return null;}
 
     return (
       <View style={styles.loadingOverlay}>
@@ -59,15 +59,15 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
   };
 
   return (
-    <ImageBackground 
-      source={require('../../assets/images/background.png')} 
+    <ImageBackground
+      source={require('../../assets/images/background.png')}
       style={styles.background}
     >
       <View style={styles.container}>
         {/* Logo Section */}
         <View style={styles.logoContainer}>
-          <Image 
-            source={require('../../assets/images/logo.png')} 
+          <Image
+            source={require('../../assets/images/logo.png')}
             style={styles.logo}
           />
           <Text style={styles.appTitle}>Board Game App</Text>
@@ -110,7 +110,7 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
 
           {/* Forgot Password Link */}
           {onForgotPasswordPress && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.forgotPasswordContainer}
               onPress={onForgotPasswordPress}
               disabled={viewModel.isLoading}
@@ -123,7 +123,7 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
           <TouchableOpacity
             style={[
               styles.loginButton,
-              (viewModel.isLoading || !email.trim() || !password.trim()) && styles.loginButtonDisabled
+              (viewModel.isLoading || !email.trim() || !password.trim()) && styles.loginButtonDisabled,
             ]}
             onPress={onLoginPress}
             disabled={viewModel.isLoading || !email.trim() || !password.trim()}
@@ -155,7 +155,7 @@ export const LoginView: React.FC<LoginViewProps> = observer(({
         {/* Sign Up Section */}
         <View style={styles.signUpContainer}>
           <Text style={styles.signUpPrompt}>계정이 없으신가요?</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={onSignUpPress}
             disabled={viewModel.isLoading}
           >

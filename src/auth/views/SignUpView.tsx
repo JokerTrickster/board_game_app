@@ -9,7 +9,7 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
-  Linking
+  Linking,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CheckBox from '@react-native-community/checkbox';
@@ -69,7 +69,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
   onSignUp,
   onLoginPress,
   onTermsPress,
-  onPrivacyPress
+  onPrivacyPress,
 }) => {
   const formatTimer = (seconds: number): string => {
     const minutes = Math.floor(seconds / 60);
@@ -78,7 +78,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
   };
 
   const renderErrorMessage = () => {
-    if (!viewModel.error) return null;
+    if (!viewModel.error) {return null;}
 
     return (
       <View style={styles.errorContainer}>
@@ -88,7 +88,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
   };
 
   const renderLoadingOverlay = () => {
-    if (!viewModel.isLoading) return null;
+    if (!viewModel.isLoading) {return null;}
 
     return (
       <View style={styles.loadingOverlay}>
@@ -99,15 +99,15 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
   };
 
   return (
-    <ImageBackground 
-      source={require('../../assets/images/background.png')} 
+    <ImageBackground
+      source={require('../../assets/images/background.png')}
       style={styles.background}
     >
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Image 
-            source={require('../../assets/images/logo.png')} 
+          <Image
+            source={require('../../assets/images/logo.png')}
             style={styles.logo}
           />
           <Text style={styles.title}>회원가입</Text>
@@ -119,7 +119,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
         {/* Email Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>이메일 인증</Text>
-          
+
           <View style={styles.inputRow}>
             <View style={[styles.inputContainer, { flex: 1 }]}>
               <Icon name="envelope" size={16} color="#667eea" style={styles.inputIcon} />
@@ -136,7 +136,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
             <TouchableOpacity
               style={[
                 styles.verifyButton,
-                (!viewModel.canRequestVerification || !email.trim()) && styles.verifyButtonDisabled
+                (!viewModel.canRequestVerification || !email.trim()) && styles.verifyButtonDisabled,
               ]}
               onPress={onRequestEmailVerification}
               disabled={!viewModel.canRequestVerification || !email.trim() || viewModel.isLoading}
@@ -176,7 +176,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
               <TouchableOpacity
                 style={[
                   styles.verifyButton,
-                  (!verificationCode.trim()) && styles.verifyButtonDisabled
+                  (!verificationCode.trim()) && styles.verifyButtonDisabled,
                 ]}
                 onPress={onVerifyEmailCode}
                 disabled={!verificationCode.trim() || viewModel.isLoading}
@@ -198,7 +198,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
         {/* Nickname Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>닉네임</Text>
-          
+
           <View style={styles.inputRow}>
             <View style={[styles.inputContainer, { flex: 1 }]}>
               <Icon name="user" size={16} color="#667eea" style={styles.inputIcon} />
@@ -214,7 +214,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
             <TouchableOpacity
               style={[
                 styles.verifyButton,
-                (!nickname.trim() || viewModel.nicknameValidation.isChecking) && styles.verifyButtonDisabled
+                (!nickname.trim() || viewModel.nicknameValidation.isChecking) && styles.verifyButtonDisabled,
               ]}
               onPress={onCheckNickname}
               disabled={!nickname.trim() || viewModel.nicknameValidation.isChecking || viewModel.isLoading}
@@ -228,7 +228,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
           {viewModel.nicknameValidation.message ? (
             <Text style={[
               styles.messageText,
-              { color: viewModel.nicknameValidation.isAvailable ? '#4CAF50' : '#F44336' }
+              { color: viewModel.nicknameValidation.isAvailable ? '#4CAF50' : '#F44336' },
             ]}>
               {viewModel.nicknameValidation.message}
             </Text>
@@ -238,7 +238,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
         {/* Password Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>비밀번호</Text>
-          
+
           <View style={styles.inputContainer}>
             <Icon name="lock" size={16} color="#667eea" style={styles.inputIcon} />
             <TextInput
@@ -250,10 +250,10 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
               editable={!viewModel.isLoading}
             />
             <TouchableOpacity onPress={onTogglePasswordVisibility}>
-              <Icon 
-                name={isPasswordVisible ? "eye" : "eye-slash"} 
-                size={16} 
-                color="#999" 
+              <Icon
+                name={isPasswordVisible ? 'eye' : 'eye-slash'}
+                size={16}
+                color="#999"
               />
             </TouchableOpacity>
           </View>
@@ -269,10 +269,10 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
               editable={!viewModel.isLoading}
             />
             <TouchableOpacity onPress={onToggleConfirmPasswordVisibility}>
-              <Icon 
-                name={isConfirmPasswordVisible ? "eye" : "eye-slash"} 
-                size={16} 
-                color="#999" 
+              <Icon
+                name={isConfirmPasswordVisible ? 'eye' : 'eye-slash'}
+                size={16}
+                color="#999"
               />
             </TouchableOpacity>
           </View>
@@ -295,7 +295,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
         {/* Terms and Conditions */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>약관 동의</Text>
-          
+
           <View style={styles.agreementContainer}>
             <CheckBox
               value={viewModel.agreements.agreeAll}
@@ -354,7 +354,7 @@ export const SignUpView: React.FC<SignUpViewProps> = observer(({
         <TouchableOpacity
           style={[
             styles.signUpButton,
-            (!viewModel.isFormValid || viewModel.isLoading) && styles.signUpButtonDisabled
+            (!viewModel.isFormValid || viewModel.isLoading) && styles.signUpButtonDisabled,
           ]}
           onPress={onSignUp}
           disabled={!viewModel.isFormValid || viewModel.isLoading}

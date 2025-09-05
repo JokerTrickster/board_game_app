@@ -9,7 +9,7 @@ import {
   TextInput,
   FlatList,
   ImageBackground,
-  Alert
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { HomeViewModel } from '../viewModels/HomeViewModel';
@@ -37,10 +37,10 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   onCategoryPress,
   onSearchChange,
   onRefresh,
-  onUserProfilePress
+  onUserProfilePress,
 }) => {
   const renderUserHeader = () => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.userHeaderContainer}
       onPress={onUserProfilePress}
     >
@@ -72,7 +72,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
         placeholderTextColor="#999"
       />
       {viewModel.searchQuery.length > 0 && (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => onSearchChange('')}
           style={styles.clearSearchButton}
         >
@@ -132,8 +132,8 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
 
   const renderCategories = () => (
     <View style={styles.categoriesContainer}>
-      <ScrollView 
-        horizontal 
+      <ScrollView
+        horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.categoriesScroll}
       >
@@ -142,13 +142,13 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
             key={category}
             style={[
               styles.categoryItem,
-              viewModel.selectedGameCategory === category && styles.categoryItemSelected
+              viewModel.selectedGameCategory === category && styles.categoryItemSelected,
             ]}
             onPress={() => onCategoryPress(category)}
           >
             <Text style={[
               styles.categoryText,
-              viewModel.selectedGameCategory === category && styles.categoryTextSelected
+              viewModel.selectedGameCategory === category && styles.categoryTextSelected,
             ]}>
               {getCategoryDisplayName(category)}
             </Text>
@@ -159,13 +159,13 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   );
 
   const renderFeaturedGames = () => {
-    if (viewModel.featuredGames.length === 0) return null;
+    if (viewModel.featuredGames.length === 0) {return null;}
 
     return (
       <View style={styles.featuredSection}>
         <Text style={styles.sectionTitle}>추천 게임</Text>
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.featuredScroll}
         >
@@ -187,13 +187,13 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   };
 
   const renderRecentlyPlayed = () => {
-    if (viewModel.recentlyPlayedGames.length === 0) return null;
+    if (viewModel.recentlyPlayedGames.length === 0) {return null;}
 
     return (
       <View style={styles.recentSection}>
         <Text style={styles.sectionTitle}>최근 플레이</Text>
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.recentScroll}
         >
@@ -219,7 +219,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
       <Text style={styles.sectionTitle}>
         {viewModel.searchQuery ? `검색 결과 (${viewModel.gameList.length})` : '모든 게임'}
       </Text>
-      
+
       {viewModel.gameList.length === 0 ? (
         <View style={styles.emptyState}>
           <Icon name="gamepad" size={48} color="#ccc" />
@@ -247,7 +247,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   );
 
   const renderNotifications = () => {
-    if (viewModel.notifications.length === 0) return null;
+    if (viewModel.notifications.length === 0) {return null;}
 
     return (
       <View style={styles.notificationsSection}>
@@ -257,18 +257,18 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
             key={notification.id}
             style={[
               styles.notificationItem,
-              !notification.isRead && styles.notificationItemUnread
+              !notification.isRead && styles.notificationItemUnread,
             ]}
             onPress={() => onNotificationPress(notification.id)}
           >
             <View style={[
               styles.notificationIcon,
-              { backgroundColor: getNotificationColor(notification.type) }
+              { backgroundColor: getNotificationColor(notification.type) },
             ]}>
-              <Icon 
-                name={getNotificationIcon(notification.type)} 
-                size={16} 
-                color="white" 
+              <Icon
+                name={getNotificationIcon(notification.type)}
+                size={16}
+                color="white"
               />
             </View>
             <View style={styles.notificationContent}>
@@ -290,7 +290,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   };
 
   const renderOfflineMessage = () => {
-    if (viewModel.isOnline) return null;
+    if (viewModel.isOnline) {return null;}
 
     return (
       <View style={styles.offlineMessage}>
@@ -301,7 +301,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   };
 
   const renderMaintenanceMessage = () => {
-    if (!viewModel.isMaintenanceMode) return null;
+    if (!viewModel.isMaintenanceMode) {return null;}
 
     return (
       <View style={styles.maintenanceMessage}>
@@ -312,12 +312,12 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   };
 
   const renderErrorMessage = () => {
-    if (!viewModel.error) return null;
+    if (!viewModel.error) {return null;}
 
     return (
       <View style={styles.errorMessage}>
         <Text style={styles.errorMessageText}>{viewModel.error}</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={viewModel.clearError}
           style={styles.errorDismissButton}
         >
@@ -337,16 +337,16 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
   }
 
   return (
-    <ImageBackground 
-      source={require('../../../assets/images/background.png')} 
+    <ImageBackground
+      source={require('../../../assets/images/background.png')}
       style={styles.background}
     >
       <Header />
-      
+
       {renderOfflineMessage()}
       {renderMaintenanceMessage()}
       {renderErrorMessage()}
-      
+
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -368,7 +368,7 @@ export const HomeView: React.FC<HomeViewProps> = observer(({
         {renderRecentlyPlayed()}
         {renderCategories()}
         {renderGameList()}
-        
+
         <View style={styles.footerSpacer} />
       </ScrollView>
     </ImageBackground>
@@ -385,9 +385,9 @@ function getCategoryDisplayName(category: string): string {
     'strategy': '전략',
     'action': '액션',
     'card': '카드',
-    'board': '보드게임'
+    'board': '보드게임',
   };
-  
+
   return categoryNames[category] || category;
 }
 
@@ -396,9 +396,9 @@ function getNotificationColor(type: string): string {
     'info': '#2196F3',
     'success': '#4CAF50',
     'warning': '#FF9800',
-    'error': '#F44336'
+    'error': '#F44336',
   };
-  
+
   return colors[type] || '#2196F3';
 }
 
@@ -407,9 +407,9 @@ function getNotificationIcon(type: string): string {
     'info': 'info-circle',
     'success': 'check-circle',
     'warning': 'exclamation-triangle',
-    'error': 'exclamation-circle'
+    'error': 'exclamation-circle',
   };
-  
+
   return icons[type] || 'bell';
 }
 
@@ -420,11 +420,11 @@ function formatNotificationTime(timestamp: Date): string {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMins < 1) return '방금 전';
-  if (diffMins < 60) return `${diffMins}분 전`;
-  if (diffHours < 24) return `${diffHours}시간 전`;
-  if (diffDays < 7) return `${diffDays}일 전`;
-  
+  if (diffMins < 1) {return '방금 전';}
+  if (diffMins < 60) {return `${diffMins}분 전`;}
+  if (diffHours < 24) {return `${diffHours}시간 전`;}
+  if (diffDays < 7) {return `${diffDays}일 전`;}
+
   return timestamp.toLocaleDateString();
 }
 

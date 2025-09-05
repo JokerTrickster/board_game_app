@@ -137,7 +137,7 @@ export default StyleSheet.create({
         zIndex: 1,
         marginTop: verticalScale(10),
     },
-    
+
     profileTwoIconContainer: {
         width: scale(50),
         height: '100%',

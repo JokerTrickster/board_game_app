@@ -7,7 +7,7 @@ import Animated, {
     useAnimatedProps,
     withTiming,
     withDelay,
-    Easing
+    Easing,
 } from 'react-native-reanimated';
 
 const AnimatedLine = Animated.createAnimatedComponent(Line);
@@ -23,7 +23,7 @@ const AnimatedX: React.FC<AnimatedXProps> = ({ x, y, isUser1 = true }) => {
     const progress1 = useSharedValue(0);
     const progress2 = useSharedValue(0);
     const opacity = useSharedValue(0);
-    
+
     // 유저별 색상 설정 - 배경색 제거
     const strokeColor = isUser1 ? '#FF0000' : '#800080'; // 빨간색 vs 보라색
 
@@ -59,14 +59,14 @@ const AnimatedX: React.FC<AnimatedXProps> = ({ x, y, isUser1 = true }) => {
     }));
 
     return (
-        <Animated.View 
+        <Animated.View
             style={[
-                styles.container, 
-                { 
-                    left: x - 15, 
-                    top: y - 15
+                styles.container,
+                {
+                    left: x - 15,
+                    top: y - 15,
                 },
-                animatedStyle
+                animatedStyle,
             ]}
         >
             <Svg width={SIZE} height={SIZE}>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         height: 30,
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
 });
 
-export default AnimatedX; 
+export default AnimatedX;

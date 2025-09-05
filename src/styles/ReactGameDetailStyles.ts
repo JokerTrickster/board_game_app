@@ -124,7 +124,7 @@ export default StyleSheet.create({
         fontWeight: '900',
         color: '#000',
     },
-   
+
     infoContainer: {
         width: '100%',
         flexDirection: 'row',

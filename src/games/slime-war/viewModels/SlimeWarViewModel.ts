@@ -110,12 +110,12 @@ export class SlimeWarViewModel extends BaseViewModel {
   }
 
   @computed get myScore(): string {
-    if (!this.gameModel) return '0';
+    if (!this.gameModel) {return '0';}
     return this.gameModel.calculateScore(this.gameModel.myUserID).toString();
   }
 
   @computed get opponentScore(): string {
-    if (!this.gameModel || !this.opponent) return '0';
+    if (!this.gameModel || !this.opponent) {return '0';}
     return this.gameModel.calculateScore(this.opponent.userID).toString();
   }
 
@@ -124,7 +124,7 @@ export class SlimeWarViewModel extends BaseViewModel {
   }
 
   @computed get gameProgress(): number {
-    if (!this.gameModel) return 0;
+    if (!this.gameModel) {return 0;}
     return (this.currentRound / this.gameModel.config.maxRounds) * 100;
   }
 
@@ -169,7 +169,7 @@ export class SlimeWarViewModel extends BaseViewModel {
    */
   @action
   public addPlayer(userID: number, name: string, colorType: number): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     const player: Player = {
       userID,
@@ -191,7 +191,7 @@ export class SlimeWarViewModel extends BaseViewModel {
   @action
   public selectCard(card: GameCard | null): void {
     this.selectedCard = card;
-    
+
     if (card) {
       // Highlight valid positions for selected card
       this.highlightedPositions = this.validPositions;
@@ -206,7 +206,7 @@ export class SlimeWarViewModel extends BaseViewModel {
    */
   @action
   public async placeCard(x: number, y: number): Promise<boolean> {
-    if (!this.selectedCard || !this.gameModel) return false;
+    if (!this.selectedCard || !this.gameModel) {return false;}
 
     return await this.executeAsync(async () => {
       const success = this.gameModel!.placeCard(
@@ -227,19 +227,19 @@ export class SlimeWarViewModel extends BaseViewModel {
 
         // Clear selection
         this.selectCard(null);
-        
+
         // Play sound
         this.playSound('card_place.mp3');
-        
+
         // Check win condition
         this.checkGameEnd();
-        
+
         // End turn
         this.endTurn();
 
-        this.logger.info('Card placed successfully', { 
-          cardId: this.selectedCard?.id, 
-          position: { x, y } 
+        this.logger.info('Card placed successfully', {
+          cardId: this.selectedCard?.id,
+          position: { x, y },
         });
 
         return true;
@@ -254,7 +254,7 @@ export class SlimeWarViewModel extends BaseViewModel {
    */
   @action
   public async moveCard(fromX: number, fromY: number, toX: number, toY: number): Promise<boolean> {
-    if (!this.gameModel) return false;
+    if (!this.gameModel) {return false;}
 
     return await this.executeAsync(async () => {
       const success = this.gameModel!.moveCard(fromX, fromY, toX, toY);
@@ -269,13 +269,13 @@ export class SlimeWarViewModel extends BaseViewModel {
 
         // Play sound
         this.playSound('card_move.mp3');
-        
+
         // Check win condition
         this.checkGameEnd();
-        
-        this.logger.info('Card moved successfully', { 
-          from: { x: fromX, y: fromY }, 
-          to: { x: toX, y: toY } 
+
+        this.logger.info('Card moved successfully', {
+          from: { x: fromX, y: fromY },
+          to: { x: toX, y: toY },
         });
 
         return true;
@@ -290,7 +290,7 @@ export class SlimeWarViewModel extends BaseViewModel {
    */
   @action
   public startTimer(): void {
-    if (!this.gameModel || this.timerInterval) return;
+    if (!this.gameModel || this.timerInterval) {return;}
 
     this.updateState(() => {
       if (this.gameModel) {
@@ -306,7 +306,7 @@ export class SlimeWarViewModel extends BaseViewModel {
 
       if (this.gameModel.timer > 0) {
         this.gameModel.timer--;
-        
+
         // Change color when time is running low
         if (this.gameModel.timer <= 10) {
           this.gameModel.timerColor = 'red';
@@ -335,7 +335,7 @@ export class SlimeWarViewModel extends BaseViewModel {
    */
   @action
   public async endTurn(): Promise<void> {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     await this.executeAsync(async () => {
       // Send end turn to server
@@ -346,7 +346,7 @@ export class SlimeWarViewModel extends BaseViewModel {
 
       // Switch turn locally (will be confirmed by server)
       this.gameModel!.nextTurn();
-      
+
       // Restart timer for next player
       if (this.gameModel!.isMyTurn()) {
         this.startTimer();
@@ -396,7 +396,7 @@ export class SlimeWarViewModel extends BaseViewModel {
   public async resetGame(): Promise<void> {
     await this.executeAsync(async () => {
       this.stopTimer();
-      
+
       if (this.gameModel) {
         this.gameModel.resetGame();
       }
@@ -492,7 +492,7 @@ export class SlimeWarViewModel extends BaseViewModel {
   }
 
   private checkGameEnd(): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     const winCondition = this.gameModel.checkWinCondition();
     if (winCondition.winner !== null) {
@@ -515,13 +515,13 @@ export class SlimeWarViewModel extends BaseViewModel {
   }
 
   private handleTimeOut(): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     this.logger.info('Turn timeout');
-    
+
     // Force end turn on timeout
     this.endTurn();
-    
+
     // Check if game should end due to timeout
     const winCondition = this.gameModel.checkWinCondition();
     if (winCondition.winner !== null) {
@@ -547,10 +547,10 @@ export class SlimeWarViewModel extends BaseViewModel {
 
   @action
   private handleGameStarted(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     this.gameModel.currentTurn = data.firstPlayer || 1;
-    
+
     if (this.gameModel.isMyTurn()) {
       this.startTimer();
     }
@@ -560,11 +560,11 @@ export class SlimeWarViewModel extends BaseViewModel {
 
   @action
   private handleCardPlaced(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     // Update board state
     this.gameModel.setBoardCell(data.x, data.y, data.cardId);
-    
+
     // Update player state if it's opponent's card
     if (data.userID !== this.gameModel.myUserID) {
       const opponent = this.gameModel.getOpponent();
@@ -582,7 +582,7 @@ export class SlimeWarViewModel extends BaseViewModel {
 
   @action
   private handleCardMoved(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     this.gameModel.moveCard(data.from.x, data.from.y, data.to.x, data.to.y);
     this.logger.info('Card moved by server', data);
@@ -590,7 +590,7 @@ export class SlimeWarViewModel extends BaseViewModel {
 
   @action
   private handleTurnChanged(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     this.gameModel.currentTurn = data.newTurn;
     this.gameModel.timer = this.gameModel.config.turnTimeLimit;
@@ -606,7 +606,7 @@ export class SlimeWarViewModel extends BaseViewModel {
 
   @action
   private handleGameEnded(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     const result: GameResult = {
       isSuccess: data.winner === this.gameModel.myUserID,
@@ -624,13 +624,13 @@ export class SlimeWarViewModel extends BaseViewModel {
 
     this.stopTimer();
     this.playSound(result.isSuccess ? 'victory.mp3' : 'defeat.mp3');
-    
+
     this.logger.info('Game ended', result);
   }
 
   @action
   private handlePlayerDisconnected(data: any): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     const player = this.gameModel.getPlayer(data.userID);
     if (player) {
@@ -666,7 +666,7 @@ export class SlimeWarViewModel extends BaseViewModel {
   protected onError(error: Error): void {
     this.logger.error('SlimeWarViewModel error', error);
     this.stopTimer();
-    
+
     // Handle specific error types
     if (error.message.includes('network') || error.message.includes('WebSocket')) {
       this.updateState(() => {

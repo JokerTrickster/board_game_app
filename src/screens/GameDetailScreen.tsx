@@ -24,7 +24,7 @@ const GameDetailScreen: React.FC = () => {
 
     const [userData, setUserData] = useState<any>(null);
     const [isMatching, setIsMatching] = useState(false); // ✅ 매칭 중 상태 추가
-    const [matchMessage, setMatchMessage] = useState("매칭하기 또는 함께하기\n선택해 주세요!"); // ✅ 메시지 상태 추가
+    const [matchMessage, setMatchMessage] = useState('매칭하기 또는 함께하기\n선택해 주세요!'); // ✅ 메시지 상태 추가
     // 모달 상태: 게임 설명 모달, 유튜브 모달
     const [isDescriptionModalVisible, setDescriptionModalVisible] = useState(false);
     const [isYoutubeModalVisible, setYoutubeModalVisible] = useState(false);
@@ -37,17 +37,17 @@ const GameDetailScreen: React.FC = () => {
         require('../assets/images/game_detail/together_start.png')
     );
     // 추가: 모달 텍스트 state 선언 (컴포넌트 상단에 추가)
-    const [modalContentText, setModalContentText] = useState("게임 매칭 방식을 선택해주세요.");
+    const [modalContentText, setModalContentText] = useState('게임 매칭 방식을 선택해주세요.');
     // 추가: 모달 타입 state (기본: "start")
-    const [modalType, setModalType] = useState("start");
+    const [modalType, setModalType] = useState('start');
 
 
     // podiumData state를 선언 (초기값은 빈 배열)
     const [podiumData, setPodiumData] = useState<any[]>([]);
 
     const [matchingUIType, setMatchingUIType] = useState<'none' | 'start' | 'random' | 'together' | 'together_create'>('none');
-    
-  
+
+
     // 게임 제목이 '틀린그림찾기'일 때만 랭킹 API를 호출하여 podiumData 갱신
     useEffect(() => {
         if (game.title === '틀린그림찾기') {
@@ -62,7 +62,7 @@ const GameDetailScreen: React.FC = () => {
               }));
               setPodiumData(transformedData);
             } catch (error) {
-              console.error("Failed to fetch ranking data", error);
+              console.error('Failed to fetch ranking data', error);
             }
           })();
         }else if(game.title === '슬라임전쟁'){
@@ -77,7 +77,7 @@ const GameDetailScreen: React.FC = () => {
                     }));
                     setPodiumData(transformedData);
                 } catch (error) {
-                    console.error("Failed to fetch ranking data", error);
+                    console.error('Failed to fetch ranking data', error);
                 }
             })();
         }else {
@@ -93,7 +93,7 @@ const GameDetailScreen: React.FC = () => {
                 setUserData(storedUser);
             }
         };
-        setModalType("start");
+        setModalType('start');
         fetchUserData();
     }, []);
     // ✅ GameDetailScreen에서 Header 설정 (navigation.setOptions 사용)
@@ -107,19 +107,19 @@ const GameDetailScreen: React.FC = () => {
     useEffect(() => {
         // Listen for password change events
         const handlePasswordChange = (newPassword: string) => {
-            console.log("Password change event received:", newPassword);
+            console.log('Password change event received:', newPassword);
             setPassword(newPassword);
-            setModalType("together_create");
+            setModalType('together_create');
         };
-        
+
         // Subscribe to the event
         eventEmitter.on('passwordChanged', handlePasswordChange);
-        console.log("Event listener registered for passwordChanged");
-        
+        console.log('Event listener registered for passwordChanged');
+
         // Clean up the event listener when component unmounts
         return () => {
             eventEmitter.off('passwordChanged', handlePasswordChange);
-            console.log("Event listener cleaned up");
+            console.log('Event listener cleaned up');
         };
     }, []);
 
@@ -142,7 +142,7 @@ const GameDetailScreen: React.FC = () => {
                 return;
         }
         setIsMatching(true);
-        setMatchMessage("매칭 중입니다...");
+        setMatchMessage('매칭 중입니다...');
     };
     const handleTogetherMatching = async () => {
         switch (game.title) {
@@ -163,17 +163,17 @@ const GameDetailScreen: React.FC = () => {
                 return;
         }
         setIsMatching(true);
-        setMatchMessage("매칭 중입니다...");
+        setMatchMessage('매칭 중입니다...');
     };
     const handleJoinMatching = async (authCode: string) => {
         try {
             const isValid = await findItService.verifyPassword(authCodeInput);
-            
+
             if (!isValid) {
                 Alert.alert('오류', '인증코드가 잘못되었습니다.');
                 return;
             }
-            
+
             switch (game.title) {
                 case '틀린그림찾기':
                     findItWebSocketService.joinConnect(authCode);
@@ -191,9 +191,9 @@ const GameDetailScreen: React.FC = () => {
                     Alert.alert('오류', '게임 매칭을 시작할 수 없습니다.');
                     return;
             }
-            
+
             setMatchingUIType('together_create');
-            
+
         } catch (error) {
             console.error('게임 참가 중 오류 발생:', error);
             Alert.alert('오류', '게임 참가 중 문제가 발생했습니다. 다시 시도해주세요.');
@@ -203,17 +203,17 @@ const GameDetailScreen: React.FC = () => {
     const handleSoloPlay = async () => {
         try {
             const deductResult = await findItService.deductCoin(-100);
-            console.log("코인 차감 결과:", deductResult);
+            console.log('코인 차감 결과:', deductResult);
 
             soloGameViewModel.resetGameState();
             const gameInfoList = await findItService.fetchSoloPlayGameInfo(10);
             (navigation as any).navigate('SoloFindIt', { gameInfoList });
 
         } catch (error: any) {
-            Alert.alert("Error", error.message);
+            Alert.alert('Error', error.message);
         }
     };
-   
+
     const handleCancelMatching = () => {
         // ✅ 매칭 취소 이벤트 전송
         findItWebSocketService.sendMatchCancelEvent();
@@ -221,7 +221,7 @@ const GameDetailScreen: React.FC = () => {
         // ✅ UI 상태 업데이트
         setIsMatching(false);
         setMatchingUIType('none');
-        setMatchMessage("매칭하기 또는 함께하기\n선택해 주세요!");
+        setMatchMessage('매칭하기 또는 함께하기\n선택해 주세요!');
 
     };
 

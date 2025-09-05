@@ -1,7 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-// 기준 디자인 사이즈: 아이폰 8플러스 
+// 기준 디자인 사이즈: 아이폰 8플러스
 // 실제 기기에서는 픽셀 대신 포인트 단위로 적용되므로, 이 값은 참고용입니다.
 const guidelineBaseWidth = 414;
 const guidelineBaseHeight = 736;

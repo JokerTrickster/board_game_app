@@ -14,7 +14,7 @@ const HomeScreen: React.FC = () => {
     const [userData, setUserData] = useState<{ success: boolean; user: any; profileImage: string | null } | null>(null);
     const [gameList, setGameList] = useState<any[]>([]);
     const [refreshing, setRefreshing] = useState(false);
-  
+
     // ✅ 유저 데이터를 서버에서 받아와 저장한 후, 최신 데이터를 state에 반영합니다.
     const fetchAndSetUserData = async () => {
         const userID = await AuthService.getUserID();

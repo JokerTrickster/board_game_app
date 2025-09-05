@@ -105,7 +105,7 @@ export class HomeModel extends DomainModel {
     totalUsers: 0,
     activeGames: 0,
     todayGames: 0,
-    weeklyRanking: null
+    weeklyRanking: null,
   };
 
   // Notifications
@@ -147,14 +147,14 @@ export class HomeModel extends DomainModel {
   updateUserExperience(newExperience: number): void {
     if (this.userProfile) {
       this.userProfile.experience = newExperience;
-      
+
       // Check for level up
       const newLevel = this.calculateLevel(newExperience);
       if (newLevel > this.userProfile.level) {
         this.userProfile.level = newLevel;
         this.addLevelUpNotification(newLevel);
       }
-      
+
       this.touch();
     }
   }
@@ -177,9 +177,9 @@ export class HomeModel extends DomainModel {
       message: `축하합니다! 레벨 ${level}에 도달했습니다!`,
       type: 'success',
       timestamp: new Date(),
-      isRead: false
+      isRead: false,
     };
-    
+
     this.addNotification(notification);
   }
 
@@ -187,7 +187,7 @@ export class HomeModel extends DomainModel {
    * Toggle favorite game
    */
   toggleFavoriteGame(gameId: number): void {
-    if (!this.userProfile) return;
+    if (!this.userProfile) {return;}
 
     const favoriteIndex = this.userProfile.favoriteGames.indexOf(gameId);
     if (favoriteIndex >= 0) {
@@ -213,9 +213,9 @@ export class HomeModel extends DomainModel {
   setGameList(games: GameItem[]): void {
     this.gameList = games.map(game => ({
       ...game,
-      isFavorite: this.userProfile?.favoriteGames.includes(game.id) || false
+      isFavorite: this.userProfile?.favoriteGames.includes(game.id) || false,
     }));
-    
+
     this.updateGameCategories();
     this.touch();
   }
@@ -247,8 +247,8 @@ export class HomeModel extends DomainModel {
       .filter(Boolean);
 
     return this.gameList
-      .filter(game => 
-        game.isActive && 
+      .filter(game =>
+        game.isActive &&
         !this.userProfile!.favoriteGames.includes(game.id) &&
         favoriteCategories.includes(game.category)
       )
@@ -262,11 +262,11 @@ export class HomeModel extends DomainModel {
     if (category === 'all') {
       return this.gameList.filter(game => game.isActive);
     }
-    
+
     if (category === 'favorites') {
       return this.gameList.filter(game => game.isFavorite);
     }
-    
+
     if (category === 'recent') {
       return this.recentlyPlayedGames;
     }
@@ -287,17 +287,17 @@ export class HomeModel extends DomainModel {
    */
   addRecentlyPlayedGame(gameId: number): void {
     const game = this.gameList.find(g => g.id === gameId);
-    if (!game) return;
+    if (!game) {return;}
 
     // Remove if already exists
     this.recentlyPlayedGames = this.recentlyPlayedGames.filter(g => g.id !== gameId);
-    
+
     // Add to front
     this.recentlyPlayedGames.unshift(game);
-    
+
     // Keep only last 10 games
     this.recentlyPlayedGames = this.recentlyPlayedGames.slice(0, 10);
-    
+
     this.touch();
   }
 
@@ -318,7 +318,7 @@ export class HomeModel extends DomainModel {
     if (this.userProfile) {
       this.userProfile.totalGamesPlayed++;
     }
-    
+
     this.homeStats.todayGames++;
     this.touch();
   }
@@ -330,14 +330,14 @@ export class HomeModel extends DomainModel {
    */
   addNotification(notification: AppNotification): void {
     this.notifications.unshift(notification);
-    
+
     if (!notification.isRead) {
       this.unreadNotificationCount++;
     }
-    
+
     // Keep only last 50 notifications
     this.notifications = this.notifications.slice(0, 50);
-    
+
     this.touch();
   }
 
@@ -360,7 +360,7 @@ export class HomeModel extends DomainModel {
     this.notifications.forEach(notification => {
       notification.isRead = true;
     });
-    
+
     this.unreadNotificationCount = 0;
     this.touch();
   }
@@ -370,15 +370,15 @@ export class HomeModel extends DomainModel {
    */
   clearOldNotifications(daysOld: number = 7): void {
     const cutoffDate = new Date(Date.now() - daysOld * 24 * 60 * 60 * 1000);
-    
-    this.notifications = this.notifications.filter(notification => 
+
+    this.notifications = this.notifications.filter(notification =>
       notification.timestamp > cutoffDate
     );
-    
+
     // Recalculate unread count
     this.unreadNotificationCount = this.notifications
       .filter(n => !n.isRead).length;
-    
+
     this.touch();
   }
 
@@ -394,29 +394,29 @@ export class HomeModel extends DomainModel {
         title: '틀린그림찾기',
         icon: 'search',
         route: 'FindIt',
-        isEnabled: true
+        isEnabled: true,
       },
       {
         id: 'slimewar',
         title: '슬라임 워',
         icon: 'gamepad',
         route: 'SlimeWar',
-        isEnabled: true
+        isEnabled: true,
       },
       {
         id: 'sequence',
         title: '시퀀스',
         icon: 'list',
         route: 'Sequence',
-        isEnabled: true
+        isEnabled: true,
       },
       {
         id: 'frog',
         title: '개구리',
         icon: 'frog',
         route: 'Frog',
-        isEnabled: true
-      }
+        isEnabled: true,
+      },
     ];
   }
 
@@ -528,7 +528,7 @@ export class HomeModel extends DomainModel {
     return {
       userProfile: this.userProfile ? {
         ...this.userProfile,
-        achievements: this.userProfile.achievements.length
+        achievements: this.userProfile.achievements.length,
       } : null,
       isProfileLoaded: this.isProfileLoaded,
       gamesCount: this.gameList.length,
@@ -544,7 +544,7 @@ export class HomeModel extends DomainModel {
       lastRefreshTime: this.lastRefreshTime,
       isOnline: this.isOnline,
       appVersion: this.appVersion,
-      isMaintenanceMode: this.isMaintenanceMode
+      isMaintenanceMode: this.isMaintenanceMode,
     };
   }
 
@@ -596,7 +596,7 @@ export class UserCanPlayGameRule implements BusinessRule<HomeModel> {
 
   isSatisfiedBy(model: HomeModel): boolean {
     const game = model.gameList.find(g => g.id === this.gameId);
-    if (!game) return false;
+    if (!game) {return false;}
 
     return game.isActive && !model.isMaintenanceMode && model.isOnline;
   }

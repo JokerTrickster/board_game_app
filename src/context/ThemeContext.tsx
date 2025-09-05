@@ -133,7 +133,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, mode);
       setThemeModeState(mode);
-      
+
       // Announce theme change to screen reader
       const announcement = getThemeAnnouncement(mode);
       AccessibilityInfo.announceForAccessibility?.(announcement);

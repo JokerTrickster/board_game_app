@@ -97,13 +97,13 @@ export class NavigationViewModel extends BaseViewModel {
       try {
         // Apply route interceptor
         const interceptedParams = this.navigationModel.applyRouteInterceptor(name, params);
-        
+
         // Record navigation in history
         const fromRoute = this.navigationModel.currentRoute;
-        this.navigationModel.addHistoryEntry('navigate', { 
-          name, 
-          params: interceptedParams, 
-          timestamp: new Date() 
+        this.navigationModel.addHistoryEntry('navigate', {
+          name,
+          params: interceptedParams,
+          timestamp: new Date(),
         }, fromRoute || undefined);
 
         // Update current route
@@ -138,13 +138,13 @@ export class NavigationViewModel extends BaseViewModel {
       try {
         // Apply route interceptor
         const interceptedParams = this.navigationModel.applyRouteInterceptor(name, params);
-        
+
         // Record navigation in history
         const fromRoute = this.navigationModel.currentRoute;
-        this.navigationModel.addHistoryEntry('replace', { 
-          name, 
-          params: interceptedParams, 
-          timestamp: new Date() 
+        this.navigationModel.addHistoryEntry('replace', {
+          name,
+          params: interceptedParams,
+          timestamp: new Date(),
         }, fromRoute || undefined);
 
         // Update current route
@@ -153,7 +153,7 @@ export class NavigationViewModel extends BaseViewModel {
         // Perform replace
         this.navigationRef!.dispatch({
           type: 'REPLACE',
-          payload: { name, params: interceptedParams }
+          payload: { name, params: interceptedParams },
         });
 
         return true;
@@ -179,8 +179,8 @@ export class NavigationViewModel extends BaseViewModel {
         // Record navigation in history
         const fromRoute = this.navigationModel.currentRoute;
         if (this.navigationModel.previousRoute) {
-          this.navigationModel.addHistoryEntry('goBack', 
-            this.navigationModel.previousRoute, 
+          this.navigationModel.addHistoryEntry('goBack',
+            this.navigationModel.previousRoute,
             fromRoute || undefined
           );
         }
@@ -218,17 +218,17 @@ export class NavigationViewModel extends BaseViewModel {
         // Record navigation in history
         const fromRoute = this.navigationModel.currentRoute;
         const targetRoute = routes[routes.length - 1];
-        
+
         this.navigationModel.addHistoryEntry('reset', {
           name: targetRoute.name,
           params: targetRoute.params,
-          timestamp: new Date()
+          timestamp: new Date(),
         }, fromRoute || undefined);
 
         // Reset navigation stack
         this.navigationRef!.reset({
           index: routes.length - 1,
-          routes: routes.map(route => ({ name: route.name, params: route.params }))
+          routes: routes.map(route => ({ name: route.name, params: route.params })),
         });
 
         // Update current route
@@ -268,7 +268,7 @@ export class NavigationViewModel extends BaseViewModel {
   @action
   public async processPendingDeepLink(): Promise<boolean> {
     const pendingLink = this.navigationModel.pendingDeepLink;
-    if (!pendingLink) return false;
+    if (!pendingLink) {return false;}
 
     this.navigationModel.setPendingDeepLink(null);
     return this.handleDeepLink(pendingLink);
@@ -382,10 +382,10 @@ export class NavigationViewModel extends BaseViewModel {
   public getScreenParams<RouteName extends keyof RootStackParamList>(
     screenName?: RouteName
   ): RootStackParamList[RouteName] | undefined {
-    const route = screenName 
+    const route = screenName
       ? this.navigationModel.navigationHistory.find(entry => entry.route.name === screenName)?.route
       : this.navigationModel.currentRoute;
-    
+
     return route?.params;
   }
 
@@ -444,7 +444,7 @@ export class NavigationViewModel extends BaseViewModel {
     return {
       navigationStats: this.navigationModel.getNavigationStats(),
       currentMemoryUsage: this.navigationModel.navigationHistory.length,
-      isPerformanceOptimal: this.navigationModel.navigationHistory.length < 30
+      isPerformanceOptimal: this.navigationModel.navigationHistory.length < 30,
     };
   }
 
@@ -476,9 +476,9 @@ export class NavigationViewModel extends BaseViewModel {
           Sequence: 'sequence',
           SequenceResult: 'sequence/result',
           Frog: 'frog',
-          FrogResult: 'frog/result'
-        }
-      }
+          FrogResult: 'frog/result',
+        },
+      },
     });
 
     this.setInitialized(true);

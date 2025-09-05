@@ -27,7 +27,7 @@ jest.mock('react-native-size-matters', () => ({
 // Mock Dimensions
 const mockDimensions = (width: number, height: number) => {
   (Dimensions.get as jest.Mock) = jest.fn(() => ({ width, height }));
-  
+
   // Update module-level variables that depend on dimensions
   jest.resetModules();
 };
@@ -40,21 +40,21 @@ describe('Responsive Utilities', () => {
   describe('Basic Scaling', () => {
     it('should scale sizes correctly for regular phone', () => {
       mockDimensions(375, 667);
-      
+
       const scaledSize = scale(20);
       expect(scaledSize).toBe(20); // 1.0 scale factor for regular phone
     });
 
     it('should scale sizes correctly for small phone', () => {
       mockDimensions(320, 568);
-      
+
       const scaledSize = scale(20);
       expect(scaledSize).toBeLessThan(20); // Should be scaled down
     });
 
     it('should scale sizes correctly for tablet', () => {
       mockDimensions(768, 1024);
-      
+
       const scaledSize = scale(20);
       expect(scaledSize).toBeGreaterThan(20); // Should be scaled up
     });
@@ -67,7 +67,7 @@ describe('Responsive Utilities', () => {
       let scaledFont = scaleFont(16);
       expect(scaledFont).toBeLessThanOrEqual(16);
 
-      // Regular phone  
+      // Regular phone
       mockDimensions(375, 667);
       scaledFont = scaleFont(16);
       expect(scaledFont).toBe(16);
@@ -113,7 +113,7 @@ describe('Responsive Utilities', () => {
   describe('Percentage-based Dimensions', () => {
     it('should calculate width percentage correctly', () => {
       mockDimensions(400, 600);
-      
+
       expect(widthPercentageToDP(50)).toBe(200);
       expect(widthPercentageToDP(100)).toBe(400);
       expect(widthPercentageToDP(25)).toBe(100);
@@ -121,7 +121,7 @@ describe('Responsive Utilities', () => {
 
     it('should calculate height percentage correctly', () => {
       mockDimensions(400, 600);
-      
+
       expect(heightPercentageToDP(50)).toBe(300);
       expect(heightPercentageToDP(100)).toBe(600);
       expect(heightPercentageToDP(25)).toBe(150);
@@ -137,7 +137,7 @@ describe('Responsive Utilities', () => {
 
     it('should ensure minimum touch target size', () => {
       mockDimensions(375, 667);
-      
+
       expect(ensureTouchTarget(30)).toBeGreaterThanOrEqual(44);
       expect(ensureTouchTarget(50)).toBe(50); // Already large enough
     });
@@ -146,10 +146,10 @@ describe('Responsive Utilities', () => {
   describe('Border Radius Scaling', () => {
     it('should scale border radius but cap at reasonable limits', () => {
       mockDimensions(375, 667);
-      
+
       const smallRadius = scaleBorderRadius(4);
       const largeRadius = scaleBorderRadius(20);
-      
+
       expect(smallRadius).toBeGreaterThanOrEqual(4);
       expect(largeRadius).toBeLessThanOrEqual(30); // Should be capped
     });
@@ -158,7 +158,7 @@ describe('Responsive Utilities', () => {
   describe('Breakpoint Utilities', () => {
     it('should detect breakpoints correctly for phone', () => {
       mockDimensions(390, 844);
-      
+
       expect(breakpoints.isPhone).toBe(true);
       expect(breakpoints.isTablet).toBe(false);
       expect(breakpoints.isRegularPhone).toBe(true);
@@ -167,7 +167,7 @@ describe('Responsive Utilities', () => {
 
     it('should detect breakpoints correctly for tablet', () => {
       mockDimensions(768, 1024);
-      
+
       expect(breakpoints.isPhone).toBe(false);
       expect(breakpoints.isTablet).toBe(true);
       expect(breakpoints.isSmallTablet).toBe(true);
@@ -188,7 +188,7 @@ describe('Responsive Utilities', () => {
 
     it('should provide utility functions for breakpoint checking', () => {
       mockDimensions(400, 600);
-      
+
       expect(breakpoints.above(300)).toBe(true);
       expect(breakpoints.above(500)).toBe(false);
       expect(breakpoints.below(500)).toBe(true);
@@ -201,7 +201,7 @@ describe('Responsive Utilities', () => {
   describe('Edge Cases and Error Handling', () => {
     it('should handle zero and negative values gracefully', () => {
       mockDimensions(375, 667);
-      
+
       expect(scale(0)).toBe(0);
       expect(scaleFont(0)).toBe(0);
       expect(scaleSpacing(0)).toBe(0);
@@ -209,7 +209,7 @@ describe('Responsive Utilities', () => {
 
     it('should handle very large values', () => {
       mockDimensions(375, 667);
-      
+
       const largeValue = 1000;
       expect(scale(largeValue)).toBeGreaterThan(0);
       expect(scaleFont(largeValue)).toBeGreaterThan(0);
@@ -217,7 +217,7 @@ describe('Responsive Utilities', () => {
 
     it('should maintain precision for small decimal values', () => {
       mockDimensions(375, 667);
-      
+
       const smallDecimal = 0.5;
       expect(scale(smallDecimal)).toBeGreaterThan(0);
     });

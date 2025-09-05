@@ -21,7 +21,7 @@ type SlimeWarScreenRouteProp = RouteProp<{
 const SlimeWarScreen_MVVM: React.FC = () => {
   const navigation = useNavigation<SlimeWarScreenNavigationProp>();
   const route = useRoute<SlimeWarScreenRouteProp>();
-  
+
   const {
     sessionId = 'default',
     roomID = 0,
@@ -31,8 +31,8 @@ const SlimeWarScreen_MVVM: React.FC = () => {
       turnTimeLimit: 60,
       gridSize: 9,
       maxRounds: 10,
-      deckSize: 20
-    }
+      deckSize: 20,
+    },
   } = route.params || {};
 
   const viewModel = useViewModel(
@@ -50,7 +50,7 @@ const SlimeWarScreen_MVVM: React.FC = () => {
         turnTimeLimit: config.turnTimeLimit,
         gridSize: config.gridSize,
         maxRounds: config.maxRounds,
-        startTime: new Date()
+        startTime: new Date(),
       };
 
       viewModel.initializeGame(config, session, userID);
@@ -86,7 +86,7 @@ const SlimeWarScreen_MVVM: React.FC = () => {
   }, [navigation, viewModel]);
 
   useEffect(() => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     const unsubscribeGameOver = viewModel.onGameOver((result) => {
       setTimeout(() => {
@@ -160,7 +160,7 @@ const SlimeWarScreen_MVVM: React.FC = () => {
   }, [viewModel, navigation]);
 
   const handleCardPress = useCallback((card: GameCard) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     if (viewModel.selectedCard?.id === card.id) {
       viewModel.selectCard(null);
@@ -170,7 +170,7 @@ const SlimeWarScreen_MVVM: React.FC = () => {
   }, [viewModel]);
 
   const handleCellPress = useCallback(async (x: number, y: number) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       if (viewModel.selectedCard) {
@@ -191,7 +191,7 @@ const SlimeWarScreen_MVVM: React.FC = () => {
   }, [viewModel]);
 
   const handleHintPress = useCallback(async () => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       const success = await viewModel.useHint();

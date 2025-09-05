@@ -67,7 +67,7 @@ class ErrorReportingService {
   public async setUserConsent(consent: boolean) {
     this.isEnabled = consent;
     await AsyncStorage.setItem('error_reporting_consent', consent.toString());
-    
+
     this.addBreadcrumb({
       category: 'system',
       message: `Error reporting ${consent ? 'enabled' : 'disabled'}`,
@@ -119,7 +119,7 @@ class ErrorReportingService {
    * Add breadcrumb for tracking user journey
    */
   public addBreadcrumb(breadcrumb: Omit<BreadcrumbItem, 'timestamp'>) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     const item: BreadcrumbItem = {
       ...breadcrumb,
@@ -146,7 +146,7 @@ class ErrorReportingService {
       extra?: any;
     }
   ) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     try {
       const errorReport = await this.createErrorReport(error, {
@@ -176,7 +176,7 @@ class ErrorReportingService {
     // Handle JavaScript errors
     if (typeof ErrorUtils !== 'undefined') {
       const originalHandler = ErrorUtils.getGlobalHandler();
-      
+
       ErrorUtils.setGlobalHandler(async (error: Error, isFatal?: boolean) => {
         try {
           await this.reportError(error, {
@@ -198,7 +198,7 @@ class ErrorReportingService {
     const originalRejectionTracker = global.HermesInternal?.hasPromiseRejectionTracker?.();
     if (originalRejectionTracker) {
       const originalHandler = global.HermesInternal.setPromiseRejectionTracker;
-      
+
       global.HermesInternal.setPromiseRejectionTracker = async (id: number, rejection: any) => {
         try {
           await this.reportError(new Error(`Unhandled Promise Rejection: ${rejection}`), {
@@ -340,7 +340,7 @@ class ErrorReportingService {
       if (__DEV__) {
         const reports = await this.getStoredReports();
         reports.push(report);
-        
+
         // Keep only last 20 reports locally
         const recentReports = reports.slice(-20);
         await AsyncStorage.setItem('error_reports', JSON.stringify(recentReports));

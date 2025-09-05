@@ -20,14 +20,14 @@ import AnimatedX from './AnimatedX';
 import AnimatedHint from './AnimatedHint';
 import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants';
 import { useTimers } from '../../hooks/useTimers';
-import { useImageLoader } from '../../hooks/useImageLoader'; 
+import { useImageLoader } from '../../hooks/useImageLoader';
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
     const { setTimeout, clearTimeout } = useTimers();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
+    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션
     const timerAnimation = useRef<RNAnimated.CompositeAnimation | null>(null);
     const remainingTime = useRef(soloFindItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
@@ -55,16 +55,16 @@ const SoloFindItScreen: React.FC = observer(() => {
     const derivedScale = useDerivedValue(() => scale.value);
     const derivedOffsetX = useDerivedValue(() => offsetX.value);
     const derivedOffsetY = useDerivedValue(() => offsetY.value);
-   
+
     const route = useRoute<any>();
     const { gameInfoList } = route.params;
-    
+
     // Extract all image URLs for optimized loading
     const imageUrls = useMemo(() => {
         const urls: string[] = [];
         gameInfoList.forEach((gameInfo: any) => {
-            if (gameInfo.normalUrl) urls.push(gameInfo.normalUrl);
-            if (gameInfo.abnormalUrl) urls.push(gameInfo.abnormalUrl);
+            if (gameInfo.normalUrl) {urls.push(gameInfo.normalUrl);}
+            if (gameInfo.abnormalUrl) {urls.push(gameInfo.abnormalUrl);}
         });
         return urls;
     }, [gameInfoList]);
@@ -81,8 +81,8 @@ const SoloFindItScreen: React.FC = observer(() => {
         },
         onError: (error) => {
             console.warn('Image loading error:', error);
-        }
-    }); 
+        },
+    });
     const [correctPositions, setCorrectPositions] = useState<any[]>([]); // ✅ 정답 좌표 저장
 
     // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
@@ -104,7 +104,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 축소할 때는 항상 중앙으로 이동
         const newScale = Math.max(MIN_SCALE, scale.value - 0.5);
         scale.value = withTiming(newScale, { duration: 200 });
-        
+
         // 스케일이 1이 되면 중앙으로 이동
         if (newScale <= 1) {
             offsetX.value = withTiming(0, { duration: 200 });
@@ -113,10 +113,10 @@ const SoloFindItScreen: React.FC = observer(() => {
             // 스케일이 1보다 크면 현재 위치에서 중앙으로 부드럽게 이동
             const scaledWidth = IMAGE_FRAME_WIDTH * newScale;
             const scaledHeight = IMAGE_FRAME_HEIGHT * newScale;
-            
+
             const maxOffsetX = (scaledWidth - IMAGE_FRAME_WIDTH) / 2;
             const maxOffsetY = (scaledHeight - IMAGE_FRAME_HEIGHT) / 2;
-            
+
             // 현재 offset을 허용 범위 내로 조정
             offsetX.value = withTiming(
                 Math.min(maxOffsetX, Math.max(-maxOffsetX, offsetX.value)),
@@ -127,7 +127,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                 { duration: 200 }
             );
         }
-        
+
         isZoomed.value = newScale > 1;
     };
 
@@ -250,7 +250,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             subscription.remove();
         };
     }, []);
-   
+
     // 컴포넌트 마운트 시 사운드 파일 로드
     useEffect(() => {
         clickSoundRef.current = new Sound('wrong_click.mp3', Sound.MAIN_BUNDLE, (error) => {
@@ -294,7 +294,7 @@ const SoloFindItScreen: React.FC = observer(() => {
 
     useEffect(() => {
         const backAction = () => {
-            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면,
             // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
             return true;
         };
@@ -317,7 +317,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         runInAction(() => {
             soloFindItViewModel.correctClicks.push({
                 x, y,
-                userID: 0
+                userID: 0,
             });
         });
     };
@@ -327,7 +327,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         runInAction(() => {
             soloFindItViewModel.wrongClicks.push({
                 x, y,
-                userID: 0
+                userID: 0,
             });
         });
         // 4초 후 해당 오답 좌표를 제거합니다.
@@ -365,7 +365,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 클릭 좌표를 실제 이미지 크기에 맞게 조정
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
-        // 아래 콘솔은 절대 지우지마라 
+        // 아래 콘솔은 절대 지우지마라
         for (const click of soloFindItViewModel.correctClicks) {
             const correctPosX = parseFloat((click.x * scaleX).toFixed(2));
             const correctPosY = parseFloat((click.y * scaleY).toFixed(2));
@@ -391,7 +391,7 @@ const SoloFindItScreen: React.FC = observer(() => {
 
         let isCorrect = false;
         let correctIndex = -1;
-        // 정답을 찾는다. 
+        // 정답을 찾는다.
         for (let i = 0; i < correctPositions.length; i++) {
             const pos = correctPositions[i];
 
@@ -402,7 +402,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             const dx = finalX - correctPosX;
             const dy = finalY - correctPosY;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             if (finalX >= 250) {
                 if (distance <= 30) {
                     isCorrect = true;
@@ -422,7 +422,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             runOnJS(playCorrectSound)();
             runOnJS(addCorrectClick)(locationX, locationY);
             // Remove the matched correct position
-            
+
             if (correctIndex !== -1) {
                 runOnJS(setCorrectPositions)(prev => {
                     const updated = [...prev];
@@ -430,7 +430,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                     return updated;
                 });
             }
-            if (soloFindItViewModel.correctClicks.length+1 === 5) {
+            if (soloFindItViewModel.correctClicks.length + 1 === 5) {
                 runInAction(() => {
                     soloFindItViewModel.roundClearEffect = true;
                 });
@@ -461,7 +461,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                         soloFindItViewModel.roundFailEffect = false;
                         navigation.navigate('SoloFindItResult', {
                             gameInfoList: gameInfoList,
-                            isSuccess: false
+                            isSuccess: false,
                         });
                     }, 3000);
                 })();
@@ -475,11 +475,11 @@ const SoloFindItScreen: React.FC = observer(() => {
         if (soloFindItViewModel.hints > 0) {
             const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width;
             const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
-            
+
             const unsolvedPositions = correctPositions.filter((pos: { x: number; y: number; }) => {
                 const finalX = parseFloat((pos.x * scaleX).toFixed(2));
                 const finalY = parseFloat((pos.y * scaleY).toFixed(2));
-                return !soloFindItViewModel.correctClicks.some(click => 
+                return !soloFindItViewModel.correctClicks.some(click =>
                     Math.abs(click.x - finalX) < TOLERANCE && Math.abs(click.y - finalY) < TOLERANCE
                 );
             });
@@ -493,7 +493,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                 const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height;
                 const scaledHintPos = {
                     x: parseFloat((hintPos.x / scaleX).toFixed(2)),
-                    y: parseFloat((hintPos.y / scaleY).toFixed(2))
+                    y: parseFloat((hintPos.y / scaleY).toFixed(2)),
                 };
 
                 // 힌트 위치 설정
@@ -582,7 +582,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         setCurrentRound(soloFindItViewModel.round);
         setCorrectPositions(gameInfoList[soloFindItViewModel.round - 1].correctPositions);
     }, [soloFindItViewModel.round]);
-    
+
     // Image preloading is now handled by useImageLoader hook above
 
     // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
@@ -635,8 +635,8 @@ const SoloFindItScreen: React.FC = observer(() => {
         // 이미지의 크기를 조정하는 대신, transform을 사용하여 확대/축소
         imageRef.current?.setNativeProps({
             style: {
-                transform: [{ scale: scaleFactor }]
-            }
+                transform: [{ scale: scaleFactor }],
+            },
         });
     };
 
@@ -651,8 +651,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         <View style={importedStyles.container}>
             <SoloHeader />
             {/* 상단 UI */}
-            <View style={importedStyles.topBar}>
-            </View>
+            <View style={importedStyles.topBar} />
 
 
             <View style={importedStyles.gameContainer}>
@@ -660,7 +659,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
                 <View style={importedStyles.normalImageContainer}>
                     <Animated.View style={[importedStyles.image, animatedStyle]}>
-                        <TouchableWithoutFeedback 
+                        <TouchableWithoutFeedback
                             onPress={handleImageClick}
                             disabled={soloFindItViewModel.roundClearEffect || soloFindItViewModel.roundFailEffect}
                         >
@@ -677,15 +676,15 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 <View style={StyleSheet.absoluteFill} pointerEvents="none">
                                     {/* 정답 표시 */}
                                     {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                        <AnimatedCircle 
-                                            key={`correct-normal-${index}`} 
-                                            x={pos.x} 
-                                            y={pos.y} 
+                                        <AnimatedCircle
+                                            key={`correct-normal-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
                                         />
                                     ))}
                                     {/* 오답 표시 */}
                                     {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                        <AnimatedX 
+                                        <AnimatedX
                                             key={`wrong-normal-${index}`}
                                             x={pos.x}
                                             y={pos.y}
@@ -731,7 +730,7 @@ const SoloFindItScreen: React.FC = observer(() => {
                     <View style={importedStyles.abnormalImageContainer}>
                     <Animated.View style={[importedStyles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
-                        <TouchableWithoutFeedback 
+                        <TouchableWithoutFeedback
                             onPress={handleImageClick}
                             disabled={soloFindItViewModel.roundClearEffect || soloFindItViewModel.roundFailEffect}
                         >
@@ -748,15 +747,15 @@ const SoloFindItScreen: React.FC = observer(() => {
                                 <View style={StyleSheet.absoluteFill} pointerEvents="none">
                                     {/* 정답 표시 */}
                                     {soloFindItViewModel.correctClicks.map((pos, index) => (
-                                        <AnimatedCircle 
-                                            key={`correct-abnormal-${index}`} 
-                                            x={pos.x} 
-                                            y={pos.y} 
+                                        <AnimatedCircle
+                                            key={`correct-abnormal-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
                                         />
                                     ))}
                                     {/* 오답 표시 */}
                                     {soloFindItViewModel.wrongClicks.map((pos, index) => (
-                                        <AnimatedX 
+                                        <AnimatedX
                                             key={`wrong-abnormal-${index}`}
                                             x={pos.x}
                                             y={pos.y}
@@ -788,7 +787,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             {soloFindItViewModel.roundClearEffect && (
                 <View style={importedStyles.clearEffectContainer}>
                     <Image
-                        source= {require('../../assets/icons/find-it/clear_star.png')} 
+                        source= {require('../../assets/icons/find-it/clear_star.png')}
                         style={styles.clearIcon}
                     />
                     <Text style={importedStyles.clearEffectRound}>ROUND {soloFindItViewModel.round}</Text>
@@ -801,7 +800,7 @@ const SoloFindItScreen: React.FC = observer(() => {
             {soloFindItViewModel.roundFailEffect && (
                 <View style={importedStyles.failEffectContainer}>
                     <Image
-                        source={require('../../assets/icons/find-it/fail_star.png')} 
+                        source={require('../../assets/icons/find-it/fail_star.png')}
                         style={styles.clearIcon}
                     />
                     <Text style={importedStyles.clearEffectRound}>ROUND {soloFindItViewModel.round}</Text>

@@ -1,10 +1,10 @@
 // Performance monitoring exports
 export { performanceMonitor } from '../PerformanceMonitor';
 export { usePerformanceDashboard } from '../../hooks/usePerformanceDashboard';
-export { 
+export {
   exportPerformanceData,
   generatePerformanceReport,
-  quickPerformanceCheck 
+  quickPerformanceCheck,
 } from '../../utils/performanceUtils';
 export { default as PerformanceDashboard } from '../../components/PerformanceDashboard';
 

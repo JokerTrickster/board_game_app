@@ -40,7 +40,7 @@ const ItemBar: FC<ItemBarProps> = ({
             {/* 좌측 그룹: 생명, 타이머, 힌트 */}
             <View style={styles.groupContainer}>
                 {/* 생명 아이템 (눌림 없이 표시) */}
-                <View 
+                <View
                     style={styles.itemContainer}
                     accessible={true}
                     accessibilityRole="text"
@@ -48,8 +48,8 @@ const ItemBar: FC<ItemBarProps> = ({
                     accessibilityHint="현재 게임에서 남은 생명의 개수입니다"
                 >
                     <View style={styles.iconWrapper}>
-                        <Image 
-                            source={require('../assets/icons/find-it/heart.png')} 
+                        <Image
+                            source={require('../assets/icons/find-it/heart.png')}
                             style={styles.icon}
                             accessibilityIgnoresInvertColors={true}
                         />
@@ -58,17 +58,17 @@ const ItemBar: FC<ItemBarProps> = ({
                     <Text style={styles.itemLabel}>남은 생명</Text>
                 </View>
                 {/* 타이머 아이템 */}
-                <TouchableOpacity 
-                    style={styles.itemContainer} 
+                <TouchableOpacity
+                    style={styles.itemContainer}
                     onPress={onTimerStopPress}
                     accessibilityRole="button"
                     accessibilityLabel={`5초 멈춤 아이템 ${timerStopCount}개 남음`}
-                    accessibilityHint={timerStopCount > 0 ? "터치하여 타이머를 5초간 멈춥니다" : "사용할 수 있는 타이머 멈춤 아이템이 없습니다"}
+                    accessibilityHint={timerStopCount > 0 ? '터치하여 타이머를 5초간 멈춥니다' : '사용할 수 있는 타이머 멈춤 아이템이 없습니다'}
                     disabled={timerStopCount === 0}
                 >
                     <View style={styles.iconWrapper}>
-                        <Image 
-                            source={require('../assets/icons/find-it/timer.png')} 
+                        <Image
+                            source={require('../assets/icons/find-it/timer.png')}
                             style={styles.icon}
                             accessibilityIgnoresInvertColors={true}
                         />
@@ -77,17 +77,17 @@ const ItemBar: FC<ItemBarProps> = ({
                     <Text style={styles.itemLabel}>5초 멈춤</Text>
                 </TouchableOpacity>
                 {/* 힌트 아이템 */}
-                <TouchableOpacity 
-                    style={styles.itemContainer} 
+                <TouchableOpacity
+                    style={styles.itemContainer}
                     onPress={onHintPress}
                     accessibilityRole="button"
                     accessibilityLabel={`힌트 아이템 ${hintCount}개 남음`}
-                    accessibilityHint={hintCount > 0 ? "터치하여 정답 위치에 힌트를 표시합니다" : "사용할 수 있는 힌트 아이템이 없습니다"}
+                    accessibilityHint={hintCount > 0 ? '터치하여 정답 위치에 힌트를 표시합니다' : '사용할 수 있는 힌트 아이템이 없습니다'}
                     disabled={hintCount === 0}
                 >
                     <View style={styles.iconWrapper}>
-                        <Image 
-                            source={require('../assets/icons/find-it/hint.png')} 
+                        <Image
+                            source={require('../assets/icons/find-it/hint.png')}
                             style={styles.icon}
                             accessibilityIgnoresInvertColors={true}
                         />
@@ -98,29 +98,29 @@ const ItemBar: FC<ItemBarProps> = ({
             </View>
             {/* 우측 그룹: 확대, 축소 */}
             <View style={styles.groupContainer}>
-                <TouchableOpacity 
-                    style={styles.itemContainer} 
+                <TouchableOpacity
+                    style={styles.itemContainer}
                     onPress={onZoomInPress}
                     accessibilityRole="button"
                     accessibilityLabel="확대"
                     accessibilityHint="터치하여 게임 이미지를 확대합니다"
                 >
-                    <Image 
-                        source={require('../assets/icons/find-it/zoom_out.png')} 
+                    <Image
+                        source={require('../assets/icons/find-it/zoom_out.png')}
                         style={styles.icon}
                         accessibilityIgnoresInvertColors={true}
                     />
                     <Text style={styles.itemLabel}>확대</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.itemContainer} 
+                <TouchableOpacity
+                    style={styles.itemContainer}
                     onPress={onZoomOutPress}
                     accessibilityRole="button"
                     accessibilityLabel="축소"
                     accessibilityHint="터치하여 게임 이미지를 축소합니다"
                 >
-                    <Image 
-                        source={require('../assets/icons/find-it/zoom_in.png')} 
+                    <Image
+                        source={require('../assets/icons/find-it/zoom_in.png')}
                         style={styles.icon}
                         accessibilityIgnoresInvertColors={true}
                     />

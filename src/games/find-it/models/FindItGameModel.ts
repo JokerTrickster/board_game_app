@@ -68,13 +68,13 @@ export class FindItGameModel extends DomainModel {
   public timer: number;
   public isGameOver: boolean = false;
   public isPaused: boolean = false;
-  
+
   // Current round data
   public correctClicks: ClickData[] = [];
   public wrongClicks: ClickData[] = [];
   public missedPositions: Position[] = [];
   public hintPosition: Position | null = null;
-  
+
   // UI state
   public isTimerStopped: boolean = false;
   public roundClearEffect: boolean = false;
@@ -98,7 +98,7 @@ export class FindItGameModel extends DomainModel {
    */
   isPositionAlreadyClicked(position: Position, radius: number = 20): boolean {
     const allClicks = [...this.correctClicks, ...this.wrongClicks];
-    return allClicks.some(click => 
+    return allClicks.some(click =>
       this.calculateDistance(click, position) <= radius
     );
   }
@@ -192,8 +192,8 @@ export class FindItGameModel extends DomainModel {
     this.hints--;
 
     // Find first unclaimed correct position
-    const availablePositions = correctPositions.filter(pos => 
-      !this.correctClicks.some(click => 
+    const availablePositions = correctPositions.filter(pos =>
+      !this.correctClicks.some(click =>
         this.calculateDistance(click, pos) <= 20
       )
     );
@@ -242,7 +242,7 @@ export class FindItGameModel extends DomainModel {
   handleTimeout(correctPositions: Position[]): void {
     const missedCount = correctPositions.length - this.correctClicks.length;
     this.lives = Math.max(0, this.lives - missedCount);
-    
+
     // Store missed positions for display
     this.missedPositions = correctPositions.filter(pos =>
       !this.correctClicks.some(click =>
@@ -273,7 +273,7 @@ export class FindItGameModel extends DomainModel {
     const livesBonus = this.lives * 50;
     const hintsBonus = this.hints * 25;
     const timerStopsBonus = this.timerStops * 25;
-    
+
     return baseScore + livesBonus + hintsBonus + timerStopsBonus;
   }
 

@@ -80,7 +80,7 @@ class PerformanceMonitorService {
   }
 
   startMonitoring(intervalMs: number = 5000) {
-    if (this.isMonitoring) return;
+    if (this.isMonitoring) {return;}
 
     console.log('📊 Starting performance monitoring');
     this.isMonitoring = true;
@@ -95,7 +95,7 @@ class PerformanceMonitorService {
   }
 
   pauseMonitoring() {
-    if (!this.isMonitoring) return;
+    if (!this.isMonitoring) {return;}
 
     console.log('⏸️ Pausing performance monitoring');
     this.isMonitoring = false;
@@ -113,19 +113,19 @@ class PerformanceMonitorService {
 
   private collectMetrics() {
     const now = Date.now();
-    
+
     // Collect memory metrics
     const memoryUsage = this.getMemoryMetrics();
-    
+
     // Collect render metrics
     const renderMetrics = this.getRenderMetrics();
-    
+
     // Collect network metrics
     const networkMetrics = this.getNetworkMetrics();
-    
+
     // Collect audio metrics
     const audioMetrics = this.getAudioMetrics();
-    
+
     // Collect app metrics
     const appMetrics = this.getAppMetrics();
 
@@ -171,7 +171,7 @@ class PerformanceMonitorService {
 
   private getNetworkMetrics() {
     const wsStats = webSocketService.getQueueStats();
-    
+
     return {
       webSocketHealth: webSocketService.isHealthy(),
       queueUtilization: wsStats.queueUtilization,
@@ -273,7 +273,7 @@ class PerformanceMonitorService {
 
   private addAlert(alert: PerformanceAlert) {
     this.alerts.push(alert);
-    
+
     // Keep only last 50 alerts
     if (this.alerts.length > 50) {
       this.alerts.shift();
@@ -303,7 +303,7 @@ class PerformanceMonitorService {
 
   getPerformanceSummary() {
     const current = this.getCurrentMetrics();
-    if (!current) return null;
+    if (!current) {return null;}
 
     return {
       status: this.getOverallHealth(),
@@ -321,9 +321,9 @@ class PerformanceMonitorService {
     const errorCount = recentAlerts.filter(a => a.type === 'error').length;
     const warningCount = recentAlerts.filter(a => a.type === 'warning').length;
 
-    if (errorCount > 0) return 'poor';
-    if (warningCount > 3) return 'fair';
-    if (warningCount > 0) return 'good';
+    if (errorCount > 0) {return 'poor';}
+    if (warningCount > 3) {return 'fair';}
+    if (warningCount > 0) {return 'good';}
     return 'excellent';
   }
 

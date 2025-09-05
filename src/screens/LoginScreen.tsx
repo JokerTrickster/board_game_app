@@ -20,19 +20,19 @@ const LoginScreen: React.FC = () => {
             Alert.alert('입력 오류', '이메일을 입력해주세요.');
             return;
         }
-        
+
         if (!password.trim()) {
             Alert.alert('입력 오류', '비밀번호를 입력해주세요.');
             return;
         }
-        
+
         // 이메일 형식 검증
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             Alert.alert('입력 오류', '올바른 이메일 형식을 입력해주세요.');
             return;
         }
-        
+
         const result = await LoginService.login(email, password);
         if (result.success) {
             navigation.replace('Home');
@@ -72,8 +72,8 @@ const LoginScreen: React.FC = () => {
         >
         <View style={styles.container}>
                 {/* 구글 로그인 버튼 */}
-                <TouchableOpacity 
-                    style={styles.googleButton} 
+                <TouchableOpacity
+                    style={styles.googleButton}
                     onPress={handleGoogleLogin}
                     accessibilityRole="button"
                     accessibilityLabel="구글 계정으로 로그인"
@@ -92,7 +92,7 @@ const LoginScreen: React.FC = () => {
                 <Text style={styles.orText}>or</Text>
                 <View style={styles.orLine} />
             </View>
-      
+
                 <View style={styles.inputWrapper}>
                     <Image
                         source={require('../assets/icons/login/login_email.png')}
@@ -128,8 +128,8 @@ const LoginScreen: React.FC = () => {
                     />
                 </View>
 
-            <TouchableOpacity 
-                style={styles.loginButton} 
+            <TouchableOpacity
+                style={styles.loginButton}
                 onPress={handleLogin}
                 accessibilityRole="button"
                 accessibilityLabel="로그인"
@@ -139,7 +139,7 @@ const LoginScreen: React.FC = () => {
             </TouchableOpacity>
 
             <View style={styles.linkContainer}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     onPress={() => navigation.navigate('SignUp')}
                     accessibilityRole="button"
                     accessibilityLabel="회원가입"
@@ -150,7 +150,7 @@ const LoginScreen: React.FC = () => {
 
                 <Text style={styles.separator}>|</Text>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                     onPress={() => navigation.navigate('Password')}
                     accessibilityRole="button"
                     accessibilityLabel="비밀번호 찾기"

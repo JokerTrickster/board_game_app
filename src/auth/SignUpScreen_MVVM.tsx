@@ -11,7 +11,7 @@ type SignUpScreenNavigationProp = StackNavigationProp<RootStackParamList, 'SignU
 
 const SignUpScreen_MVVM: React.FC = () => {
   const navigation = useNavigation<SignUpScreenNavigationProp>();
-  
+
   // Local form state
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -132,7 +132,7 @@ const SignUpScreen_MVVM: React.FC = () => {
   }, [viewModel]);
 
   const handleSignUp = useCallback(async () => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     const signUpData = {
       email: email.trim(),
@@ -143,7 +143,7 @@ const SignUpScreen_MVVM: React.FC = () => {
       agreeTerms: viewModel.agreements.agreeTerms,
       agreePrivacy: viewModel.agreements.agreePrivacy,
       agreeAge: viewModel.agreements.agreeAge,
-      agreeMarketing: viewModel.agreements.agreeMarketing
+      agreeMarketing: viewModel.agreements.agreeMarketing,
     };
 
     // Client-side validation
@@ -172,8 +172,8 @@ const SignUpScreen_MVVM: React.FC = () => {
           [
             {
               text: '확인',
-              onPress: () => navigation.navigate('Login')
-            }
+              onPress: () => navigation.navigate('Login'),
+            },
           ]
         );
       }
@@ -187,7 +187,7 @@ const SignUpScreen_MVVM: React.FC = () => {
     confirmPassword,
     nickname,
     verificationCode,
-    navigation
+    navigation,
   ]);
 
   const handleLoginPress = useCallback(() => {
@@ -207,8 +207,8 @@ const SignUpScreen_MVVM: React.FC = () => {
             Linking.openURL('https://your-terms-url.com').catch(() => {
               Alert.alert('오류', '링크를 열 수 없습니다.');
             });
-          }
-        }
+          },
+        },
       ]
     );
   }, []);
@@ -226,8 +226,8 @@ const SignUpScreen_MVVM: React.FC = () => {
             Linking.openURL('https://your-privacy-url.com').catch(() => {
               Alert.alert('오류', '링크를 열 수 없습니다.');
             });
-          }
-        }
+          },
+        },
       ]
     );
   }, []);

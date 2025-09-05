@@ -7,7 +7,7 @@ import Animated, {
     useAnimatedProps,
     withTiming,
     withSpring,
-    Easing
+    Easing,
 } from 'react-native-reanimated';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -19,11 +19,11 @@ interface AnimatedCircleProps {
     isUser1?: boolean; // 유저 구분을 위한 prop 추가
 }
 
-const CircleAnimation: React.FC<AnimatedCircleProps> = ({ 
-    x, 
-    y, 
+const CircleAnimation: React.FC<AnimatedCircleProps> = ({
+    x,
+    y,
     startAngle = -270,
-    isUser1 = true 
+    isUser1 = true,
 }) => {
     const CIRCLE_LENGTH = Math.PI * 40;
     const progress = useSharedValue(0);

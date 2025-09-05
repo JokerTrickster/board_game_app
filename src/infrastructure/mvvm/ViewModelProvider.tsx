@@ -40,7 +40,7 @@ export const ViewModelProvider: React.FC<ViewModelProviderProps> = ({ children }
       }
 
       viewModelsRef.current.set(key, viewModel);
-      
+
       // Initialize the new ViewModel
       viewModel.initialize().catch(error => {
         console.error(`Failed to initialize ViewModel '${key}':`, error);
@@ -130,7 +130,7 @@ export function withViewModel<P extends object, T extends BaseViewModel>(
     };
 
     WrappedComponent.displayName = `withViewModel(${Component.displayName || Component.name})`;
-    
+
     return observer(WrappedComponent);
   };
 }
@@ -209,7 +209,7 @@ export function createViewModelComponent<
     );
 
     const ComponentToRender = autoObserve ? observer(Component) : Component;
-    
+
     return <ComponentToRender {...(props as P)} viewModel={viewModel} />;
   };
 

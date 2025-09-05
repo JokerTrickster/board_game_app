@@ -1,11 +1,11 @@
 // Authentication MVVM Components Export
 
 // Models
-export { 
+export {
   AuthModel,
   UserCanLoginRule,
   UserCanSignUpRule,
-  CanRequestEmailVerificationRule
+  CanRequestEmailVerificationRule,
 } from './models/AuthModel';
 export type {
   UserProfile,
@@ -14,7 +14,7 @@ export type {
   GoogleLoginData,
   SignUpData,
   EmailVerificationData,
-  AuthState
+  AuthState,
 } from './models/AuthModel';
 
 // ViewModels

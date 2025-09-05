@@ -14,7 +14,7 @@ import AnalyticsService from '../services/AnalyticsService';
 export const initializeFeedbackSystem = async (userId?: string) => {
   try {
     const feedbackService = FeedbackService.getInstance();
-    
+
     await feedbackService.initialize({
       enableErrorReporting: true,
       enableAnalytics: true,
@@ -45,7 +45,7 @@ export const handleErrorWithFeedback = async (
   }
 ) => {
   const feedbackService = FeedbackService.getInstance();
-  
+
   try {
     // Report error through feedback system
     await feedbackService.reportError(error, {
@@ -57,7 +57,7 @@ export const handleErrorWithFeedback = async (
     // Show user-friendly error message if requested
     if (context.showUserAlert) {
       const errorMessage = typeof error === 'string' ? error : error.message;
-      
+
       Alert.alert(
         '오류 발생',
         `문제가 발생했습니다: ${errorMessage}\n\n개발팀에 자동으로 보고되었습니다.`,
@@ -88,7 +88,7 @@ export const trackUserAction = async (
   properties: Record<string, any> = {}
 ) => {
   const feedbackService = FeedbackService.getInstance();
-  
+
   try {
     await feedbackService.trackAction(eventType, {
       screen,
@@ -108,10 +108,10 @@ export const trackScreenNavigation = async (
   previousScreen?: string
 ) => {
   const feedbackService = FeedbackService.getInstance();
-  
+
   try {
     await feedbackService.trackScreenView(screenName);
-    
+
     // Track navigation event
     await trackUserAction('screen_navigation', screenName, {
       previousScreen,
@@ -132,11 +132,11 @@ export const trackGameEvent = async (
 ) => {
   const analytics = AnalyticsService.getInstance();
   const feedbackService = FeedbackService.getInstance();
-  
+
   try {
     // Track through analytics service
     await analytics.trackGameEvent(gameType, action as any, gameData);
-    
+
     // Also track as general action
     await feedbackService.trackAction('game_event', {
       gameType,
@@ -157,7 +157,7 @@ export const trackButtonClick = async (
   additionalContext: Record<string, any> = {}
 ) => {
   const analytics = AnalyticsService.getInstance();
-  
+
   try {
     await analytics.trackButtonClick(buttonName, {
       screen,
@@ -177,7 +177,7 @@ export const trackLoginAttempt = async (
   error?: string
 ) => {
   const feedbackService = FeedbackService.getInstance();
-  
+
   try {
     await feedbackService.trackAction('login_attempt', {
       method,
@@ -208,13 +208,13 @@ export const trackPerformanceMetric = async (
   additionalData: Record<string, any> = {}
 ) => {
   const analytics = AnalyticsService.getInstance();
-  
+
   try {
     await analytics.trackPerformance({
       [metricName]: value,
       ...additionalData,
     });
-    
+
     // Also track as general event
     await analytics.track('performance_metric', {
       metricName,
@@ -237,7 +237,7 @@ export const addBreadcrumb = (
   level: 'debug' | 'info' | 'warning' | 'error' = 'info'
 ) => {
   const errorReporting = ErrorReportingService.getInstance();
-  
+
   errorReporting.addBreadcrumb({
     category,
     message,
@@ -251,21 +251,21 @@ export const addBreadcrumb = (
  */
 export const testFeedbackIntegration = async () => {
   console.log('🧪 Testing Feedback System Integration...');
-  
+
   try {
     const feedbackService = FeedbackService.getInstance();
-    
+
     // Test 1: Analytics tracking
     console.log('📊 Testing analytics tracking...');
     await feedbackService.trackAction('test_event', {
       testType: 'integration_test',
       timestamp: new Date().toISOString(),
     });
-    
+
     // Test 2: Screen view tracking
     console.log('📱 Testing screen view tracking...');
     await feedbackService.trackScreenView('TestScreen');
-    
+
     // Test 3: Error reporting
     console.log('🚨 Testing error reporting...');
     await feedbackService.reportError('Test error message', {
@@ -273,17 +273,17 @@ export const testFeedbackIntegration = async () => {
       action: 'integration_test',
       fatal: false,
     });
-    
+
     // Test 4: Service info
     console.log('ℹ️ Getting service info...');
     const serviceInfo = feedbackService.getServiceInfo();
     console.log('Service Info:', serviceInfo);
-    
+
     // Test 5: Generate stats
     console.log('📈 Testing stats generation...');
     const stats = await feedbackService.generateFeedbackStats();
     console.log('Feedback Stats:', stats);
-    
+
     console.log('✅ Feedback system integration test completed successfully!');
     return true;
   } catch (error) {
@@ -299,7 +299,7 @@ export const getFeedbackSystemStatus = () => {
   const feedbackService = FeedbackService.getInstance();
   const errorReporting = ErrorReportingService.getInstance();
   const analytics = AnalyticsService.getInstance();
-  
+
   return {
     feedbackService: feedbackService.getServiceInfo(),
     errorReporting: errorReporting.getSessionInfo(),
@@ -315,20 +315,20 @@ export const showStoredFeedbackData = async () => {
     const feedbackService = FeedbackService.getInstance();
     const errorReporting = ErrorReportingService.getInstance();
     const analytics = AnalyticsService.getInstance();
-    
+
     const [feedbacks, errors, events, stats] = await Promise.all([
       feedbackService.getStoredFeedbacks(),
       errorReporting.getStoredReports(),
       analytics.getStoredEvents(),
       feedbackService.generateFeedbackStats(),
     ]);
-    
+
     console.log('=== Stored Feedback Data ===');
     console.log('Feedbacks:', feedbacks.length);
     console.log('Errors:', errors.length);
     console.log('Events:', events.length);
     console.log('Stats:', stats);
-    
+
     return {
       feedbacks,
       errors,

@@ -65,7 +65,7 @@ export class NavigationModel extends DomainModel {
   // Navigation stack
   public navigationStack: NavigationStackState = {
     index: 0,
-    routes: []
+    routes: [],
   };
 
   // Deep linking
@@ -89,7 +89,7 @@ export class NavigationModel extends DomainModel {
     const newRoute: RouteInfo = {
       name: routeName,
       params,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     this.previousRoute = this.currentRoute;
@@ -103,7 +103,7 @@ export class NavigationModel extends DomainModel {
    */
   private updateNavigationStack(route: RouteInfo): void {
     const existingIndex = this.navigationStack.routes.findIndex(r => r.name === route.name);
-    
+
     if (existingIndex >= 0) {
       // Update existing route
       this.navigationStack.routes[existingIndex] = route;
@@ -142,7 +142,7 @@ export class NavigationModel extends DomainModel {
     };
 
     this.navigationHistory.unshift(entry);
-    
+
     // Limit history size
     if (this.navigationHistory.length > this.maxHistorySize) {
       this.navigationHistory = this.navigationHistory.slice(0, this.maxHistorySize);
@@ -197,7 +197,7 @@ export class NavigationModel extends DomainModel {
    * Add navigation guard
    */
   addNavigationGuard(
-    routeName: keyof RootStackParamList, 
+    routeName: keyof RootStackParamList,
     guard: (params?: any) => boolean
   ): void {
     this.navigationGuards.set(routeName, guard);
@@ -271,18 +271,18 @@ export class NavigationModel extends DomainModel {
    * Parse deep link URL
    */
   parseDeepLink(url: string): { route: keyof RootStackParamList; params?: any } | null {
-    if (!this.deepLinkConfig) return null;
+    if (!this.deepLinkConfig) {return null;}
 
     // Simple URL parsing logic
     const urlObj = new URL(url);
     const path = urlObj.pathname.substring(1); // Remove leading slash
-    
+
     // Find matching screen
     for (const [screenName, pattern] of Object.entries(this.deepLinkConfig.config.screens)) {
       if (path === pattern || path.startsWith(pattern + '/')) {
         return {
           route: screenName as keyof RootStackParamList,
-          params: this.extractParamsFromUrl(urlObj)
+          params: this.extractParamsFromUrl(urlObj),
         };
       }
     }
@@ -295,7 +295,7 @@ export class NavigationModel extends DomainModel {
    */
   private extractParamsFromUrl(url: URL): any {
     const params: any = {};
-    
+
     // Extract query parameters
     url.searchParams.forEach((value, key) => {
       params[key] = value;
@@ -317,7 +317,7 @@ export class NavigationModel extends DomainModel {
   } {
     const totalNavigations = this.navigationHistory.length;
     const routeFrequency: Record<string, number> = {};
-    
+
     // Calculate route frequency
     this.navigationHistory.forEach(entry => {
       const routeName = entry.route.name;
@@ -336,19 +336,19 @@ export class NavigationModel extends DomainModel {
 
     // Calculate average session time (simplified)
     const sessionTimes = this.navigationHistory.map((_, index, arr) => {
-      if (index === arr.length - 1) return 0;
+      if (index === arr.length - 1) {return 0;}
       return arr[index].route.timestamp.getTime() - arr[index + 1].route.timestamp.getTime();
     });
 
-    const averageSessionTime = sessionTimes.length > 0 
-      ? sessionTimes.reduce((a, b) => a + b, 0) / sessionTimes.length 
+    const averageSessionTime = sessionTimes.length > 0
+      ? sessionTimes.reduce((a, b) => a + b, 0) / sessionTimes.length
       : 0;
 
     return {
       totalNavigations,
       routeFrequency,
       averageSessionTime,
-      mostVisitedRoute
+      mostVisitedRoute,
     };
   }
 
@@ -368,7 +368,7 @@ export class NavigationModel extends DomainModel {
   // Domain Model Implementation
   protected serialize(): Record<string, any> {
     const stats = this.getNavigationStats();
-    
+
     return {
       currentRoute: this.currentRoute,
       previousRoute: this.previousRoute,
@@ -381,7 +381,7 @@ export class NavigationModel extends DomainModel {
       hasPendingDeepLink: !!this.pendingDeepLink,
       guardsCount: this.navigationGuards.size,
       interceptorsCount: this.routeInterceptors.size,
-      stats
+      stats,
     };
   }
 
@@ -396,7 +396,7 @@ export class NavigationModel extends DomainModel {
       });
     }
 
-    if (this.navigationStack.index < 0 || 
+    if (this.navigationStack.index < 0 ||
         this.navigationStack.index >= this.navigationStack.routes.length) {
       errors.push({
         field: 'navigationStack.index',

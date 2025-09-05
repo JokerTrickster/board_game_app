@@ -13,7 +13,7 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 const HomeScreen_MVVM: React.FC = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const appState = useRef(RNAppState.currentState);
-  
+
   const viewModel = useViewModel(
     'home',
     () => new HomeViewModel(),
@@ -29,7 +29,7 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle app state changes
   useEffect(() => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     const handleAppStateChange = (nextAppState: any) => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
@@ -39,22 +39,22 @@ const HomeScreen_MVVM: React.FC = () => {
         // App has gone to background
         viewModel.handleAppBackground();
       }
-      
+
       appState.current = nextAppState;
     };
 
     const subscription = RNAppState.addEventListener('change', handleAppStateChange);
-    
+
     return () => subscription?.remove();
   }, [viewModel]);
 
   // Handle network connectivity changes
   useEffect(() => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     const unsubscribe = NetInfo.addEventListener(state => {
       viewModel.setOnlineStatus(state.isConnected || false);
-      
+
       if (!state.isConnected) {
         Alert.alert(
           '네트워크 연결 없음',
@@ -78,14 +78,14 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle game selection
   const handleGamePress = useCallback(async (gameId: number) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       const result = await viewModel.playGame(gameId);
-      
+
       if (result.canPlay) {
         viewModel.trackGameSelection(gameId, 'game_list');
-        
+
         // Navigate to game screen
         if (result.route && result.route !== 'GameDetail') {
           navigation.navigate(result.route as keyof RootStackParamList, result.params);
@@ -106,11 +106,11 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle quick action selection
   const handleQuickActionPress = useCallback(async (actionId: string) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       const result = await viewModel.executeQuickAction(actionId);
-      
+
       if (result) {
         // Navigate to quick action screen
         navigation.navigate(result.route as keyof RootStackParamList, result.params);
@@ -123,10 +123,10 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle notification press
   const handleNotificationPress = useCallback((notificationId: string) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     viewModel.markNotificationAsRead(notificationId);
-    
+
     // Handle notification action if needed
     const notification = viewModel.notifications.find(n => n.id === notificationId);
     if (notification?.actionUrl) {
@@ -137,7 +137,7 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle category selection
   const handleCategoryPress = useCallback((category: string) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     viewModel.setGameCategory(category);
     viewModel.trackCategoryChange(category);
@@ -145,21 +145,21 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle search input
   const handleSearchChange = useCallback((query: string) => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     viewModel.setSearchQuery(query);
   }, [viewModel]);
 
   // Handle refresh
   const handleRefresh = useCallback(async () => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       const success = await viewModel.refreshHomeData();
-      
+
       if (!success && viewModel.error) {
         Alert.alert('새로고침 실패', viewModel.error, [
-          { text: '확인', onPress: () => viewModel.clearError() }
+          { text: '확인', onPress: () => viewModel.clearError() },
         ]);
       }
     } catch (error) {
@@ -170,18 +170,18 @@ const HomeScreen_MVVM: React.FC = () => {
 
   // Handle user profile press
   const handleUserProfilePress = useCallback(() => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     if (!viewModel.userProfile) {
       Alert.alert(
         '프로필 없음',
         '사용자 프로필을 불러올 수 없습니다. 다시 로그인해주세요.',
         [
-          { 
-            text: '로그인', 
-            onPress: () => navigation.navigate('Login')
+          {
+            text: '로그인',
+            onPress: () => navigation.navigate('Login'),
           },
-          { text: '취소', style: 'cancel' }
+          { text: '취소', style: 'cancel' },
         ]
       );
       return;
@@ -194,7 +194,7 @@ const HomeScreen_MVVM: React.FC = () => {
       [
         {
           text: '알림 모두 읽음',
-          onPress: () => viewModel.markAllNotificationsAsRead()
+          onPress: () => viewModel.markAllNotificationsAsRead(),
         },
         {
           text: '사용자 통계',
@@ -207,7 +207,7 @@ const HomeScreen_MVVM: React.FC = () => {
               `현재 레벨: ${metrics.currentLevel}`,
               [{ text: '확인' }]
             );
-          }
+          },
         },
         {
           text: '로그아웃',
@@ -225,15 +225,15 @@ const HomeScreen_MVVM: React.FC = () => {
                     // This would typically be handled by AuthViewModel
                     navigation.reset({
                       index: 0,
-                      routes: [{ name: 'Login' }]
+                      routes: [{ name: 'Login' }],
                     });
-                  }
-                }
+                  },
+                },
               ]
             );
-          }
+          },
         },
-        { text: '취소', style: 'cancel' }
+        { text: '취소', style: 'cancel' },
       ]
     );
   }, [viewModel, navigation]);

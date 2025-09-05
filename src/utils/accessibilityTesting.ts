@@ -29,7 +29,7 @@ export class AccessibilityTester {
         severity: 'error',
         component: componentName,
         message: `Missing accessibilityLabel in ${componentName}`,
-        fix: 'Add accessibilityLabel prop to describe what this element does'
+        fix: 'Add accessibilityLabel prop to describe what this element does',
       };
     }
 
@@ -39,7 +39,7 @@ export class AccessibilityTester {
         severity: 'warning',
         component: componentName,
         message: `Missing accessibilityRole in ${componentName}`,
-        fix: 'Add accessibilityRole prop (button, text, image, etc.)'
+        fix: 'Add accessibilityRole prop (button, text, image, etc.)',
       };
     }
 
@@ -49,7 +49,7 @@ export class AccessibilityTester {
         severity: 'warning',
         component: componentName,
         message: `Accessibility label mismatch in ${componentName}`,
-        fix: `Expected "${expectedLabel}", got "${element.props.accessibilityLabel}"`
+        fix: `Expected "${expectedLabel}", got "${element.props.accessibilityLabel}"`,
       };
     }
 
@@ -57,7 +57,7 @@ export class AccessibilityTester {
       passed: true,
       severity: 'info',
       component: componentName,
-      message: `Accessibility label properly set in ${componentName}`
+      message: `Accessibility label properly set in ${componentName}`,
     };
   }
 
@@ -70,14 +70,14 @@ export class AccessibilityTester {
     componentName: string
   ): AccessibilityTestResult {
     const minSize = ACCESSIBILITY_CONSTANTS.TOUCH_TARGETS.MINIMUM;
-    
+
     if (width < minSize || height < minSize) {
       return {
         passed: false,
         severity: 'error',
         component: componentName,
         message: `Touch target too small in ${componentName}: ${width}x${height}`,
-        fix: `Increase size to at least ${minSize}x${minSize}dp`
+        fix: `Increase size to at least ${minSize}x${minSize}dp`,
       };
     }
 
@@ -88,7 +88,7 @@ export class AccessibilityTester {
         severity: 'warning',
         component: componentName,
         message: `Touch target below recommended size in ${componentName}`,
-        fix: `Consider increasing to ${recommendedSize}x${recommendedSize}dp for better usability`
+        fix: `Consider increasing to ${recommendedSize}x${recommendedSize}dp for better usability`,
       };
     }
 
@@ -96,7 +96,7 @@ export class AccessibilityTester {
       passed: true,
       severity: 'info',
       component: componentName,
-      message: `Touch target size appropriate in ${componentName}`
+      message: `Touch target size appropriate in ${componentName}`,
     };
   }
 
@@ -116,8 +116,8 @@ export class AccessibilityTester {
       { fg: '#212121', bg: '#FFFFFF', ratio: 12.6 }, // Dark gray on white
     ];
 
-    const pair = contrastPairs.find(p => 
-      p.fg.toLowerCase() === foregroundColor.toLowerCase() && 
+    const pair = contrastPairs.find(p =>
+      p.fg.toLowerCase() === foregroundColor.toLowerCase() &&
       p.bg.toLowerCase() === backgroundColor.toLowerCase()
     );
 
@@ -126,7 +126,7 @@ export class AccessibilityTester {
         passed: true,
         severity: 'info',
         component: componentName,
-        message: `Color contrast meets WCAG AA standards in ${componentName} (${pair.ratio}:1)`
+        message: `Color contrast meets WCAG AA standards in ${componentName} (${pair.ratio}:1)`,
       };
     }
 
@@ -135,7 +135,7 @@ export class AccessibilityTester {
       severity: 'error',
       component: componentName,
       message: `Color contrast may not meet WCAG AA standards in ${componentName}`,
-      fix: 'Ensure contrast ratio is at least 4.5:1 for normal text, 3:1 for large text'
+      fix: 'Ensure contrast ratio is at least 4.5:1 for normal text, 3:1 for large text',
     };
   }
 
@@ -156,7 +156,7 @@ export class AccessibilityTester {
         severity: 'error',
         component: componentName,
         message: `Button without onPress handler in ${componentName}`,
-        fix: 'Add onPress handler or change accessibility role'
+        fix: 'Add onPress handler or change accessibility role',
       };
     }
 
@@ -166,7 +166,7 @@ export class AccessibilityTester {
         severity: 'warning',
         component: componentName,
         message: `Button without accessibility state in ${componentName}`,
-        fix: 'Add accessibilityState prop to indicate disabled/selected state'
+        fix: 'Add accessibilityState prop to indicate disabled/selected state',
       };
     }
 
@@ -174,7 +174,7 @@ export class AccessibilityTester {
       passed: true,
       severity: 'info',
       component: componentName,
-      message: `Interactive element properly configured in ${componentName}`
+      message: `Interactive element properly configured in ${componentName}`,
     };
   }
 
@@ -210,7 +210,7 @@ export class AccessibilityTester {
         severity: 'warning',
         component: componentName,
         message: `Form input accessibility issues in ${componentName}: ${issues.join(', ')}`,
-        fix: 'Add missing accessibility props for better screen reader support'
+        fix: 'Add missing accessibility props for better screen reader support',
       };
     }
 
@@ -218,7 +218,7 @@ export class AccessibilityTester {
       passed: true,
       severity: 'info',
       component: componentName,
-      message: `Form input properly configured in ${componentName}`
+      message: `Form input properly configured in ${componentName}`,
     };
   }
 
@@ -271,14 +271,14 @@ export class AccessibilityTester {
     const passed = this.results.filter(r => r.passed);
 
     let report = '# Accessibility Test Report\n\n';
-    
-    report += `## Summary\n`;
+
+    report += '## Summary\n';
     report += `- ✅ Passed: ${passed.length}\n`;
     report += `- ⚠️ Warnings: ${warnings.length}\n`;
     report += `- ❌ Errors: ${errors.length}\n\n`;
 
     if (errors.length > 0) {
-      report += `## 🚨 Critical Issues (Must Fix)\n`;
+      report += '## 🚨 Critical Issues (Must Fix)\n';
       errors.forEach((error, index) => {
         report += `${index + 1}. **${error.component}**: ${error.message}\n`;
         if (error.fix) {
@@ -289,7 +289,7 @@ export class AccessibilityTester {
     }
 
     if (warnings.length > 0) {
-      report += `## ⚠️ Warnings (Should Fix)\n`;
+      report += '## ⚠️ Warnings (Should Fix)\n';
       warnings.forEach((warning, index) => {
         report += `${index + 1}. **${warning.component}**: ${warning.message}\n`;
         if (warning.fix) {
@@ -300,7 +300,7 @@ export class AccessibilityTester {
     }
 
     if (passed.length > 0) {
-      report += `## ✅ Passed Tests\n`;
+      report += '## ✅ Passed Tests\n';
       const passedByComponent = passed.reduce((acc, p) => {
         acc[p.component || 'Unknown'] = (acc[p.component || 'Unknown'] || 0) + 1;
         return acc;
@@ -311,11 +311,11 @@ export class AccessibilityTester {
       });
     }
 
-    report += `\n## Recommendations\n`;
-    report += `- Ensure all interactive elements have accessibilityLabel and accessibilityRole\n`;
-    report += `- Test with actual screen reader (TalkBack/VoiceOver)\n`;
-    report += `- Verify color contrast ratios meet WCAG AA standards\n`;
-    report += `- Test keyboard navigation flow\n`;
+    report += '\n## Recommendations\n';
+    report += '- Ensure all interactive elements have accessibilityLabel and accessibilityRole\n';
+    report += '- Test with actual screen reader (TalkBack/VoiceOver)\n';
+    report += '- Verify color contrast ratios meet WCAG AA standards\n';
+    report += '- Test keyboard navigation flow\n';
 
     return report;
   }

@@ -18,25 +18,25 @@ const App: React.FC = () => {
     useEffect(() => {
         // Register services first
         registerServices();
-        
+
         // Register global ViewModels in DI container
         globalContainer.register(
             'NavigationViewModel',
             () => new NavigationViewModel(),
             { singleton: true }
         );
-        
+
         globalContainer.register(
-            'AuthViewModel', 
+            'AuthViewModel',
             () => new AuthViewModel(),
             { singleton: true }
         );
-        
+
         GoogleSignin.configure(GOOGLE_SIGNIN_CONFIG);
-        
+
         // Start performance monitoring
         performanceMonitor.startMonitoring(5000); // Monitor every 5 seconds
-        
+
         return () => {
             performanceMonitor.stopMonitoring();
         };

@@ -68,7 +68,7 @@ const getCardInfoById = (cardID: number) => {
 
 // 카드 정보로 이미지 반환
 const getCardImage = (cardInfo: any) => {
-  if (!cardInfo || !cardInfo.image) return null;
+  if (!cardInfo || !cardInfo.image) {return null;}
   return cardImageMap[cardInfo.image] || null;
 };
 
@@ -106,7 +106,7 @@ const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
                 timerRef.current = null;
             }
         };
-    }, [sequenceViewModel.isMyTurn]);
+    }, []);
 
     // 마지막 사용 카드 추적
     useEffect(() => {
@@ -122,11 +122,11 @@ const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
             const cardInfo = sequenceCards.find(card => card.mapID === lastMapID);
             setOpponentLastCard(cardInfo?.id ?? null);
         }
-    }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
+    }, []);
 
     // Create a card image getter function that matches sequence's pattern
     const getSequenceCardImageSource = (cardId: number | null) => {
-        if (!cardId) return null;
+        if (!cardId) {return null;}
         const cardInfo = getCardInfoById(cardId);
         return getCardImage(cardInfo);
     };

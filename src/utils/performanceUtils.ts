@@ -37,7 +37,7 @@ export const generatePerformanceReport = () => {
   }
 
   const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 B';
+    if (bytes === 0) {return '0 B';}
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -50,12 +50,12 @@ export const generatePerformanceReport = () => {
     return `${minutes}m ${seconds}s`;
   };
 
-  let report = `📊 PERFORMANCE REPORT\n`;
+  let report = '📊 PERFORMANCE REPORT\n';
   report += `Generated: ${new Date().toLocaleString()}\n\n`;
 
   report += `🎯 OVERALL HEALTH: ${summary.status.toUpperCase()}\n\n`;
 
-  report += `📈 CURRENT METRICS:\n`;
+  report += '📈 CURRENT METRICS:\n';
   report += `Memory Usage: ${formatBytes(summary.memoryUsage)}\n`;
   report += `Average FPS: ${summary.averageFPS.toFixed(1)}\n`;
   report += `WebSocket Health: ${summary.webSocketHealth ? '✅ Healthy' : '❌ Unhealthy'}\n`;
@@ -64,7 +64,7 @@ export const generatePerformanceReport = () => {
   report += `Recent Alerts: ${summary.alertCount}\n\n`;
 
   if (alerts.length > 0) {
-    report += `🚨 RECENT ALERTS:\n`;
+    report += '🚨 RECENT ALERTS:\n';
     alerts.forEach((alert, index) => {
       const icon = alert.type === 'error' ? '❌' : alert.type === 'warning' ? '⚠️' : 'ℹ️';
       report += `${icon} [${alert.category.toUpperCase()}] ${alert.message}\n`;
@@ -72,7 +72,7 @@ export const generatePerformanceReport = () => {
     report += '\n';
   }
 
-  report += `💡 RECOMMENDATIONS:\n`;
+  report += '💡 RECOMMENDATIONS:\n';
   if (summary.memoryUsage > 50 * 1024 * 1024) {
     report += `• High memory usage detected (${formatBytes(summary.memoryUsage)})\n`;
   }
@@ -80,13 +80,13 @@ export const generatePerformanceReport = () => {
     report += `• Low FPS detected (${summary.averageFPS.toFixed(1)})\n`;
   }
   if (!summary.webSocketHealth) {
-    report += `• WebSocket connection issues detected\n`;
+    report += '• WebSocket connection issues detected\n';
   }
   if (summary.queueUtilization > 70) {
     report += `• High queue utilization (${summary.queueUtilization.toFixed(1)}%)\n`;
   }
   if (alerts.filter(a => a.type === 'error').length > 0) {
-    report += `• Critical errors require immediate attention\n`;
+    report += '• Critical errors require immediate attention\n';
   }
 
   console.log(report);

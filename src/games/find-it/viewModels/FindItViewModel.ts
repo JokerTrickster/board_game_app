@@ -21,7 +21,7 @@ export class FindItViewModel extends BaseViewModel {
   };
   @observable public timerColor: string = 'black';
   @observable public showEffects: boolean = false;
-  
+
   // Timer management
   private timerInterval: NodeJS.Timeout | null = null;
   private timerStopTimeout: NodeJS.Timeout | null = null;
@@ -106,9 +106,9 @@ export class FindItViewModel extends BaseViewModel {
   }
 
   @computed get gameProgress(): number {
-    if (!this.gameModel) return 0;
+    if (!this.gameModel) {return 0;}
     const currentRound = this.gameModel.getCurrentRound();
-    if (!currentRound) return 0;
+    if (!currentRound) {return 0;}
     return (this.correctClicks.length / currentRound.correctPositions.length) * 100;
   }
 
@@ -148,10 +148,10 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   public async handleClick(x: number, y: number, userID: number = 1): Promise<void> {
-    if (!this.gameModel || !this.gameModel.isClickable || this.isLoading) return;
+    if (!this.gameModel || !this.gameModel.isClickable || this.isLoading) {return;}
 
     const currentRound = this.gameModel.getCurrentRound();
-    if (!currentRound) return;
+    if (!currentRound) {return;}
 
     // Check if click is on correct position
     const isCorrect = currentRound.correctPositions.some(pos =>
@@ -170,11 +170,11 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   public async useHint(): Promise<void> {
-    if (!this.gameModel || !this.canUseHint) return;
+    if (!this.gameModel || !this.canUseHint) {return;}
 
     await this.executeAsync(async () => {
       const currentRound = this.gameModel!.getCurrentRound();
-      if (!currentRound) return;
+      if (!currentRound) {return;}
 
       const success = this.gameModel!.useHint(currentRound.correctPositions);
       if (success) {
@@ -190,7 +190,7 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   public async useTimerStop(): Promise<void> {
-    if (!this.gameModel || !this.canUseTimerStop) return;
+    if (!this.gameModel || !this.canUseTimerStop) {return;}
 
     await this.executeAsync(async () => {
       const success = this.gameModel!.useTimerStop();
@@ -216,7 +216,7 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   public startTimer(): void {
-    if (!this.gameModel || this.timerInterval) return;
+    if (!this.gameModel || this.timerInterval) {return;}
 
     this.updateState(() => {
       this.timerColor = 'black';
@@ -254,7 +254,7 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   private resumeTimer(): void {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     this.gameModel.resumeTimer();
     this.updateState(() => {
@@ -268,19 +268,19 @@ export class FindItViewModel extends BaseViewModel {
    */
   @action
   public async nextRound(): Promise<void> {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     await this.executeAsync(async () => {
       this.gameModel!.nextRound();
       await this.loadCurrentRound();
-      
+
       this.updateState(() => {
         this.showEffects = false;
       });
 
       this.playSound('next_stage.mp3');
       this.startTimer();
-      
+
       this.logger.info(`Advanced to round ${this.currentRound}`);
     });
   }
@@ -312,10 +312,10 @@ export class FindItViewModel extends BaseViewModel {
 
   private async handleCorrectClick(x: number, y: number, userID: number): Promise<void> {
     const success = this.gameModel!.addCorrectClick({ x, y }, userID);
-    if (!success) return;
+    if (!success) {return;}
 
     this.playSound('correct_click.mp3');
-    
+
     // Check if round is complete
     const currentRound = this.gameModel!.getCurrentRound();
     if (currentRound && this.gameModel!.isRoundComplete(currentRound.correctPositions)) {
@@ -327,7 +327,7 @@ export class FindItViewModel extends BaseViewModel {
 
   private async handleWrongClick(x: number, y: number, userID: number): Promise<void> {
     const success = this.gameModel!.addWrongClick({ x, y }, userID);
-    if (!success) return;
+    if (!success) {return;}
 
     this.playSound('wrong_click.mp3');
 
@@ -344,7 +344,7 @@ export class FindItViewModel extends BaseViewModel {
 
   private async completeRound(): Promise<void> {
     this.stopTimer();
-    
+
     this.updateState(() => {
       if (this.gameModel) {
         this.gameModel.roundClearEffect = true;
@@ -362,7 +362,7 @@ export class FindItViewModel extends BaseViewModel {
 
   private handleTimeout(): void {
     this.stopTimer();
-    
+
     const currentRound = this.gameModel!.getCurrentRound();
     if (currentRound) {
       this.gameModel!.handleTimeout(currentRound.correctPositions);
@@ -398,7 +398,7 @@ export class FindItViewModel extends BaseViewModel {
     // Load rounds from service
     // This is a simplified version - actual implementation would fetch from server
     const rounds: GameRound[] = [];
-    
+
     for (let i = 1; i <= 10; i++) {
       rounds.push({
         roundNumber: i,
@@ -419,7 +419,7 @@ export class FindItViewModel extends BaseViewModel {
   }
 
   private async loadCurrentRound(): Promise<void> {
-    if (!this.gameModel) return;
+    if (!this.gameModel) {return;}
 
     const currentRound = this.gameModel.getCurrentRound();
     if (!currentRound) {
@@ -487,7 +487,7 @@ export class FindItViewModel extends BaseViewModel {
   protected onError(error: Error): void {
     this.logger.error('FindItViewModel error', error);
     this.stopTimer();
-    
+
     // Handle specific error types
     if (error.message.includes('network')) {
       // Handle network errors

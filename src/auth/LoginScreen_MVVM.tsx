@@ -12,7 +12,7 @@ type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'
 
 const LoginScreen_MVVM: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  
+
   // Local form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,16 +60,16 @@ const LoginScreen_MVVM: React.FC = () => {
       };
 
       const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-      
+
       return () => subscription.remove();
     }, [])
   );
 
   const handleLogin = useCallback(async () => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     const credentials = { email: email.trim(), password: password.trim() };
-    
+
     // Client-side validation
     const validationErrors = viewModel.validateLoginForm(credentials);
     if (validationErrors.length > 0) {
@@ -89,7 +89,7 @@ const LoginScreen_MVVM: React.FC = () => {
   }, [viewModel, email, password, navigation]);
 
   const handleGoogleLogin = useCallback(async () => {
-    if (!viewModel) return;
+    if (!viewModel) {return;}
 
     try {
       const response = await GoogleSignin.signIn();
@@ -101,7 +101,7 @@ const LoginScreen_MVVM: React.FC = () => {
 
       const success = await viewModel.googleLogin({
         idToken: response.data.idToken,
-        serverAuthCode: response.data.serverAuthCode
+        serverAuthCode: response.data.serverAuthCode,
       });
 
       if (success) {
@@ -109,7 +109,7 @@ const LoginScreen_MVVM: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Google login error:', error);
-      
+
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // User cancelled the login flow
         return;

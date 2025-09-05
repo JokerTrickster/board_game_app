@@ -20,8 +20,8 @@ export abstract class BaseViewModel {
    */
   @action
   public async initialize(): Promise<void> {
-    if (this.isInitialized) return;
-    
+    if (this.isInitialized) {return;}
+
     try {
       this.setLoading(true);
       this.clearError();
@@ -102,15 +102,15 @@ export abstract class BaseViewModel {
     const { showLoading = true, clearError = true } = options || {};
 
     try {
-      if (showLoading) this.setLoading(true);
-      if (clearError) this.clearError();
-      
+      if (showLoading) {this.setLoading(true);}
+      if (clearError) {this.clearError();}
+
       return await action();
     } catch (error) {
       this.handleError(error as Error);
       return null;
     } finally {
-      if (showLoading) this.setLoading(false);
+      if (showLoading) {this.setLoading(false);}
     }
   }
 
