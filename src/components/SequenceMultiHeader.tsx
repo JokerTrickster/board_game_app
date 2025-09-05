@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Modal, ScrollView, Alert, ImageBackground, Linking } from 'react-native';
-import styles from './styles/MultiHeaderStyles';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { gameService } from '../services/GameService';
-import { AuthService } from '../services/AuthService';
-import { useNavigation } from '@react-navigation/native';
-import { StackActions } from '@react-navigation/native';
-import Slider from '@react-native-community/slider'; // ✅ 올바른 방식
+import GameHeader from './GameHeader';
 import { sequenceViewModel } from '../games/sequence/services/SequenceViewModel';
 import { sequenceWebSocketService } from '../games/sequence/services/SequenceWebsocketService';
 import sequenceCards from '../assets/data/sequnce_cards.json';
@@ -80,17 +73,10 @@ const getCardImage = (cardInfo: any) => {
 };
 
 const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
-    const [users, setUsers] = useState(userData?.users || []);
-    const [profileImage, setProfileImage] = useState(userData?.profileImage);
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [effectVolume, setEffectVolume] = useState(0.5);
-    const [bgmVolume, setBgmVolume] = useState(0.5);
     const [timer, setTimer] = useState(TURN_TIME);
     const timerRef = React.useRef<NodeJS.Timeout | null>(null);
     const [myLastCard, setMyLastCard] = useState<number | null>(null);
     const [opponentLastCard, setOpponentLastCard] = useState<number | null>(null);
-
-    const navigation = useNavigation();
 
     // 타이머 설정
     useEffect(() => {
@@ -122,18 +108,6 @@ const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
         };
     }, [sequenceViewModel.isMyTurn]);
 
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            const storedData = await gameService.getUserInfo();
-            if (storedData) {
-                // storedData.users가 존재하면 두 명 이상의 정보를 세팅
-                setUsers(storedData.users || [storedData.user]);
-            }
-        };
-
-        fetchUserInfo();
-    }, [userData]);
-
     // 마지막 사용 카드 추적
     useEffect(() => {
         // 내 마지막 사용 mapID → 카드ID
@@ -150,117 +124,30 @@ const SequenceMultiHeader: React.FC<{ userData?: any }> = ({ userData }) => {
         }
     }, [sequenceViewModel.ownedMapIDs, sequenceViewModel.opponentOwnedMapIDs]);
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
+    // Create a card image getter function that matches sequence's pattern
+    const getSequenceCardImageSource = (cardId: number | null) => {
+        if (!cardId) return null;
+        const cardInfo = getCardInfoById(cardId);
+        return getCardImage(cardInfo);
     };
-
-    // ✅ 회원 탈퇴 처리
-    const handleDeleteAccount = async () => {
-        Alert.alert('회원 탈퇴', '정말로 탈퇴하시겠습니까?', [
-            { text: '취소', style: 'cancel' },
-            {
-                text: '확인',
-                onPress: async () => {
-                    await AuthService.logout(); // ✅ API 추가 필요
-                    navigation.dispatch(StackActions.replace('Login'));
-
-                    Alert.alert('탈퇴 완료', '회원 탈퇴가 정상적으로 처리되었습니다.');
-                },
-            },
-        ]);
-    };
-
-    // ✅ 로그아웃 처리
-    const handleLogout = async () => {
-        await AuthService.logout();
-        navigation.dispatch(StackActions.replace('Login'));
-
-    };
-    // 두 유저 정보 추출 (존재하지 않을 경우 기본값 사용)
-    const profile1 = users[0] || { name: '유저1', profileImage: null };
-    const profile2 = users[1] || { name: '유저2', profileImage: null };
 
     return (
-        <View style={styles.multiHeader}>
-            {/* 프로필 1 */}
-            <View style={styles.profileContainer}>
-                <Image
-                    source={
-                        profile1.profileImage
-                            ? { uri: profile1.profileImage }
-                            : require('../assets/images/home/default_profile.png')
-                    }
-                    style={styles.profileImage}
-                />
-                <View style={styles.profileInfo}>
-                    <Text style={[
-                        styles.nickname,
-                        sequenceViewModel.isMyTurn && profile1.name === '나' && styles.activePlayerName,
-                        !sequenceViewModel.isMyTurn && profile2.name === '상대' && styles.activePlayerName
-                    ]}>
-                        {profile1.name || '보린이'}
-                    </Text>
-                </View>
-                {/* 마지막 사용 카드 표시 */}
-                {myLastCard && (
-                    <View style={styles.lastCardContainer}>
-                        <Image
-                            source={getCardImage(getCardInfoById(myLastCard))}
-                            style={styles.lastCardImage}
-                            resizeMode="contain"
-                        />
-                    </View>
-                )}
-            </View>
-
-            {/* 가운데: 타이머만 표시 */}
-            <View style={styles.centerContainer}>
-                <View style={styles.timerWrapper}>
-                    <View style={styles.timerContainer}>
-                        <View style={styles.timerBar}>
-                            <View
-                                style={[
-                                    styles.timerProgress,
-                                    { width: `${(timer / TURN_TIME) * 100}%` }
-                                ]}
-                            />
-                        </View>
-                        <Text style={styles.timerText}>{timer}초</Text>
-                    </View>
-                </View>
-            </View>
-
-            {/* 프로필 2 */}
-            <View style={styles.profileContainer}>
-                <Image
-                    source={
-                        profile2.profileImage
-                            ? { uri: profile2.profileImage }
-                            : require('../assets/images/home/default_profile.png')
-                    }
-                    style={styles.profileImage}
-                />
-                <View style={styles.profileInfo}>
-                    <Text style={[
-                        styles.nickname,
-                        sequenceViewModel.isMyTurn && profile2.name === '상대' && styles.activePlayerName,
-                        !sequenceViewModel.isMyTurn && profile1.name === '나' && styles.activePlayerName
-                    ]}>
-                        {profile2.name || '보린이'}
-                    </Text>
-                </View>
-                {/* 마지막 사용 카드 표시 */}
-                {opponentLastCard && (
-                    <View style={styles.lastCardContainer}>
-                        <Image
-                            source={getCardImage(getCardInfoById(opponentLastCard))}
-                            style={styles.lastCardImage}
-                            resizeMode="contain"
-                        />
-                    </View>
-                )}
-            </View>
-        </View>
+        <GameHeader
+            type="game-multi"
+            userData={userData}
+            users={userData?.users}
+            timer={timer}
+            maxTime={TURN_TIME}
+            gameType="sequence"
+            isMyTurn={sequenceViewModel.isMyTurn}
+            myLastCard={myLastCard}
+            opponentLastCard={opponentLastCard}
+            showTimer={true}
+            showLastCards={true}
+            getCardImageSource={getSequenceCardImageSource}
+            enableBackHandler={true}
+            showExitConfirmation={true}
+        />
     );
 };
 

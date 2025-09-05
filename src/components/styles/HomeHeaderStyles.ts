@@ -7,6 +7,13 @@ const guidelineBaseHeight = 736;
 const scale = (size: number) => (width / guidelineBaseWidth) * size;
 const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
 
+// Add responsive utilities if they don't exist
+const responsive = {
+    spacing: (size: number) => scale(size),
+    touchTarget: () => Math.max(44, scale(44)),
+    verticalScale: (size: number) => verticalScale(size),
+};
+
 export default StyleSheet.create({
     container: {
         flex: 1,
@@ -17,7 +24,8 @@ export default StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: scale(10),
+        padding: responsive.spacing(10),
+        minHeight: responsive.touchTarget(),
     },
     soloHeader: {
         flexDirection: 'row',
@@ -25,7 +33,7 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         width: '90%',
         height: '20%',
-        paddingBottom: verticalScale(50),
+        paddingBottom: responsive.verticalScale(50),
     },
     // 프로필
     profileContainer: {

@@ -1,6 +1,7 @@
 import SystemMessage from '../../../components/common/SystemMessage';
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground, BackHandler, Modal, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert, Image, ImageBackground, Modal, StyleSheet } from 'react-native';
+import { useNavigationActions } from '../../../hooks/useNavigationActions';
 import baseStyles from '../styles/SlimeWarStyles';
 import { slimeWarService } from '../services/SlimeWarService';
 import { slimeWarWebSocketService } from '../services/SlimeWarWebsocketService';
@@ -90,6 +91,12 @@ const SlimeWarScreen: React.FC = observer(() => {
   const [isCardSelectMode, setIsCardSelectMode] = React.useState<null | 'HERO' | 'MOVE'>(null);
   const [isMoveMode, setIsMoveMode] = useState(false);
   const [systemMessage, setSystemMessage] = useState<string>('');
+  
+  const { safeGoBack } = useNavigationActions({
+    enableBackHandler: true,
+    showExitConfirmation: true,
+    exitConfirmationMessage: '게임을 나가시겠습니까? 진행중인 게임이 끝납니다.',
+  });
   // kingIndex를 mobx 상태에서 가져옴
   // 본인/상대방 카드 mobx 상태에서 가져오기
   const playerHand = slimeWarViewModel.cardList;
@@ -222,20 +229,6 @@ const SlimeWarScreen: React.FC = observer(() => {
       slimeWarWebSocketService.sendNextRoundEvent(slimeWarViewModel.opponentCanMove);
     }
   }, [slimeWarViewModel.isMyTurn, canDrawCard, movableCards.length, heroCards.length]);
-
-  // 백키 완전 차단
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      () => {
-        // 항상 true를 반환하여 백키 이벤트를 완전히 차단
-        return true;
-      }
-    );
-
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
-    return () => backHandler.remove();
-  }, []); // 의존성 배열이 비어있으므로 컴포넌트 마운트 시 한 번만 실행
 
   useEffect(() => {
 

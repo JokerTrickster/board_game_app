@@ -1,18 +1,11 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
-const guidelineBaseWidth = 414;
-const guidelineBaseHeight = 736;
-
-// 반응형 사이즈 헬퍼 함수
-const scale = (size: number) => (width / guidelineBaseWidth) * size;
-const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
+import { StyleSheet } from 'react-native';
+import { responsive, ASPECT_RATIOS } from '../../utils';
 
 export default StyleSheet.create({
     // 전체 랭킹 카드 바깥 컨테이너
     cardOuterContainer: {
-        width: scale(380),
-        height: verticalScale(250),
+        width: responsive.scale(380),
+        aspectRatio: ASPECT_RATIOS.PHOTO,
         overflow: 'hidden',
     },
 
@@ -30,69 +23,69 @@ export default StyleSheet.create({
     // 1등 (골드) 컨테이너
     goldContainer: {
         position: 'absolute',
-        // ranking_background.png 에서 1등 영역의 위치로 조정
-        top: verticalScale(60),
-        left: scale(160),
-        width: scale(55),
-        height: verticalScale(50),
+        // Percentage-based positioning for better responsiveness
+        top: '24%',
+        left: '42%',
+        width: responsive.scale(55),
+        height: responsive.verticalScale(50),
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     goldProfileImage: {
         width: '100%',
         height: '100%',  // 컨테이너 대비 이미지 높이
-        borderRadius: scale(10),
-        borderWidth: scale(2),
+        borderRadius: responsive.borderRadius(10),
+        borderWidth: responsive.scale(2),
         resizeMode: 'cover',
     },
     goldNickname: {
-        marginTop: verticalScale(2),
-        fontSize: scale(10),
+        marginTop: responsive.verticalScale(2),
+        fontSize: responsive.font(10),
         fontWeight: '900',
         color: '#000',
     },
     goldScore: {
-        marginTop: verticalScale(22),
-        fontSize: scale(16),
+        marginTop: responsive.verticalScale(22),
+        fontSize: responsive.font(16),
         fontWeight: '900',
         color: '#fff',
     },
     rankingText: {
         position: 'absolute',
-        top: verticalScale(10),
+        top: '4%',
         alignSelf: 'center',
-        fontSize: scale(20),
+        fontSize: responsive.font(20),
         fontWeight: 'bold',
-        color: '#000', // 흰색 텍스트
+        color: '#000',
     },
     // 2등 (실버) 컨테이너
     silverContainer: {
         position: 'absolute',
-        // ranking_background.png 에서 2등 영역의 위치로 조정
-        top: verticalScale(70),
-        left: scale(40),
-        width: scale(55),
-        height: verticalScale(50),
+        // Percentage-based positioning for better responsiveness
+        top: '28%',
+        left: '10%',
+        width: responsive.scale(55),
+        height: responsive.verticalScale(50),
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     silverProfileImage: {
         width: '100%',
-        height: '100%',  // 컨테이너 대비 이미지 높이
-        borderRadius: scale(10),
+        height: '100%',
+        borderRadius: responsive.borderRadius(10),
         borderColor: '#000',
-        borderWidth: scale(2.5),
+        borderWidth: responsive.scale(2.5),
         resizeMode: 'cover',
     },
     silverNickname: {
-        marginTop: verticalScale(2),
-        fontSize: scale(10),
+        marginTop: responsive.verticalScale(2),
+        fontSize: responsive.font(10),
         fontWeight: '900',
         color: '#000',
     },
     silverScore: {
-        marginTop: verticalScale(12),
-        fontSize: scale(16),
+        marginTop: responsive.verticalScale(12),
+        fontSize: responsive.font(16),
         fontWeight: '900',
         color: '#fff',
     },
@@ -100,31 +93,31 @@ export default StyleSheet.create({
     // 3등 (브론즈) 컨테이너
     bronzeContainer: {
         position: 'absolute',
-        // ranking_background.png 에서 3등 영역의 위치로 조정
-        top: verticalScale(70),
-        right: scale(45),
-        width: scale(55),
-        height: verticalScale(50),
+        // Percentage-based positioning for better responsiveness
+        top: '28%',
+        right: '12%',
+        width: responsive.scale(55),
+        height: responsive.verticalScale(50),
         alignItems: 'center',
         justifyContent: 'flex-start',
     },
     bronzeProfileImage: {
         width: '100%',
-        height: '100%',  // 컨테이너 대비 이미지 높이
-        borderRadius: scale(10),
+        height: '100%',
+        borderRadius: responsive.borderRadius(10),
         borderColor: '#000',
-        borderWidth: scale(2.5),
+        borderWidth: responsive.scale(2.5),
         resizeMode: 'cover',
     },
     bronzeNickname: {
-        marginTop: verticalScale(2),
-        fontSize: scale(10),
+        marginTop: responsive.verticalScale(2),
+        fontSize: responsive.font(10),
         fontWeight: '900',
         color: '#000',
     },
     bronzeScore: {
-        marginTop: verticalScale(12),
-        fontSize: scale(16),
+        marginTop: responsive.verticalScale(12),
+        fontSize: responsive.font(16),
         fontWeight: '900',
         color: '#fff',
     },

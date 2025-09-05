@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, memo } from 'react';
 import { StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import Animated, {
@@ -90,4 +90,13 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CircleAnimation;
+// Memoize the component to prevent unnecessary re-renders
+// Only re-render when x, y, startAngle, or isUser1 props change
+export default memo(CircleAnimation, (prevProps, nextProps) => {
+    return (
+        prevProps.x === nextProps.x &&
+        prevProps.y === nextProps.y &&
+        prevProps.startAngle === nextProps.startAngle &&
+        prevProps.isUser1 === nextProps.isUser1
+    );
+});
