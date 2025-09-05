@@ -1,5 +1,18 @@
-import { StyleSheet } from 'react-native';
-import { responsive, ASPECT_RATIOS, TOUCH_TARGETS } from '../../utils';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+const guidelineBaseWidth = 414;
+const guidelineBaseHeight = 736;
+
+const scale = (size: number) => (width / guidelineBaseWidth) * size;
+const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
+
+// Add responsive utilities if they don't exist
+const responsive = {
+    spacing: (size: number) => scale(size),
+    touchTarget: () => Math.max(44, scale(44)),
+    verticalScale: (size: number) => verticalScale(size),
+};
 
 export default StyleSheet.create({
     container: {

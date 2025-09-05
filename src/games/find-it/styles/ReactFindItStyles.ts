@@ -139,11 +139,18 @@ export const styles = StyleSheet.create({
     },
     hintCircle: {
         position: 'absolute',
-        width: scale(40),
-        height: scale(40),
-        borderRadius: scale(15),
-        borderWidth: scale(3),
-        borderColor: 'rgba(36, 140, 205, 0.85)',
+        width: scale(44), // 터치 타겟 최소 크기 보장
+        height: scale(44),
+        borderRadius: scale(22),
+        borderWidth: scale(4),
+        borderColor: '#FF9800', // 오렌지색으로 변경 (더 높은 대비)
+        backgroundColor: 'rgba(255, 152, 0, 0.2)',
+        // 깜빡이는 애니메이션을 위한 스타일
+        elevation: 5,
+        shadowColor: '#FF9800',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.7,
+        shadowRadius: 4,
     },
     wrongXRotate45: {
         transform: [{ rotate: '45deg' }]
@@ -353,26 +360,41 @@ export const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
 
-    // 유저1(내) 정답 원 스타일
+    // 유저1(내) 정답 원 스타일 - 접근성 개선
     correctCircleUser1: {
         position: 'absolute',
         width: scale(30),
         height: scale(30),
         borderRadius: scale(15),
-        borderWidth: scale(3),
+        borderWidth: scale(4), // 더 두꺼운 테두리로 시각적 구분 강화
         borderColor: '#4CAF50', // 초록색
-        backgroundColor: 'rgba(76, 175, 80, 0.2)', // 연한 초록색 배경
+        borderStyle: 'solid', // 실선으로 구분
+        backgroundColor: 'rgba(76, 175, 80, 0.3)', // 더 진한 배경으로 대비 향상
+        // 패턴 추가를 위한 그림자
+        elevation: 4,
+        shadowColor: '#4CAF50',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
     },
 
-    // 유저2(상대방) 정답 원 스타일
+    // 유저2(상대방) 정답 원 스타일 - 접근성 개선
     correctCircleUser2: {
         position: 'absolute',
         width: scale(30),
         height: scale(30),
-        borderRadius: scale(15),
-        borderWidth: scale(3),
+        borderRadius: 0, // 다이아몬드 모양을 위해 원형 제거
+        borderWidth: scale(4),
         borderColor: '#2196F3', // 파란색
-        backgroundColor: 'rgba(33, 150, 243, 0.2)', // 연한 파란색 배경
+        borderStyle: 'dashed', // 점선으로 구분
+        backgroundColor: 'rgba(33, 150, 243, 0.3)',
+        transform: [{ rotate: '45deg' }], // 다이아몬드 모양으로 회전
+        // 패턴 추가를 위한 그림자
+        elevation: 4,
+        shadowColor: '#2196F3',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 3,
     },
 
     // 유저1(내) 오답 X 컨테이너 스타일
@@ -395,19 +417,35 @@ export const styles = StyleSheet.create({
         backgroundColor: 'rgba(156, 39, 176, 0.1)', // 연한 보라색 배경
     },
 
-    // 유저1(내) 오답 X 선 스타일
+    // 유저1(내) 오답 X 선 스타일 - 접근성 개선
     wrongXLineUser1: {
         position: 'absolute',
         width: scale(30),
-        height: verticalScale(5),
+        height: verticalScale(6), // 더 두꺼운 선으로 시각성 향상
         backgroundColor: '#F44336', // 빨간색
+        borderRadius: verticalScale(3), // 둥근 모서리
+        // 패턴 구분을 위한 그림자
+        elevation: 3,
+        shadowColor: '#F44336',
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.6,
+        shadowRadius: 2,
     },
 
-    // 유저2(상대방) 오답 X 선 스타일
+    // 유저2(상대방) 오답 X 선 스타일 - 접근성 개선
     wrongXLineUser2: {
         position: 'absolute',
         width: scale(30),
-        height: verticalScale(5),
+        height: verticalScale(6), // 더 두꺼운 선
         backgroundColor: '#9C27B0', // 보라색
+        borderRadius: verticalScale(3),
+        // 점선 패턴 효과를 위한 스타일 (CSS에서는 불가능하므로 대안 적용)
+        opacity: 0.8,
+        // 패턴 구분을 위한 그림자
+        elevation: 3,
+        shadowColor: '#9C27B0',
+        shadowOffset: { width: 1, height: 1 },
+        shadowOpacity: 0.6,
+        shadowRadius: 2,
     },
 });

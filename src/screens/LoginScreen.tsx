@@ -72,10 +72,17 @@ const LoginScreen: React.FC = () => {
         >
         <View style={styles.container}>
                 {/* 구글 로그인 버튼 */}
-                <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
+                <TouchableOpacity 
+                    style={styles.googleButton} 
+                    onPress={handleGoogleLogin}
+                    accessibilityRole="button"
+                    accessibilityLabel="구글 계정으로 로그인"
+                    accessibilityHint="구글 계정을 사용하여 앱에 로그인합니다"
+                >
                     <Image
                         source={require('../assets/icons/login/login_google.png')}
                         style={styles.buttonIcon}
+                        accessibilityIgnoresInvertColors={true}
                     />
                     <Text style={styles.googleButtonText}>구글 로그인</Text>
                 </TouchableOpacity>
@@ -98,6 +105,9 @@ const LoginScreen: React.FC = () => {
                         onChangeText={setEmail}
                         keyboardType="email-address"
                         autoCapitalize="none"
+                        accessibilityLabel="이메일 주소"
+                        accessibilityHint="로그인할 이메일 주소를 입력하세요"
+                        returnKeyType="next"
                     />
                 </View>
 
@@ -112,21 +122,40 @@ const LoginScreen: React.FC = () => {
                         value={password}
                         onChangeText={setPassword}
                         secureTextEntry
+                        accessibilityLabel="비밀번호"
+                        accessibilityHint="로그인할 비밀번호를 입력하세요"
+                        returnKeyType="done"
                     />
                 </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleLogin}
+                accessibilityRole="button"
+                accessibilityLabel="로그인"
+                accessibilityHint="입력한 계정 정보로 로그인을 시도합니다"
+            >
                 <Text style={styles.loginButtonText}>로그인</Text>
             </TouchableOpacity>
 
             <View style={styles.linkContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('SignUp')}
+                    accessibilityRole="button"
+                    accessibilityLabel="회원가입"
+                    accessibilityHint="새 계정을 만들기 위해 회원가입 화면으로 이동합니다"
+                >
                     <Text style={styles.signupText}>회원가입</Text>
                 </TouchableOpacity>
 
                 <Text style={styles.separator}>|</Text>
 
-                <TouchableOpacity onPress={() => navigation.navigate('Password')}>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate('Password')}
+                    accessibilityRole="button"
+                    accessibilityLabel="비밀번호 찾기"
+                    accessibilityHint="비밀번호를 재설정하기 위한 화면으로 이동합니다"
+                >
                     <Text style={styles.forgotPasswordText}>비밀번호 찾기</Text>
                 </TouchableOpacity>
             </View>

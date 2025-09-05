@@ -18,10 +18,13 @@ import { CommonAudioManager } from '../../services/CommonAudioManager'; // Globa
 import { BackHandler } from 'react-native';
 import AnimatedX from './AnimatedX';
 import AnimatedHint from './AnimatedHint';
-import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants' 
+import { GAME_TIMER, ITEM_TIMER_STOP, LIFE, HINTS } from './services/constants';
+import { useTimers } from '../../hooks/useTimers';
+import { useImageLoader } from '../../hooks/useImageLoader'; 
 
 const SoloFindItScreen: React.FC = observer(() => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList, 'SoloFindIt'>>();
+    const { setTimeout, clearTimeout } = useTimers();
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
     const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
@@ -54,7 +57,32 @@ const SoloFindItScreen: React.FC = observer(() => {
     const derivedOffsetY = useDerivedValue(() => offsetY.value);
    
     const route = useRoute<any>();
-    const { gameInfoList } = route.params; 
+    const { gameInfoList } = route.params;
+    
+    // Extract all image URLs for optimized loading
+    const imageUrls = useMemo(() => {
+        const urls: string[] = [];
+        gameInfoList.forEach((gameInfo: any) => {
+            if (gameInfo.normalUrl) urls.push(gameInfo.normalUrl);
+            if (gameInfo.abnormalUrl) urls.push(gameInfo.abnormalUrl);
+        });
+        return urls;
+    }, [gameInfoList]);
+
+    // Initialize optimized image loader
+    const { isImageLoaded, totalProgress, startLoading } = useImageLoader(imageUrls, {
+        priority: 'high', // Game images are high priority
+        preload: true,    // Start loading immediately
+        onProgress: (progress) => {
+            console.log(`Image loading progress: ${Math.round(progress * 100)}%`);
+        },
+        onLoad: () => {
+            console.log('All game images loaded successfully');
+        },
+        onError: (error) => {
+            console.warn('Image loading error:', error);
+        }
+    }); 
     const [correctPositions, setCorrectPositions] = useState<any[]>([]); // ✅ 정답 좌표 저장
 
     // 클릭 사운드를 위한 ref (초기화 시 파일 경로를 지정)
@@ -555,12 +583,7 @@ const SoloFindItScreen: React.FC = observer(() => {
         setCorrectPositions(gameInfoList[soloFindItViewModel.round - 1].correctPositions);
     }, [soloFindItViewModel.round]);
     
-    useEffect(() => {
-        gameInfoList.forEach((gameInfo:any) => {
-          Image.prefetch(gameInfo.normalUrl);
-          Image.prefetch(gameInfo.abnormalUrl);
-        });
-      }, []);
+    // Image preloading is now handled by useImageLoader hook above
 
     // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
     useEffect(() => {
