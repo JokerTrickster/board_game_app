@@ -26,7 +26,7 @@ export default StyleSheet.create({
         fontWeight: 'bold',
     },
     container: {
-        padding: scale(20)
+        padding: scale(20),
     },
     inputRow: {
         flexDirection: 'row',
@@ -47,22 +47,22 @@ export default StyleSheet.create({
         borderColor: '#000',
     },
     smallButtonText: {
-        fontSize: scale(14)
+        fontSize: scale(14),
     },
     checkboxRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: verticalScale(3)
+        marginVertical: verticalScale(3),
     },
     checkboxText: {
         flex: 1,
         fontSize: scale(14),
-        marginLeft: scale(10)
+        marginLeft: scale(10),
     },
     linkText: {
         color: '#000',
         textDecorationLine: 'underline',
-        fontSize: scale(10)
+        fontSize: scale(10),
     },
     signupButton: {
         backgroundColor: '#FAC0BE',
@@ -75,7 +75,7 @@ export default StyleSheet.create({
     },
     signupButtonText: {
         fontSize: scale(18),
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     },
     background: {
         flex: 1,
@@ -97,7 +97,7 @@ export default StyleSheet.create({
     },
     icon: {
         color: '#555',
-        marginRight: scale(10)
+        marginRight: scale(10),
     },
     input: {
         flex: 1,

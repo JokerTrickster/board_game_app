@@ -14,7 +14,7 @@ export default StyleSheet.create({
         fontSize: responsive.font(16),
         fontWeight: 'bold',
     },
-    
+
     disabled: {
         opacity: 0.5,
     },

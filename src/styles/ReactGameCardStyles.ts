@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 import { responsive, ASPECT_RATIOS } from '../utils';
 
 export default StyleSheet.create({
-   
+
     imageWrapper: {
         width: '100%',
         flex: 1,
@@ -52,7 +52,7 @@ export default StyleSheet.create({
     gameTitle: {
         marginTop: verticalScale(5),
         fontWeight: 'bold',
-        fontSize: scale(20)
+        fontSize: scale(20),
     },
     hashtagContainer: {
         flexDirection: 'row',
@@ -64,7 +64,7 @@ export default StyleSheet.create({
         fontSize: scale(12),
         backgroundColor: '#eee',
         padding: scale(2),
-        borderRadius: scale(5)
+        borderRadius: scale(5),
     },
 
     categoryBorder: {
@@ -88,7 +88,7 @@ export default StyleSheet.create({
         fontSize: scale(12),
         color: '#000',
     },
-   
+
     hashtagText: {
         fontSize: scale(12),
         color: '#000',

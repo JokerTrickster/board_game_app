@@ -19,7 +19,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
     };
     useEffect(() => {
         const backAction = () => {
-            // 여기서 특별한 동작 없이 그냥 true를 반환하면, 
+            // 여기서 특별한 동작 없이 그냥 true를 반환하면,
             // 시스템의 기본 백 버튼 동작(예: 앱 종료, 화면 이동 등)을 차단합니다.
             return true;
         };
@@ -33,7 +33,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
         // 컴포넌트가 언마운트될 때 리스너 제거
         return () => backHandler.remove();
     }, []);
-    
+
     return (
         <ImageBackground
             source={require('../../assets/images/common/background_basic.png')}
@@ -43,11 +43,11 @@ const SoloFindItResultScreen: React.FC = observer(() => {
             <View style={styles.container}>
 
                 <SoloHeader />
-                
+
                 <View style={styles.resultContainer}>
                     <View style={styles.clearConatiner}>
-                        <Image 
-                            source={isSuccess ? 
+                        <Image
+                            source={isSuccess ?
                                 require('../../assets/icons/find-it/clear_star.png') :
                                 require('../../assets/icons/find-it/fail_star.png')
                             }
@@ -55,7 +55,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                         />
                         <View style={styles.clearTextContainer}>
                             <Text style={styles.clearText}>
-                                {isSuccess ? "클리어!" : "게임오버"}
+                                {isSuccess ? '클리어!' : '게임오버'}
                             </Text>
                         </View>
                     </View>
@@ -74,7 +74,7 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                                     style={styles.medalIcon}
                                 />
                             </View>
-                            
+
                             <View style={styles.profileImageContainer} >
                                 <Image
                                     source={ require('../../assets/images/home/default_profile.png')}
@@ -87,13 +87,13 @@ const SoloFindItResultScreen: React.FC = observer(() => {
                                     source={require('../../assets/icons/find-it/coin.png')}
                                     style={styles.profileScoreIcon}
                                 />
-                                <Text style={styles.profileScore}>{isSuccess ? "+300" : "-100"}</Text>
+                                <Text style={styles.profileScore}>{isSuccess ? '+300' : '-100'}</Text>
                             </View>
                         </View>
                     </View>
                 </View>
                 <View style={styles.ResultButtonContainer}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.resultButton}
                         onPress={goToHome}
                     >

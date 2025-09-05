@@ -1,6 +1,6 @@
 /**
  * Responsive Design System - Main Export File
- * 
+ *
  * This module provides a comprehensive responsive design system for React Native
  * including device detection, responsive scaling, breakpoints, and React hooks.
  */

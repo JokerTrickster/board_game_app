@@ -29,7 +29,7 @@ const MultiFindItResultScreen: React.FC = () => {
     };
     const getUserName = (userID: number) => {
         return gameService.users.find((user: any) => user.id === userID)?.name;
-    }
+    };
 
     // 백 버튼 처리
     useEffect(() => {
@@ -40,8 +40,8 @@ const MultiFindItResultScreen: React.FC = () => {
 
     // 승자 결정
     const getWinner = () => {
-        if (!gameResult?.users) return null;
-        return gameResult.users.reduce((prev: GameResult['users'][0], current: GameResult['users'][0]) => 
+        if (!gameResult?.users) {return null;}
+        return gameResult.users.reduce((prev: GameResult['users'][0], current: GameResult['users'][0]) =>
             (prev.score > current.score) ? prev : current
         );
     };
@@ -66,7 +66,7 @@ const MultiFindItResultScreen: React.FC = () => {
                         />
                         <View style={styles.clearTextContainer}>
                             <Text style={styles.clearText}>
-                                {isSuccess ? "클리어!" : "게임오버"}
+                                {isSuccess ? '클리어!' : '게임오버'}
                             </Text>
                         </View>
                     </View>
@@ -89,23 +89,23 @@ const MultiFindItResultScreen: React.FC = () => {
                     {/* 프로필 영역 */}
                     <View style={styles.profilesRootContainer}>
                         {gameResult?.users.map((user: GameResult['users'][0], index: number) => (
-                            <View 
-                                key={index} 
+                            <View
+                                key={index}
                                 style={[
                                     styles.profilesContainer,
-                                    index === 1 && styles.profilesTwoContainer
+                                    index === 1 && styles.profilesTwoContainer,
                                 ]}
                             >
                                 <View style={styles.profileRow}>
                                     <View style={[
                                         styles.profileIconContainer,
-                                        index === 1 && styles.profileTwoIconContainer
+                                        index === 1 && styles.profileTwoIconContainer,
                                     ]}>
                                         <Image
                                             source={require('../../assets/icons/find-it/medal.png')}
                                             style={[
                                                 styles.medalIcon,
-                                                index === 1 && styles.medalTwoIcon
+                                                index === 1 && styles.medalTwoIcon,
                                             ]}
                                         />
                                     </View>
@@ -118,7 +118,7 @@ const MultiFindItResultScreen: React.FC = () => {
                                     <Text style={styles.profileName}>{getUserName(user.userID)}</Text>
                                     <View style={[
                                         styles.profileScoreContainer,
-                                        index === 1 && styles.profileTwoScoreContainer
+                                        index === 1 && styles.profileTwoScoreContainer,
                                     ]}>
                                         <Image
                                             source={require('../../assets/icons/find-it/coin.png')}

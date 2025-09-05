@@ -149,7 +149,7 @@ class FindItService {
             }
             const data = await response.json();
             // 응답 데이터 검증
-            console.log("모야 데이터 모야 ",data);
+            console.log('모야 데이터 모야 ',data);
             if (
                 !Array.isArray(data.users)
             ) {

@@ -6,8 +6,8 @@ export const BREAKPOINTS = {
   // Phone breakpoints
   PHONE_SMALL: 375,      // iPhone SE, small Android phones
   PHONE_REGULAR: 428,    // iPhone 14, most modern phones
-  
-  // Tablet breakpoints  
+
+  // Tablet breakpoints
   TABLET_SMALL: 768,     // iPad Mini, small tablets
   TABLET_REGULAR: 834,   // iPad (10.2"), regular tablets
   TABLET_LARGE: 1024,    // iPad Pro (11"), large tablets

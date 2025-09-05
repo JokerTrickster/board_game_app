@@ -84,7 +84,7 @@ class AnalyticsService {
    */
   public async initialize(userId?: string) {
     this.userId = userId;
-    
+
     await this.track('analytics_initialized', {
       userId,
       sessionId: this.sessionId,
@@ -99,7 +99,7 @@ class AnalyticsService {
   public async setUserConsent(consent: boolean) {
     this.isEnabled = consent;
     await AsyncStorage.setItem('analytics_consent', consent.toString());
-    
+
     if (consent) {
       await this.track('analytics_enabled', {});
     } else {
@@ -127,7 +127,7 @@ class AnalyticsService {
    * Track user action event
    */
   public async track(eventType: string, properties: Record<string, any> = {}) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     const event: UserActionEvent = {
       eventType,
@@ -155,7 +155,7 @@ class AnalyticsService {
    * Track screen view
    */
   public async trackScreenView(screenName: string) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     const now = Date.now();
     const previousScreen = this.currentScreen;
@@ -201,7 +201,7 @@ class AnalyticsService {
     action: GameAnalyticsEvent['action'],
     gameData: GameAnalyticsEvent['gameData'] = {}
   ) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     const event: GameAnalyticsEvent = {
       gameType,
@@ -223,7 +223,7 @@ class AnalyticsService {
    * Track performance metrics
    */
   public async trackPerformance(metrics: PerformanceMetrics['metrics']) {
-    if (!this.isEnabled) return;
+    if (!this.isEnabled) {return;}
 
     try {
       const batteryLevel = await DeviceInfo.getBatteryLevel();
@@ -278,7 +278,7 @@ class AnalyticsService {
     await this.track('flow_completion', {
       flowName,
       totalSteps: steps.length,
-      completedSteps: completedSteps.length,
+      completedStepsCount: completedSteps.length,
       completionRate: completedSteps.length / steps.length,
       totalTimeSeconds: totalTime ? Math.round(totalTime / 1000) : undefined,
       steps,
@@ -330,7 +330,7 @@ class AnalyticsService {
    * Flush events to storage/backend
    */
   private async flushEvents() {
-    if (this.eventQueue.length === 0 || !this.isEnabled) return;
+    if (this.eventQueue.length === 0 || !this.isEnabled) {return;}
 
     const eventsToFlush = [...this.eventQueue];
     this.eventQueue = [];
@@ -343,7 +343,7 @@ class AnalyticsService {
 
       // TODO: Send to analytics backend
       // await this.sendToAnalyticsBackend(eventsToFlush);
-      
+
       console.log(`Analytics: Flushed ${eventsToFlush.length} events`);
     } catch (error) {
       console.error('Failed to flush analytics events:', error);
@@ -359,10 +359,10 @@ class AnalyticsService {
     try {
       const existingEvents = await this.getStoredEvents();
       const allEvents = [...existingEvents, ...events];
-      
+
       // Keep only last 100 events
       const recentEvents = allEvents.slice(-100);
-      
+
       await AsyncStorage.setItem('analytics_events', JSON.stringify(recentEvents));
     } catch (error) {
       console.error('Failed to store events locally:', error);
@@ -413,10 +413,10 @@ class AnalyticsService {
   public async generateSessionReport() {
     const events = await this.getStoredEvents();
     const sessionEvents = events.filter(e => e.sessionId === this.sessionId);
-    
+
     const screens = [...new Set(sessionEvents.map(e => e.screen))];
     const eventTypes = [...new Set(sessionEvents.map(e => e.eventType))];
-    
+
     const gameEvents = sessionEvents.filter(e => e.eventType === 'game_event');
     const buttonClicks = sessionEvents.filter(e => e.eventType === 'button_click');
     const errors = sessionEvents.filter(e => e.eventType === 'error_occurred');
@@ -463,7 +463,7 @@ class AnalyticsService {
     if (this.flushTimer) {
       clearInterval(this.flushTimer);
     }
-    
+
     // Flush remaining events
     if (this.eventQueue.length > 0) {
       await this.flushEvents();

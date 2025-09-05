@@ -78,7 +78,7 @@ export const provideHapticFeedback = (type: 'success' | 'error' | 'warning' | 'l
  */
 export const getGameFeedbackAccessibility = (type: 'correct' | 'incorrect' | 'hint') => {
   const indicator = ACCESSIBILITY_CONSTANTS.FEEDBACK_INDICATORS[type.toUpperCase() as keyof typeof ACCESSIBILITY_CONSTANTS.FEEDBACK_INDICATORS];
-  
+
   return {
     accessible: true,
     accessibilityRole: 'text' as const,
@@ -93,7 +93,7 @@ export const getGameFeedbackAccessibility = (type: 'correct' | 'incorrect' | 'hi
 export const getUserIndicatorAccessibility = (userType: 'USER1' | 'USER2', count?: number) => {
   const indicator = ACCESSIBILITY_CONSTANTS.USER_INDICATORS[userType];
   const countText = count !== undefined ? ` ${count}개` : '';
-  
+
   return {
     accessible: true,
     accessibilityRole: 'text' as const,
@@ -128,15 +128,15 @@ export const generateAccessibilityHint = (
   condition?: boolean
 ): string => {
   let hint = `터치하여 ${action}`;
-  
+
   if (context) {
     hint += ` ${context}`;
   }
-  
+
   if (condition === false) {
     hint = `현재 사용할 수 없습니다. ${hint}하려면 조건을 만족해야 합니다`;
   }
-  
+
   return hint;
 };
 
@@ -156,16 +156,16 @@ export const createAccessibleButtonProps = ({
   hint,
   disabled = false,
   count,
-  role = 'button'
+  role = 'button',
 }: AccessibleButtonProps) => {
   const countText = count !== undefined ? ` ${count}개` : '';
   const accessibilityLabel = `${label}${countText}`;
-  
+
   let accessibilityHint = hint;
   if (disabled) {
     accessibilityHint = '현재 사용할 수 없는 상태입니다';
   }
-  
+
   return {
     accessible: true,
     accessibilityRole: role,
@@ -193,20 +193,20 @@ export const createAccessibleInputProps = ({
   placeholder,
   required = false,
   error,
-  value
+  value,
 }: AccessibleInputProps) => {
   let accessibilityLabel = label;
   if (required) {
     accessibilityLabel += ', 필수 항목';
   }
-  
+
   let accessibilityHint = placeholder ? `${placeholder}을 입력하세요` : '내용을 입력하세요';
   if (error) {
     accessibilityHint = `오류: ${error}`;
   }
-  
+
   const accessibilityValue = value ? { text: value } : undefined;
-  
+
   return {
     accessible: true,
     accessibilityLabel,
@@ -227,7 +227,7 @@ export const debouncedAnnounce = (message: string, delay: number = 500) => {
   if (announcementTimeout) {
     clearTimeout(announcementTimeout);
   }
-  
+
   announcementTimeout = setTimeout(() => {
     announceForAccessibility(message);
     announcementTimeout = null;
@@ -241,14 +241,14 @@ export const formatTimeForAccessibility = (seconds: number): string => {
   if (seconds < 60) {
     return `${seconds}초`;
   }
-  
+
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  
+
   if (remainingSeconds === 0) {
     return `${minutes}분`;
   }
-  
+
   return `${minutes}분 ${remainingSeconds}초`;
 };
 
@@ -257,7 +257,7 @@ export const formatTimeForAccessibility = (seconds: number): string => {
  */
 export const announceTimeRemaining = (seconds: number) => {
   const timeText = formatTimeForAccessibility(seconds);
-  
+
   if (seconds <= 10) {
     announceForAccessibility(`남은 시간 ${timeText}`);
     provideHapticFeedback('warning');

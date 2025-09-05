@@ -331,4 +331,4 @@ export default StyleSheet.create({
     height: 20,
     marginRight: 4,
   },
-}); 
+});

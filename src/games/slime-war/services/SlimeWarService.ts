@@ -42,7 +42,7 @@ class SlimeWarService {
             throw new Error('Access token not found');
         }
         try {
-            console.log("api base url   ", API_BASE_URL);
+            console.log('api base url   ', API_BASE_URL);
             const response = await fetch(`${API_BASE_URL}/slime-war/v0.1/game/rank`, {
                 method: 'GET',
                 headers: {
@@ -92,7 +92,7 @@ class SlimeWarService {
             return false;
         }
     }
-    
+
 
     /**
      * 슬라임 전쟁 게임 결과를 가져오는 함수
@@ -119,7 +119,7 @@ class SlimeWarService {
             if (!data.users) {
                 throw new Error('Invalid response from server');
             }
-            console.log("data.users", data.users);
+            console.log('data.users', data.users);
             return data.users;
         } catch (error) {
             throw error;
@@ -176,8 +176,8 @@ class SlimeWarService {
                     roomID: roomId,
                     userID: userId,
                     score: score,
-                    result: result
-                })
+                    result: result,
+                }),
             });
 
             if (!response.ok) {

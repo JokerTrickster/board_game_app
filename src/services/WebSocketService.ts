@@ -18,7 +18,7 @@ const DEFAULT_CONFIG: WebSocketConfig = {
     maxQueueSize: 100,
     messageTTL: 30000, // 30 seconds
     maxRetries: 3,
-    reconnectDelay: 5000 // 5 seconds
+    reconnectDelay: 5000, // 5 seconds
 };
 
 export class WebSocketService {
@@ -57,7 +57,7 @@ export class WebSocketService {
     private cleanupExpiredMessages() {
         const now = Date.now();
         const initialLength = this.messageQueue.length;
-        
+
         this.messageQueue = this.messageQueue.filter(queuedMessage => {
             return (now - queuedMessage.timestamp) <= this.config.messageTTL;
         });
@@ -80,7 +80,7 @@ export class WebSocketService {
         const queuedMessage: QueuedMessage = {
             event,
             timestamp: Date.now(),
-            retryCount: 0
+            retryCount: 0,
         };
 
         this.messageQueue.push(queuedMessage);
@@ -103,7 +103,7 @@ export class WebSocketService {
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
                 try {
                     this.ws.send(JSON.stringify(queuedMessage.event));
-                    console.log(`📤 Queue message sent:`, queuedMessage.event);
+                    console.log('📤 Queue message sent:', queuedMessage.event);
                 } catch (error) {
                     // Re-queue if failed and under retry limit
                     if (queuedMessage.retryCount < this.config.maxRetries) {
@@ -131,9 +131,9 @@ export class WebSocketService {
         this.reconnectTimer = setTimeout(() => {
             this.reconnectTimer = null;
             this.connectionAttempts++;
-            
+
             console.log(`🔄 Attempting reconnection ${this.connectionAttempts}/${this.maxConnectionAttempts}`);
-            
+
             if (this.wsUrl) {
                 // Restore handlers before reconnecting
                 const handlers = [...this.messageHandlers];
@@ -144,21 +144,21 @@ export class WebSocketService {
 
     public connect(wsUrl: string, messageHandler: (eventType: string, data: any) => void) {
         this.wsUrl = wsUrl;
-        
+
         // Close existing connection if any
         if (this.ws) {
             this.ws.close();
         }
 
         this.ws = new WebSocket(wsUrl);
-        
+
         // Clear or add message handler
         if (!this.messageHandlers.includes(messageHandler)) {
             this.messageHandlers.push(messageHandler);
         }
 
         this.ws.onopen = () => {
-            console.log("✅ WebSocket connection established!");
+            console.log('✅ WebSocket connection established!');
             this.isConnected = true;
             this.connectionAttempts = 0; // Reset connection attempts on successful connection
 
@@ -190,7 +190,7 @@ export class WebSocketService {
         this.ws.onclose = (event) => {
             console.log(`🔌 WebSocket connection closed (code: ${event.code}, reason: ${event.reason})`);
             this.isConnected = false;
-            
+
             // Attempt reconnection if not intentionally closed
             if (event.code !== 1000 && event.code !== 1001) {
                 this.attemptReconnect();
@@ -198,7 +198,7 @@ export class WebSocketService {
         };
 
         this.ws.onerror = (error) => {
-            console.error("❌ WebSocket error occurred:", error);
+            console.error('❌ WebSocket error occurred:', error);
             this.isConnected = false;
         };
     }
@@ -259,17 +259,17 @@ export class WebSocketService {
         this.isConnected = false;
         this.connectionAttempts = 0;
         this.wsUrl = '';
-        
+
         // Clear message queue to prevent memory leaks
         this.messageQueue = [];
-        
+
         console.log('🔌 WebSocket service disconnected and cleaned up');
     }
 
     // Performance monitoring methods
     getQueueStats() {
         const now = Date.now();
-        const expiredCount = this.messageQueue.filter(msg => 
+        const expiredCount = this.messageQueue.filter(msg =>
             (now - msg.timestamp) > this.config.messageTTL
         ).length;
 
@@ -279,7 +279,7 @@ export class WebSocketService {
             expiredMessages: expiredCount,
             isConnected: this.isConnected,
             connectionAttempts: this.connectionAttempts,
-            queueUtilization: (this.messageQueue.length / this.config.maxQueueSize) * 100
+            queueUtilization: (this.messageQueue.length / this.config.maxQueueSize) * 100,
         };
     }
 

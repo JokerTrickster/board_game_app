@@ -19,7 +19,7 @@ const GameCard: React.FC<GameCardProps> = ({ title, category, hashtag, image, on
                 : title === '시퀀스'
                     ? require('../assets/images/common/sequence.png')
                     : require('../assets/images/common/default.png');
-    
+
     return (
         <TouchableOpacity style={styles.gameCard} onPress={onPress}>
             <View style={styles.imageWrapper}>

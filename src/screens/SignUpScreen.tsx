@@ -51,7 +51,7 @@ const SignUpScreen: React.FC = () => {
         agreeTerms &&
         agreePrivacy;
 
-    
+
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -85,7 +85,7 @@ const SignUpScreen: React.FC = () => {
         }
     }, [agreeAge, agreeTerms, agreePrivacy, agreeMarketing]);
 
-    
+
     const handleEmailCodeValidation = async () => {
         setCodeError('');
         try {

@@ -51,7 +51,7 @@ const SequenceResultScreen: React.FC = () => {
                         />
                         <View style={styles.clearTextContainer}>
                             <Text style={styles.clearText}>
-                                {isSuccess ? "클리어!" : "게임오버"}
+                                {isSuccess ? '클리어!' : '게임오버'}
                             </Text>
                         </View>
                     </View>
@@ -67,7 +67,7 @@ const SequenceResultScreen: React.FC = () => {
                                 <Text style={styles.resultScoreValue}>{myScore}점</Text>
                                 <Text style={[
                                     styles.resultScoreStatus,
-                                    myResult === 'Winner' ? styles.winnerText : styles.loserText
+                                    myResult === 'Winner' ? styles.winnerText : styles.loserText,
                                 ]}>
                                     {myResult}
                                 </Text>
@@ -79,7 +79,7 @@ const SequenceResultScreen: React.FC = () => {
                                 <Text style={styles.resultScoreValue}>{opponentScore}점</Text>
                                 <Text style={[
                                     styles.resultScoreStatus,
-                                    opponentResult === 'Winner' ? styles.winnerText : styles.loserText
+                                    opponentResult === 'Winner' ? styles.winnerText : styles.loserText,
                                 ]}>
                                     {opponentResult}
                                 </Text>
@@ -112,7 +112,7 @@ const SequenceResultScreen: React.FC = () => {
                                     />
                                     <Text style={[
                                         styles.profileScore,
-                                        { color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' }
+                                        { color: myResult === 'Winner' ? '#2ecc40' : '#e74c3c' },
                                     ]}>
                                         {myScore}점
                                     </Text>
@@ -140,7 +140,7 @@ const SequenceResultScreen: React.FC = () => {
                                     />
                                     <Text style={[
                                         styles.profileScore,
-                                        { color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' }
+                                        { color: opponentResult === 'Winner' ? '#2ecc40' : '#e74c3c' },
                                     ]}>
                                         {opponentScore}점
                                     </Text>

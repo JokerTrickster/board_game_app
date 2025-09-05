@@ -152,7 +152,7 @@ const FrogScreen: React.FC = observer(() => {
 
   // 맵에서 카드 선택 핸들러 수정
   const handleMapCardPress = (cardId: number) => {
-    if (!frogViewModel.isMyTurn) return;
+    if (!frogViewModel.isMyTurn) {return;}
 
     // 0라운드: 도라 선택
     if (frogViewModel.round === 0 && !frogViewModel.dora) {
@@ -162,8 +162,8 @@ const FrogScreen: React.FC = observer(() => {
 
     // 1,2라운드: 5장 선택
     if ((frogViewModel.round === 1 || frogViewModel.round === 2)) {
-      if (selectedImportCards.includes(cardId)) return;
-      if (selectedImportCards.length >= 5) return;
+      if (selectedImportCards.includes(cardId)) {return;}
+      if (selectedImportCards.length >= 5) {return;}
       const next = [...selectedImportCards, cardId];
       setSelectedImportCards(next);
       if (next.length === 5) {
@@ -194,7 +194,7 @@ const FrogScreen: React.FC = observer(() => {
         {Array.from({ length: GRID_COLS }).map((_, colIdx) => {
           cardCount++;
           const cardId = cardCount <= TOTAL_CARDS ? mapCards[cardCount - 1] : null;
-          
+
           // 선택 가능 조건
           let isSelectable = false;
           if (frogViewModel.isMyTurn) {
@@ -224,10 +224,10 @@ const FrogScreen: React.FC = observer(() => {
               onPress={() => cardId && handleMapCardPress(cardId)}
             >
               {cardId ? (
-                <Image 
-                  source={imageSource} 
-                  style={styles.cardImage} 
-                  resizeMode="contain" 
+                <Image
+                  source={imageSource}
+                  style={styles.cardImage}
+                  resizeMode="contain"
                 />
               ) : null}
             </TouchableOpacity>
@@ -256,7 +256,7 @@ const FrogScreen: React.FC = observer(() => {
         <View
           style={[
             styles.doraImage,
-            { backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 6 }
+            { backgroundColor: 'rgba(0,0,0,0.1)', borderRadius: 6 },
           ]}
         />
       )}
@@ -338,7 +338,7 @@ const FrogScreen: React.FC = observer(() => {
               key={`hand-card-${idx}`}
               style={[
                 styles.handCardWrapper,
-                isSelected && { borderColor: '#4CAF50', borderWidth: 2 }
+                isSelected && { borderColor: '#4CAF50', borderWidth: 2 },
               ]}
               onPress={() => handleHandCardPress(idx)}
             >
@@ -370,7 +370,7 @@ const FrogScreen: React.FC = observer(() => {
 
   // 안내 메시지
   const renderImportGuide = () => {
-    if (!frogViewModel.isMyTurn) return null;
+    if (!frogViewModel.isMyTurn) {return null;}
     if (frogViewModel.round === 0 && !frogViewModel.dora) {
       return (
         <View style={{ alignItems: 'center', marginVertical: 8 }}>
@@ -403,7 +403,7 @@ const FrogScreen: React.FC = observer(() => {
 
   // LOAN 버튼 핸들러
   const handleLoan = () => {
-    if (!frogViewModel.isMyTurn) return;
+    if (!frogViewModel.isMyTurn) {return;}
     const opponentDiscardCardList = frogViewModel.opponentDiscardCardList;
     const cardId = opponentDiscardCardList[opponentDiscardCardList.length - 1];
     frogWebSocketService.sendLoanEvent(cardId);
@@ -429,19 +429,19 @@ const FrogScreen: React.FC = observer(() => {
         </View>
 
         {/* 타이머 + 마지막 카드 UI */}
-         
+
           {/* 타이머(가운데) */}
           <View style={styles.timerWrapper}>
             <View style={styles.timerBar}>
               <View
                 style={[
                   styles.timerProgress,
-                  { width: `${(timer / 30) * 100}%` }
+                  { width: `${(timer / 30) * 100}%` },
                 ]}
               />
             </View>
           </View>
-         
+
 
         {/* 게임 보드 */}
         <View style={[styles.boardContainer, { position: 'relative' }]}>
@@ -490,9 +490,9 @@ const FrogScreen: React.FC = observer(() => {
 
         {/* 시스템 메시지 */}
         {systemMessage ? (
-          <SystemMessage 
-            message={systemMessage} 
-            onHide={() => setSystemMessage('')} 
+          <SystemMessage
+            message={systemMessage}
+            onHide={() => setSystemMessage('')}
           />
         ) : null}
       </SafeAreaView>

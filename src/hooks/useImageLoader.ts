@@ -29,7 +29,7 @@ export const useImageLoader = (
     preload = false,
     onProgress,
     onLoad,
-    onError
+    onError,
   } = config;
 
   const [loadStates, setLoadStates] = useState<Map<string, ImageLoadState>>(
@@ -37,7 +37,7 @@ export const useImageLoader = (
       loading: false,
       loaded: false,
       error: false,
-      progress: 0
+      progress: 0,
     }]))
   );
 
@@ -58,14 +58,14 @@ export const useImageLoader = (
 
   // Load a single image with progress tracking
   const loadImage = useCallback(async (source: string): Promise<void> => {
-    if (activeLoads.current.has(source)) return;
-    
+    if (activeLoads.current.has(source)) {return;}
+
     activeLoads.current.add(source);
-    
+
     setLoadStates(prev => new Map(prev).set(source, {
       ...prev.get(source)!,
       loading: true,
-      error: false
+      error: false,
     }));
 
     try {
@@ -74,12 +74,12 @@ export const useImageLoader = (
           .then(() => {
             loadedCount.current++;
             const progress = loadedCount.current / sources.length;
-            
+
             setLoadStates(prev => new Map(prev).set(source, {
               loading: false,
               loaded: true,
               error: false,
-              progress: 100
+              progress: 100,
             }));
 
             onProgress?.(progress);
@@ -90,12 +90,12 @@ export const useImageLoader = (
           })
           .catch((error) => {
             errorCount.current++;
-            
+
             setLoadStates(prev => new Map(prev).set(source, {
               loading: false,
               loaded: false,
               error: true,
-              progress: 0
+              progress: 0,
             }));
 
             onError?.(error);
@@ -121,7 +121,7 @@ export const useImageLoader = (
         if (delay > 0) {
           await new Promise(resolve => setTimeout(resolve, delay));
         }
-        
+
         loadImage(source).catch(() => {
           // Error handled in loadImage
         });
@@ -153,7 +153,7 @@ export const useImageLoader = (
       loaded: states.filter(s => s.loaded).length,
       loading: states.filter(s => s.loading).length,
       errors: states.filter(s => s.error).length,
-      progress: loadedCount.current / sources.length
+      progress: loadedCount.current / sources.length,
     };
   }, [loadStates, sources.length]);
 
@@ -173,7 +173,7 @@ export const useImageLoader = (
     getStats,
     isImageLoaded,
     areAllLoaded,
-    totalProgress: loadedCount.current / sources.length
+    totalProgress: loadedCount.current / sources.length,
   };
 };
 
@@ -185,11 +185,11 @@ export const useLazyImage = (source: string, config: ImageLoaderConfig = {}) => 
     loading: false,
     loaded: false,
     error: false,
-    progress: 0
+    progress: 0,
   });
 
   const loadImage = useCallback(async () => {
-    if (state.loading || state.loaded) return;
+    if (state.loading || state.loaded) {return;}
 
     setState(prev => ({ ...prev, loading: true, error: false }));
 
@@ -199,7 +199,7 @@ export const useLazyImage = (source: string, config: ImageLoaderConfig = {}) => 
         loading: false,
         loaded: true,
         error: false,
-        progress: 100
+        progress: 100,
       });
       config.onLoad?.();
     } catch (error) {
@@ -207,7 +207,7 @@ export const useLazyImage = (source: string, config: ImageLoaderConfig = {}) => 
         loading: false,
         loaded: false,
         error: true,
-        progress: 0
+        progress: 0,
       });
       config.onError?.(error);
     }
@@ -215,7 +215,7 @@ export const useLazyImage = (source: string, config: ImageLoaderConfig = {}) => 
 
   return {
     ...state,
-    loadImage
+    loadImage,
   };
 };
 

@@ -24,7 +24,7 @@ export const useTimers = () => {
   // Create an interval with automatic tracking
   const setInterval = useCallback((callback: () => void, delay: number): NodeJS.Timeout => {
     const intervalId = global.setInterval(callback, delay);
-    
+
     // Track the interval for cleanup
     intervalsRef.current.add(intervalId);
     return intervalId;
@@ -61,7 +61,7 @@ export const useTimers = () => {
   const getTimerCounts = useCallback(() => ({
     timeouts: timeoutsRef.current.size,
     intervals: intervalsRef.current.size,
-    total: timeoutsRef.current.size + intervalsRef.current.size
+    total: timeoutsRef.current.size + intervalsRef.current.size,
   }), []);
 
   // Cleanup all timers on unmount
@@ -77,7 +77,7 @@ export const useTimers = () => {
     clearTimeout,
     clearInterval,
     clearAllTimers,
-    getTimerCounts
+    getTimerCounts,
   };
 };
 
@@ -102,9 +102,9 @@ export const useTimeout = (callback: () => void, delay: number | null) => {
     }
 
     const tick = () => savedCallback.current();
-    
+
     timeoutRef.current = global.setTimeout(tick, delay);
-    
+
     // Cleanup function
     return () => {
       if (timeoutRef.current) {
@@ -145,9 +145,9 @@ export const useInterval = (callback: () => void, delay: number | null) => {
     }
 
     const tick = () => savedCallback.current();
-    
+
     intervalRef.current = global.setInterval(tick, delay);
-    
+
     // Cleanup function
     return () => {
       if (intervalRef.current) {

@@ -16,7 +16,7 @@ class GameService {
 
     async setGameList(games: any[]) {
         this.gameList = games;
-        console.log("게임 목록 저장", this.gameList);
+        console.log('게임 목록 저장', this.gameList);
         await AsyncStorage.setItem('gameList', JSON.stringify(games));
     }
 
@@ -50,7 +50,7 @@ class GameService {
         this.userInfo = userData;
         await AsyncStorage.setItem('userInfo', JSON.stringify(userData));
     }
-    
+
     async getUserInfo() {
         if (!this.userInfo) {
             const storedUser = await AsyncStorage.getItem('userInfo');
@@ -85,12 +85,12 @@ class GameService {
         await AsyncStorage.setItem('round', String(id));
     }
     async setNormalImage(imageUrl: string) {
-        this.normalImageUrl = imageUrl
-        await AsyncStorage.setItem('normalImageUrl',String(imageUrl))
+        this.normalImageUrl = imageUrl;
+        await AsyncStorage.setItem('normalImageUrl',String(imageUrl));
     }
     async setAbnormalImage(imageUrl: string) {
-        this.abnormalImageUrl = imageUrl
-        await AsyncStorage.setItem('abnormalImageUrl', String(imageUrl))
+        this.abnormalImageUrl = imageUrl;
+        await AsyncStorage.setItem('abnormalImageUrl', String(imageUrl));
     }
 
     /** ✅ 서버에서 받은 정상 이미지 URL 가져오기 */
@@ -138,7 +138,7 @@ class GameService {
         }
         return this.round;
     }
-     
+
     // ✅ 게임 정보 저장
     setGameInfo(info: any) {
         this.gameInfo = info;

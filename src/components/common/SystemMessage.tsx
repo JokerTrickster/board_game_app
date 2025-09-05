@@ -62,4 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SystemMessage; 
+export default SystemMessage;

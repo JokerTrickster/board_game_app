@@ -2,7 +2,7 @@ import { Dimensions, Platform } from 'react-native';
 
 export enum DeviceCategory {
   PHONE_SMALL = 'phone_small',     // < 375px
-  PHONE_REGULAR = 'phone_regular', // 375px - 428px  
+  PHONE_REGULAR = 'phone_regular', // 375px - 428px
   TABLET_SMALL = 'tablet_small',   // 768px - 834px
   TABLET_LARGE = 'tablet_large'    // > 834px
 }
@@ -33,7 +33,7 @@ export const getScreenDimensions = () => {
  */
 export const getDeviceCategory = (): DeviceCategory => {
   const { width } = getDeviceDimensions();
-  
+
   if (width < 375) {
     return DeviceCategory.PHONE_SMALL;
   } else if (width >= 375 && width < 768) {
@@ -104,7 +104,7 @@ export const getDeviceInfo = () => {
   const category = getDeviceCategory();
   const orientation = getOrientation();
   const platform = getPlatformInfo();
-  
+
   return {
     dimensions,
     screenDimensions,
@@ -125,7 +125,7 @@ export const getDeviceInfo = () => {
 export const getScaleFactor = (): number => {
   const category = getDeviceCategory();
   const { width } = getDeviceDimensions();
-  
+
   switch (category) {
     case DeviceCategory.PHONE_SMALL:
       // Scale down slightly for small phones

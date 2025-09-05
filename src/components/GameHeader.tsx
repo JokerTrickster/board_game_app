@@ -9,30 +9,30 @@ import { useNavigationActions } from '../hooks/useNavigationActions';
 export interface GameHeaderConfig {
   // Header type determines layout and features
   type: 'home' | 'solo' | 'multi' | 'game-solo' | 'game-multi';
-  
+
   // User data
   userData?: any;
   users?: any[];
-  
+
   // Timer (for multi-player games)
   timer?: number;
   maxTime?: number;
-  
+
   // Game-specific data
   gameType?: 'find-it' | 'frog' | 'sequence' | 'slime-war';
   isMyTurn?: boolean;
   myLastCard?: any;
   opponentLastCard?: any;
-  
+
   // Visual customization
   showSettings?: boolean;
   showCoin?: boolean;
   showTimer?: boolean;
   showLastCards?: boolean;
-  
+
   // Card rendering functions (for games with different card systems)
   getCardImageSource?: (cardId: any) => any;
-  
+
   // Navigation config
   enableBackHandler?: boolean;
   showExitConfirmation?: boolean;
@@ -102,7 +102,7 @@ const GameHeader: React.FC<GameHeaderConfig> = ({
   const renderHomeHeader = () => {
     // Import the home styles for proper coin layout
     const homeStyles = require('./styles/HomeHeaderStyles').default;
-    
+
     return (
       <View style={homeStyles.header}>
         {/* Profile with ImageBackground */}
@@ -194,7 +194,7 @@ const GameHeader: React.FC<GameHeaderConfig> = ({
             <Text style={[
               styles.nickname,
               isMyTurn && profile1.name === '나' && styles.activePlayerName,
-              !isMyTurn && profile2.name === '상대' && styles.activePlayerName
+              !isMyTurn && profile2.name === '상대' && styles.activePlayerName,
             ]}>
               {profile1.name || '보린이'}
             </Text>
@@ -220,7 +220,7 @@ const GameHeader: React.FC<GameHeaderConfig> = ({
                   <View
                     style={[
                       styles.timerProgress,
-                      { width: `${(timer / maxTime) * 100}%` }
+                      { width: `${(timer / maxTime) * 100}%` },
                     ]}
                   />
                 </View>
@@ -246,7 +246,7 @@ const GameHeader: React.FC<GameHeaderConfig> = ({
             <Text style={[
               styles.nickname,
               isMyTurn && profile2.name === '상대' && styles.activePlayerName,
-              !isMyTurn && profile1.name === '나' && styles.activePlayerName
+              !isMyTurn && profile1.name === '나' && styles.activePlayerName,
             ]}>
               {profile2.name || '보린이'}
             </Text>

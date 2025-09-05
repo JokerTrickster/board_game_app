@@ -21,7 +21,7 @@ const FindItGameOverScreen: React.FC = observer(() => {
                 const token = await AsyncStorage.getItem('accessToken');
                 const roomID = await AsyncStorage.getItem('roomID');
 
-                const response = await fetch(API_BASE_URL+'/result', {
+                const response = await fetch(API_BASE_URL + '/result', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

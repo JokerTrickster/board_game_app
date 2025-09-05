@@ -125,15 +125,15 @@ describe('Device Detection', () => {
       // Exact boundary - 375px
       mockDimensions(375, 667);
       expect(getDeviceCategory()).toBe(DeviceCategory.PHONE_REGULAR);
-      
+
       // Just below boundary - 374px
       mockDimensions(374, 667);
       expect(getDeviceCategory()).toBe(DeviceCategory.PHONE_SMALL);
-      
+
       // Tablet boundary - 768px
       mockDimensions(768, 1024);
       expect(getDeviceCategory()).toBe(DeviceCategory.TABLET_SMALL);
-      
+
       // Just below tablet boundary - 767px
       mockDimensions(767, 1024);
       expect(getDeviceCategory()).toBe(DeviceCategory.PHONE_REGULAR);

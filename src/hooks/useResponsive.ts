@@ -8,11 +8,11 @@ interface ResponsiveHookReturn {
   deviceInfo: ReturnType<typeof getDeviceInfo>;
   category: DeviceCategory;
   orientation: Orientation;
-  
+
   // Screen dimensions
   width: number;
   height: number;
-  
+
   // Breakpoint utilities
   isPhone: boolean;
   isTablet: boolean;
@@ -22,7 +22,7 @@ interface ResponsiveHookReturn {
   isLargeTablet: boolean;
   isLandscape: boolean;
   isPortrait: boolean;
-  
+
   // Responsive scaling functions
   scale: (size: number) => number;
   verticalScale: (size: number) => number;
@@ -31,7 +31,7 @@ interface ResponsiveHookReturn {
   scaleSpacing: (spacing: number) => number;
   widthPercentage: (percentage: number) => number;
   heightPercentage: (percentage: number) => number;
-  
+
   // Utility functions
   responsiveValue: <T>(values: {
     phone?: T;
@@ -50,21 +50,21 @@ interface ResponsiveHookReturn {
  */
 export const useResponsive = (): ResponsiveHookReturn => {
   const [dimensions, setDimensions] = useState(() => Dimensions.get('window'));
-  
+
   // Update dimensions when screen changes (orientation, folding phones, etc.)
   useEffect(() => {
     const subscription = Dimensions.addEventListener('change', ({ window }: { window: ScaledSize }) => {
       setDimensions(window);
     });
-    
+
     return () => subscription?.remove();
   }, []);
-  
+
   // Memoized device info that updates with dimensions
   const deviceInfo = getDeviceInfo();
   const category = getDeviceCategory();
   const orientation = getOrientation();
-  
+
   // Responsive value selector
   const responsiveValue = useCallback(<T,>(values: {
     phone?: T;
@@ -87,7 +87,7 @@ export const useResponsive = (): ResponsiveHookReturn => {
     if (category === DeviceCategory.TABLET_LARGE && values.tabletLarge !== undefined) {
       return values.tabletLarge;
     }
-    
+
     // Fallback to broader categories
     if ((category === DeviceCategory.PHONE_SMALL || category === DeviceCategory.PHONE_REGULAR) && values.phone !== undefined) {
       return values.phone;
@@ -95,21 +95,21 @@ export const useResponsive = (): ResponsiveHookReturn => {
     if ((category === DeviceCategory.TABLET_SMALL || category === DeviceCategory.TABLET_LARGE) && values.tablet !== undefined) {
       return values.tablet;
     }
-    
+
     // Default fallback - use phone value or first available value
     return values.phone || values.phoneRegular || values.phoneSmall || values.tablet || values.tabletSmall || values.tabletLarge as T;
   }, [category]);
-  
+
   return {
     // Device information
     deviceInfo,
     category,
     orientation,
-    
+
     // Screen dimensions
     width: dimensions.width,
     height: dimensions.height,
-    
+
     // Breakpoint utilities
     isPhone: breakpoints.isPhone,
     isTablet: breakpoints.isTablet,
@@ -119,7 +119,7 @@ export const useResponsive = (): ResponsiveHookReturn => {
     isLargeTablet: breakpoints.isLargeTablet,
     isLandscape: breakpoints.isLandscape,
     isPortrait: breakpoints.isPortrait,
-    
+
     // Responsive scaling functions
     scale: responsive.scale,
     verticalScale: responsive.verticalScale,
@@ -128,7 +128,7 @@ export const useResponsive = (): ResponsiveHookReturn => {
     scaleSpacing: responsive.spacing,
     widthPercentage: responsive.width,
     heightPercentage: responsive.height,
-    
+
     // Utility functions
     responsiveValue,
   };
@@ -165,7 +165,7 @@ export const useDeviceCategory = <T>(values: {
  */
 export const useSafeAreaDimensions = () => {
   const { width, height, isLandscape } = useResponsive();
-  
+
   // Estimated safe area insets (could be enhanced with react-native-safe-area-context)
   const safeAreaInsets = {
     top: isLandscape ? 0 : 44,      // Status bar height (iPhone)
@@ -173,7 +173,7 @@ export const useSafeAreaDimensions = () => {
     left: isLandscape ? 44 : 0,     // Notch area in landscape
     right: isLandscape ? 44 : 0,    // Notch area in landscape
   };
-  
+
   return {
     width,
     height,

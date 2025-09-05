@@ -11,14 +11,14 @@ class EventEmitter {
   }
 
   off(event: string, callback: Function) {
-    if (!this.listeners[event]) return;
+    if (!this.listeners[event]) {return;}
     this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
     console.log(`Event listener removed for ${event}`);
   }
 
   emit(event: string, ...args: any[]) {
     console.log(`Emitting event: ${event}`, args);
-    if (!this.listeners[event]) return;
+    if (!this.listeners[event]) {return;}
     this.listeners[event].forEach(callback => {
       try {
         callback(...args);
@@ -32,4 +32,4 @@ class EventEmitter {
 // Create a singleton event emitter instance
 const eventEmitter = new EventEmitter();
 
-export default eventEmitter; 
+export default eventEmitter;

@@ -118,7 +118,7 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
   for (let row = 0; row < GRID_SIZE; row++) {
     for (let col = 0; col < GRID_SIZE; col++) {
       const mapID = coordToMapId(row, col);
-      if (!ownedMapIDs.includes(mapID) && !SPECIAL_MAP_IDS.includes(mapID)) continue;
+      if (!ownedMapIDs.includes(mapID) && !SPECIAL_MAP_IDS.includes(mapID)) {continue;}
 
       for (const direction of DIRECTIONS) {
         let tempSeq: number[] = [];
@@ -129,10 +129,10 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
 
         while (true) {
           const curMapID = coordToMapId(r, c);
-          //소유하고 있거나 스펠셜 좌표인지 체크 
+          //소유하고 있거나 스펠셜 좌표인지 체크
           if ((ownedMapIDs.includes(curMapID) || SPECIAL_MAP_IDS.includes(curMapID))) {
             // 이미 시퀀스로 인정된 칩인지 체크
-            if (SPECIAL_MAP_IDS.includes(curMapID)) specialCount++;
+            if (SPECIAL_MAP_IDS.includes(curMapID)) {specialCount++;}
 
             if (checked.has(curMapID)) {
               usedSequenceCount++;
@@ -166,7 +166,7 @@ const findConsecutiveSequences = (ownedMapIDs: number[]): number[][] => {
             // 다음 칸으로 이동
             r += direction.row;
             c += direction.col;
-            if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) break;
+            if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) {break;}
           } else {
             // 연속이 끊기면 초기화
             tempSeq = [];
@@ -210,7 +210,7 @@ const SequenceScreen: React.FC = observer(() => {
   useEffect(() => {
     const mySeqs = findConsecutiveSequences(sequenceViewModel.ownedMapIDs);
     const opponentSeqs = findConsecutiveSequences(sequenceViewModel.opponentOwnedMapIDs);
-    
+
     setMySequences(mySeqs);
     setOpponentSequences(opponentSeqs);
     sequenceViewModel.setMySequences(mySeqs);
@@ -280,7 +280,7 @@ const SequenceScreen: React.FC = observer(() => {
 
   // getCardImage 함수 수정
   const getCardImage = (cardInfo: any) => {
-    if (!cardInfo || !cardInfo.image) return null;
+    if (!cardInfo || !cardInfo.image) {return null;}
     return cardImageMap[cardInfo.image] || null;
   };
 
@@ -309,7 +309,7 @@ const SequenceScreen: React.FC = observer(() => {
       } else if (cardInfo.count === 'j2') {
         // j2 조커: 비어있는 곳 중 특수 위치(1,10,91,100)를 제외한 모든 위치
         const allMapIDs = Array.from({ length: 100 }, (_, i) => i + 1);
-        const validMapIDs = allMapIDs.filter(mapID => 
+        const validMapIDs = allMapIDs.filter(mapID =>
           !SPECIAL_MAP_IDS.includes(mapID) && // 특수 위치 제외
           !sequenceViewModel.ownedMapIDs.includes(mapID) && // 내가 놓은 칩 제외
           !sequenceViewModel.opponentOwnedMapIDs.includes(mapID) // 상대방이 놓은 칩 제외
@@ -324,7 +324,7 @@ const SequenceScreen: React.FC = observer(() => {
       .filter(card => card.type === cardInfo.type && card.count === cardInfo.count)
       .map(card => card.mapID);
 
-    const validMapIDs = allMapIDs.filter(mapID => 
+    const validMapIDs = allMapIDs.filter(mapID =>
       !sequenceViewModel.ownedMapIDs.includes(mapID) &&
       !sequenceViewModel.opponentOwnedMapIDs.includes(mapID)
     );
@@ -359,7 +359,7 @@ const SequenceScreen: React.FC = observer(() => {
     }
 
     const cardInfo = getCardInfoById(selectedCard);
-    if (!cardInfo) return;
+    if (!cardInfo) {return;}
 
     // 조커 카드 처리
     if (cardInfo.type === 'joker') {
@@ -419,7 +419,7 @@ const SequenceScreen: React.FC = observer(() => {
                 isValid && styles.validCell,
                 isInMySequence && styles.mySequenceCell,
                 isInOpponentSequence && styles.opponentSequenceCell,
-                isOpponentLastChip && styles.opponentLastChipCell
+                isOpponentLastChip && styles.opponentLastChipCell,
               ]}
               onPress={() => handleCellPress(row, col)}
               activeOpacity={0.8}
@@ -478,7 +478,7 @@ const SequenceScreen: React.FC = observer(() => {
         {/* 플레이어 카드 영역 */}
         <View style={[
           styles.handContainer,
-          sequenceViewModel.isMyTurn && styles.activeHandContainer
+          sequenceViewModel.isMyTurn && styles.activeHandContainer,
         ]}>
           <View style={styles.handScrollView}>
             {playerHand.map((cardID: number, index: number) => {
@@ -488,7 +488,7 @@ const SequenceScreen: React.FC = observer(() => {
                   key={`card-${index}`}
                   style={[
                     styles.card,
-                    sequenceViewModel.selectedCard === cardID && styles.selectedCard
+                    sequenceViewModel.selectedCard === cardID && styles.selectedCard,
                   ]}
                   onPress={() => handleCardSelect(cardID)}
                 >
@@ -507,9 +507,9 @@ const SequenceScreen: React.FC = observer(() => {
 
         {/* 시스템 메시지 */}
         {systemMessage ? (
-          <SystemMessage 
-            message={systemMessage} 
-            onHide={() => setSystemMessage('')} 
+          <SystemMessage
+            message={systemMessage}
+            onHide={() => setSystemMessage('')}
           />
         ) : null}
 

@@ -45,7 +45,7 @@ export const moderateScaleEnhanced = (size: number, factor?: number): number => 
 export const scaleFont = (fontSize: number): number => {
   const category = getDeviceCategory();
   let typographyScale = TYPOGRAPHY_SCALES.PHONE_REGULAR;
-  
+
   switch (category) {
     case DeviceCategory.PHONE_SMALL:
       typographyScale = TYPOGRAPHY_SCALES.PHONE_SMALL;
@@ -60,7 +60,7 @@ export const scaleFont = (fontSize: number): number => {
       typographyScale = TYPOGRAPHY_SCALES.TABLET_LARGE;
       break;
   }
-  
+
   return Math.round(fontSize * typographyScale);
 };
 
@@ -70,7 +70,7 @@ export const scaleFont = (fontSize: number): number => {
 export const scaleSpacing = (spacing: number): number => {
   const category = getDeviceCategory();
   let spacingScale = SPACING_SCALES.PHONE_REGULAR;
-  
+
   switch (category) {
     case DeviceCategory.PHONE_SMALL:
       spacingScale = SPACING_SCALES.PHONE_SMALL;
@@ -85,7 +85,7 @@ export const scaleSpacing = (spacing: number): number => {
       spacingScale = SPACING_SCALES.TABLET_LARGE;
       break;
   }
-  
+
   return Math.round(spacing * spacingScale);
 };
 
@@ -134,11 +134,11 @@ export const scaleBorderRadius = (radius: number): number => {
  */
 export const scaleElevation = (elevation: number): number => {
   const category = getDeviceCategory();
-  
+
   if (category === DeviceCategory.TABLET_SMALL || category === DeviceCategory.TABLET_LARGE) {
     return Math.min(elevation * 1.2, elevation + 4);
   }
-  
+
   return elevation;
 };
 
@@ -150,25 +150,25 @@ export const responsive = {
   scale,
   verticalScale,
   moderateScale: moderateScaleEnhanced,
-  
+
   // Specialized scaling
   font: scaleFont,
   spacing: scaleSpacing,
   borderRadius: scaleBorderRadius,
   elevation: scaleElevation,
-  
+
   // Percentage-based
   width: widthPercentageToDP,
   height: heightPercentageToDP,
-  
+
   // Touch targets
   touchTarget: getMinTouchTarget,
   ensureTouchTarget,
-  
+
   // Screen dimensions
   screenWidth,
   screenHeight,
-  
+
   // Utility functions
   min: (a: number, b: number) => Math.min(a, b),
   max: (a: number, b: number) => Math.max(a, b),
@@ -185,11 +185,11 @@ export const breakpoints = {
   isSmallTablet: screenWidth >= BREAKPOINTS.TABLET_SMALL && screenWidth < BREAKPOINTS.TABLET_LARGE,
   isLargeTablet: screenWidth >= BREAKPOINTS.TABLET_LARGE,
   isTablet: screenWidth >= BREAKPOINTS.TABLET_SMALL,
-  
+
   // Orientation
   isLandscape: screenWidth > screenHeight,
   isPortrait: screenHeight >= screenWidth,
-  
+
   // Specific breakpoint checks
   above: (breakpoint: number) => screenWidth > breakpoint,
   below: (breakpoint: number) => screenWidth < breakpoint,

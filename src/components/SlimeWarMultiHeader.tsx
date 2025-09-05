@@ -76,7 +76,7 @@ const SlimeWarMultiHeader: React.FC<{ userData?: any; timer: number }> = ({ user
         if (currentOpponentCard !== 0) {
             setOpponentLastCard(currentOpponentCard);
         }
-    }, [slimeWarViewModel.round]);
+    }, []);
 
     return (
         <GameHeader

@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     profileRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        
+
         // paddingHorizontal: scale(10),
         // marginTop: verticalScale(2),
         // paddingVertical: verticalScale(6),
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#345B9C',
         opacity: 1,
         borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
-        borderBottomLeftRadius: scale(10), 
-        
+        borderBottomLeftRadius: scale(10),
+
     },
     medalIcon: {
         marginVertical: scale(10),
@@ -171,11 +171,11 @@ const styles = StyleSheet.create({
         width: scale(80),
         borderColor: '#FFF',
         borderRadius: scale(5),
-        marginLeft: scale(20),  
+        marginLeft: scale(20),
         // opacity: 1,
         flexDirection: 'row',
         borderTopLeftRadius: scale(10),      // 왼쪽 상단 둥근 모서리
-        borderBottomLeftRadius: scale(10), 
+        borderBottomLeftRadius: scale(10),
     },
     profileScoreIcon: {
         resizeMode: 'contain',
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: verticalScale(40),
         justifyContent: 'center',
-    },  
+    },
     resultButtonText: {
         color: '#000',
         fontSize: scale(18),

@@ -7,7 +7,7 @@ import Animated, {
     useAnimatedProps,
     withTiming,
     withDelay,
-    Easing
+    Easing,
 } from 'react-native-reanimated';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -42,22 +42,22 @@ const AnimatedHint: React.FC<AnimatedHintProps> = ({ x, y }) => {
     const animatedProps = useAnimatedProps(() => {
         // 체크 표시의 경로를 계산
         const currentProgress = progress.value;
-        
+
         // 시작점
         const startX = SIZE * 0.2;
         const startY = SIZE * 0.5;
-        
+
         // 중간점 (꺾이는 지점)
         const middleX = SIZE * 0.4;
         const middleY = SIZE * 0.7;
-        
+
         // 끝점
         const endX = SIZE * 0.8;
         const endY = SIZE * 0.3;
 
         // 현재 진행도에 따라 경로 계산
         let d = `M ${startX} ${startY}`;
-        
+
         if (currentProgress <= 0.5) {
             // 첫 번째 선 그리기 (시작점에서 중간점까지)
             const currentX = startX + (middleX - startX) * (currentProgress * 2);
@@ -66,7 +66,7 @@ const AnimatedHint: React.FC<AnimatedHintProps> = ({ x, y }) => {
         } else {
             // 첫 번째 선 완성
             d += ` L ${middleX} ${middleY}`;
-            
+
             // 두 번째 선 그리기 (중간점에서 끝점까지)
             const progress2 = (currentProgress - 0.5) * 2;
             const currentX = middleX + (endX - middleX) * progress2;
@@ -75,7 +75,7 @@ const AnimatedHint: React.FC<AnimatedHintProps> = ({ x, y }) => {
         }
 
         return {
-            d: d
+            d: d,
         };
     });
 
@@ -84,8 +84,8 @@ const AnimatedHint: React.FC<AnimatedHintProps> = ({ x, y }) => {
             style={[
                 styles.container,
                 {
-                    left: x - SIZE/2,
-                    top: y - SIZE/2 - 15,
+                    left: x - SIZE / 2,
+                    top: y - SIZE / 2 - 15,
                 },
                 animatedStyle,
             ]}

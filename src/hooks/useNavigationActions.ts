@@ -50,10 +50,10 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
 
                 // Clear authentication
                 await AuthService.clearTokens();
-                
+
                 // Clear user from feedback services
                 await feedbackService.setUser('');
-                
+
                 // Navigate to login screen
                 navigation.reset({
                   index: 0,
@@ -67,7 +67,7 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
                   screen: route.name,
                   action: 'logout',
                 });
-                
+
                 Alert.alert(
                   '로그아웃 실패',
                   '로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.',
@@ -136,7 +136,7 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
                           screen: route.name,
                           action: 'delete_account',
                         });
-                        
+
                         Alert.alert(
                           '삭제 실패',
                           '계정 삭제 중 오류가 발생했습니다.',
@@ -284,7 +284,7 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
         };
 
         const screenName = gameScreenMap[gameType] as keyof RootStackParamList;
-        
+
         navigation.navigate(screenName, {
           gameType,
           gameMode,
@@ -305,7 +305,7 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
    * Back handler implementation
    */
   useEffect(() => {
-    if (!enableBackHandler) return;
+    if (!enableBackHandler) {return;}
 
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       try {
@@ -367,7 +367,7 @@ export const useNavigationActions = (config: NavigationConfig = {}) => {
     // Navigation utilities
     canGoBack: navigation.canGoBack(),
     currentScreen: route.name,
-    
+
     // Direct navigation access (for advanced use cases)
     navigation,
     route,

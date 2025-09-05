@@ -9,12 +9,12 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email }),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             return await response.json();
         } catch (error) {
             if (error instanceof Error) {
@@ -31,12 +31,12 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, code, password }),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             return await response.json();
         } catch (error) {
             if (error instanceof Error) {
@@ -53,12 +53,12 @@ export class PasswordService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
             }
-            
+
             return await response.json();
         } catch (error) {
             if (error instanceof Error) {

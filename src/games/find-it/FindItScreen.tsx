@@ -28,7 +28,7 @@ const FindItScreen: React.FC = observer(() => {
     });
     const imageRef = useRef<View>(null);
     const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
-    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션  
+    const timerWidth = useRef(new RNAnimated.Value(100)).current;  // ✅ 타이머 바 애니메이션
     const timerAnimation = useRef<RNAnimated.CompositeAnimation | null>(null);
     const remainingTime = useRef(findItViewModel.timer); // ✅ 남은 시간 저장
     const isPaused = useRef(false); // ✅ 타이머 정지 여부
@@ -267,36 +267,36 @@ const FindItScreen: React.FC = observer(() => {
     // ✅ 클릭 좌표 계산 (확대/이동 고려)
     const handleImageClick = useCallback((event: any) => {
         'worklet';
-        
+
         // 게임이 클리어되거나 게임오버 상태일 때 클릭 무시
         if (findItViewModel.roundClearEffect || findItViewModel.roundFailEffect) {
             return;
         }
-        
+
         // 클릭 가능 상태가 아니면 무시
         if (!findItViewModel.isClickable) {
             return;
         }
-        
+
         // 1초 이내의 연속 클릭이면 무시합니다.
         const now = Date.now();
         if (now - lastClickTime.current < CLICK_DELAY) {
             return;
         }
         lastClickTime.current = now;
-        
+
         // transform 보정 없이 원본 좌표 사용
         const { locationX, locationY } = event.nativeEvent;
         const scaleX = IMAGE_FRAME_WIDTH / imageSize.current.width; // IMAGE_FRAME_WIDTH가 400이면 1이 됩니다.
         const scaleY = IMAGE_FRAME_HEIGHT / imageSize.current.height; // IMAGE_FRAME_HEIGHT가 277이면 1이 됩니다.
 
-        
+
         const finalX = parseFloat((locationX * scaleX).toFixed(2));
         const finalY = parseFloat((locationY * scaleY).toFixed(2));
 
         runOnJS(sendClickToServer)(finalX, finalY);
 
-        if (findItViewModel.isAlreadyClicked(finalX, finalY)) return;
+        if (findItViewModel.isAlreadyClicked(finalX, finalY)) {return;}
         findItWebSocketService.sendSubmitPosition(finalX, finalY);
     }, []);
 
@@ -325,7 +325,7 @@ const FindItScreen: React.FC = observer(() => {
             isPaused.current = true;
 
             setTimeout(() => {
-                console.log("▶ 타이머 & 타이머 바 재시작!", remainingTime.current);
+                console.log('▶ 타이머 & 타이머 바 재시작!', remainingTime.current);
                 isPaused.current = false;
                 startTimerAnimation(remainingTime.current); // ✅ 남은 시간만큼 다시 진행
             }, 5000);
@@ -401,7 +401,7 @@ const FindItScreen: React.FC = observer(() => {
         offsetY.value = withTiming(0, { duration: 200 });
     }, [findItViewModel.round]);
 
-    
+
     // ✅ 힌트 좌표가 변경될 때마다 감지하여 5초 후 제거
     useEffect(() => {
         if (findItViewModel.hintPosition) {
@@ -425,23 +425,22 @@ const FindItScreen: React.FC = observer(() => {
         // 여기서 UI 업데이트 로직을 실행하거나 필요한 추가 작업 수행 가능
     }, [findItViewModel.life, findItViewModel.hints, findItViewModel.item_timer_stop, findItViewModel.round]);
 
- 
+
     // ✅ 게임 종료 시 타이머 바 정지
     useEffect(() => {
         if (findItViewModel.gameOver) {
-            console.log("🛑 게임 종료! 타이머 바 정지");
+            console.log('🛑 게임 종료! 타이머 바 정지');
             findItViewModel.timerStopped = true;
             if (timerAnimation.current) {
                 timerAnimation.current.stop();
             }
         }
     }, [findItViewModel.gameOver]);
-    
+
     return (
         <View style={styles.container}>
             <MultiHeader />
-            <View style={styles.topBar}>
-            </View>
+            <View style={styles.topBar} />
 
             <View style={styles.gameContainer}>
             {/* 정상 이미지 컨테이너 (정답, 오답 클릭 모두 지원) */}
@@ -449,7 +448,7 @@ const FindItScreen: React.FC = observer(() => {
                 <View style={[styles.normalImageContainer]}>
                         <Animated.View style={[styles.image, animatedStyle]}>
                         {normalImage ? (
-                            <TouchableWithoutFeedback 
+                            <TouchableWithoutFeedback
                                 onPress={handleImageClick}
                                 disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect || !findItViewModel.isClickable}
                             >
@@ -463,10 +462,10 @@ const FindItScreen: React.FC = observer(() => {
                                     {/* 내 정답 표시 */}
                                     {findItViewModel.myCorrectClicks.map((pos, index) => {
                                         return (
-                                            <AnimatedCircle 
-                                                key={`correct-normal-my-${index}`} 
-                                                x={pos.x} 
-                                                y={pos.y} 
+                                            <AnimatedCircle
+                                                key={`correct-normal-my-${index}`}
+                                                x={pos.x}
+                                                y={pos.y}
                                                 isUser1={true}  // 명시적으로 true 설정
                                             />
                                         );
@@ -474,20 +473,20 @@ const FindItScreen: React.FC = observer(() => {
                                     {/* 상대방 정답 표시 */}
                                     {findItViewModel.opponentCorrectClicks.map((pos, index) => {
                                         return (
-                                            <AnimatedCircle 
-                                                key={`correct-normal-opponent-${index}`} 
-                                                x={pos.x} 
-                                                y={pos.y} 
+                                            <AnimatedCircle
+                                                key={`correct-normal-opponent-${index}`}
+                                                x={pos.x}
+                                                y={pos.y}
                                                 isUser1={false}  // 명시적으로 false 설정
                                             />
                                         );
                                     })}
                                     {/* 오답 표시 */}
                                     {findItViewModel.wrongClicks.map((pos, index) => (
-                                        <AnimatedX 
-                                            key={`wrong-${index}`} 
-                                            x={pos.x} 
-                                            y={pos.y} 
+                                        <AnimatedX
+                                            key={`wrong-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
                                             isUser1={pos.userID === findItViewModel.userID}
                                         />
                                     ))}
@@ -531,7 +530,7 @@ const FindItScreen: React.FC = observer(() => {
                 <View style={[styles.abnormalImageContainer]}>
                         <Animated.View style={[styles.image, animatedStyle]}>
                         {/* ✅ 틀린 그림 */}
-                        <TouchableWithoutFeedback 
+                        <TouchableWithoutFeedback
                             onPress={handleImageClick}
                             disabled={findItViewModel.roundClearEffect || findItViewModel.roundFailEffect || !findItViewModel.isClickable}
                         >
@@ -545,10 +544,10 @@ const FindItScreen: React.FC = observer(() => {
                                 {/* 내 정답 표시 */}
                                 {findItViewModel.myCorrectClicks.map((pos, index) => {
                                     return (
-                                        <AnimatedCircle 
-                                            key={`correct-abnormal-my-${index}`} 
-                                            x={pos.x} 
-                                            y={pos.y} 
+                                        <AnimatedCircle
+                                            key={`correct-abnormal-my-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
                                             isUser1={true}  // 명시적으로 true 설정
                                         />
                                     );
@@ -556,10 +555,10 @@ const FindItScreen: React.FC = observer(() => {
                                 {/* 상대방 정답 표시 */}
                                 {findItViewModel.opponentCorrectClicks.map((pos, index) => {
                                     return (
-                                        <AnimatedCircle 
-                                            key={`correct-abnormal-opponent-${index}`} 
-                                            x={pos.x} 
-                                            y={pos.y} 
+                                        <AnimatedCircle
+                                            key={`correct-abnormal-opponent-${index}`}
+                                            x={pos.x}
+                                            y={pos.y}
                                             isUser1={false}  // 명시적으로 false 설정
                                         />
                                     );
@@ -567,10 +566,10 @@ const FindItScreen: React.FC = observer(() => {
 
                                 {/* 오답 표시 */}
                                 {findItViewModel.wrongClicks.map((pos, index) => (
-                                    <AnimatedX 
-                                        key={`wrong-abnormal-${index}`} 
-                                        x={pos.x} 
-                                        y={pos.y} 
+                                    <AnimatedX
+                                        key={`wrong-abnormal-${index}`}
+                                        x={pos.x}
+                                        y={pos.y}
                                         isUser1={pos.userID === findItViewModel.userID}
                                     />
                                 ))}
@@ -583,14 +582,14 @@ const FindItScreen: React.FC = observer(() => {
                                     <AnimatedHint x={findItViewModel.hintPosition.x} y={findItViewModel.hintPosition.y} />
                                 )}
                                 </View>
-                        
+
                         </TouchableWithoutFeedback>
                     </Animated.View>
                 </View>
                 </GestureDetector>
                 </View>
             {renderCheckBoxes()}
-    
+
             <ItemBar
                 life={findItViewModel.life}
                 timerStopCount={findItViewModel.item_timer_stop}
@@ -604,7 +603,7 @@ const FindItScreen: React.FC = observer(() => {
             {findItViewModel.roundClearEffect && (
                 <View style={styles.clearEffectContainer}>
                 <Image
-                    source= {require('../../assets/icons/find-it/clear_star.png')} 
+                    source= {require('../../assets/icons/find-it/clear_star.png')}
                     style={styles.clearIcon}
                 />
                 <Text style={styles.clearEffectRound}>ROUND {findItViewModel.round}</Text>
@@ -617,7 +616,7 @@ const FindItScreen: React.FC = observer(() => {
             {findItViewModel.roundFailEffect && (
                 <View style={styles.failEffectContainer}>
                 <Image
-                    source={require('../../assets/icons/find-it/fail_star.png')} 
+                    source={require('../../assets/icons/find-it/fail_star.png')}
                     style={styles.clearIcon}
                 />
                 <Text style={styles.clearEffectRound}>ROUND {findItViewModel.round}</Text>

@@ -72,13 +72,13 @@ class SoloGameViewModel {
     }
     /** ✅ 정답 클릭 저장 (유저 ID 포함) */
     addCorrectClick(x: number, y: number, userID: number) {
-        if (this.isAlreadyClicked(x, y)) return; // 이미 클릭된 영역이면 무시
+        if (this.isAlreadyClicked(x, y)) {return;} // 이미 클릭된 영역이면 무시
         this.correctClicks.push({ x, y, userID });
     }
 
     /** ✅ 오답 클릭 저장 (유저 ID 포함, 3초 후 삭제) */
     addWrongClick(x: number, y: number, userID: number) {
-        if (this.isAlreadyClicked(x, y)) return; // 중복 클릭 방지
+        if (this.isAlreadyClicked(x, y)) {return;} // 중복 클릭 방지
         this.isClickable = false;
 
         const wrongClick = { id: Date.now().toString(), x, y, userID };
@@ -108,7 +108,7 @@ class SoloGameViewModel {
                 this.updateTimer(this.timer - 1);
                 this.remainingTime = this.timer;
             } else {
-                console.log("타임아웃");
+                console.log('타임아웃');
                 this.stopTimer();
                 runInAction(() => {
                     this.life -= (5 - this.correctClicks.length);
@@ -190,7 +190,7 @@ class SoloGameViewModel {
     }
 
     // 힌트 아이템 사용
-    
+
     useHintItem(correctPositions: { x: number; y: number }[]) {
         // 정답으로 체크되지 않은 좌표만 필터링
         //힌트 좌표를 넣을때 정답 좌표에 없는거를 넣어줘야 된다.
@@ -241,13 +241,13 @@ class SoloGameViewModel {
         // next_stage.mp3 사운드를 재생합니다.
         const nextStageSound = new Sound('next_stage.mp3', Sound.MAIN_BUNDLE, (error) => {
             if (error) {
-                console.log("Failed to load next stage sound:", error);
+                console.log('Failed to load next stage sound:', error);
                 return;
             }
             nextStageSound.setNumberOfLoops(0); // 한 번만 재생
             nextStageSound.play((success) => {
                 if (!success) {
-                    console.log("Next stage sound playback failed");
+                    console.log('Next stage sound playback failed');
                 }
                 nextStageSound.release(); // 재생 완료 후 리소스 해제
             });

@@ -110,7 +110,7 @@ const HelpScreen: React.FC = () => {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.question.toLowerCase().includes(query) ||
         item.answer.toLowerCase().includes(query) ||
         item.tags.some(tag => tag.toLowerCase().includes(query))
@@ -123,7 +123,7 @@ const HelpScreen: React.FC = () => {
   const handleFAQPress = (faqId: string) => {
     const isExpanded = expandedFAQ === faqId;
     setExpandedFAQ(isExpanded ? null : faqId);
-    
+
     analytics.track('faq_clicked', {
       faqId,
       question: FAQ_DATA.find(f => f.id === faqId)?.question,
@@ -134,7 +134,7 @@ const HelpScreen: React.FC = () => {
   const handleCategoryPress = (category: string) => {
     const newCategory = selectedCategory === category ? null : category;
     setSelectedCategory(newCategory);
-    
+
     analytics.track('help_category_selected', {
       category: newCategory,
     });
@@ -145,7 +145,7 @@ const HelpScreen: React.FC = () => {
       const appVersion = await DeviceInfo.getVersion();
       const deviceModel = await DeviceInfo.getModel();
       const systemVersion = await DeviceInfo.getSystemVersion();
-      
+
       const subject = '보드게임 앱 문의';
       const body = `안녕하세요,
 
@@ -158,9 +158,9 @@ const HelpScreen: React.FC = () => {
 기기: ${deviceModel}
 OS: ${systemVersion}
       `;
-      
+
       const url = `mailto:support@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
+
       const canOpen = await Linking.canOpenURL(url);
       if (canOpen) {
         await Linking.openURL(url);
@@ -180,7 +180,7 @@ OS: ${systemVersion}
         screen: 'HelpScreen',
         action: 'contact_support',
       });
-      
+
       Alert.alert(
         '오류 발생',
         '이메일 앱을 여는 중 오류가 발생했습니다.',
@@ -193,12 +193,12 @@ OS: ${systemVersion}
     try {
       const appVersion = await DeviceInfo.getVersion();
       const message = `보드게임 앱을 추천합니다! 틀린그림찾기 등 다양한 게임을 즐겨보세요. (버전 ${appVersion})`;
-      
+
       await Share.share({
         message,
         title: '보드게임 앱',
       });
-      
+
       analytics.track('app_shared', {
         source: 'help_screen',
       });
@@ -211,14 +211,14 @@ OS: ${systemVersion}
     try {
       // In production, this would send to backend
       console.log('Feedback submitted:', feedbackData);
-      
+
       analytics.track('feedback_submitted', {
         category: feedbackData.category,
         rating: feedbackData.rating,
         hasScreenshot: !!feedbackData.screenshot,
         source: 'help_screen',
       });
-      
+
       setShowFeedbackModal(false);
     } catch (error) {
       console.error('Failed to submit feedback:', error);
@@ -295,7 +295,7 @@ OS: ${systemVersion}
           <Text style={styles.sectionTitle}>
             자주 묻는 질문 ({filteredFAQ.length}개)
           </Text>
-          
+
           {filteredFAQ.length === 0 ? (
             <View style={styles.noResultsContainer}>
               <Text style={styles.noResultsText}>
@@ -322,7 +322,7 @@ OS: ${systemVersion}
                     {expandedFAQ === faq.id ? '▲' : '▼'}
                   </Text>
                 </View>
-                
+
                 {expandedFAQ === faq.id && (
                   <View style={styles.faqAnswer}>
                     <Text style={styles.faqAnswerText}>{faq.answer}</Text>
@@ -343,7 +343,7 @@ OS: ${systemVersion}
         {/* Support Actions */}
         <View style={styles.supportSection}>
           <Text style={styles.sectionTitle}>문의 및 지원</Text>
-          
+
           <TouchableOpacity
             style={styles.supportButton}
             onPress={() => setShowFeedbackModal(true)}

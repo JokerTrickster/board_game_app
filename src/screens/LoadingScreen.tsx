@@ -47,12 +47,12 @@ const LoadingScreen: React.FC = () => {
 
     const { message, duration } = getLoadingConfig(nextScreen);
     const progress = useRef(new Animated.Value(0)).current;
-    
+
     // 로딩 화면 마운트 시 배경음악 초기화
     useEffect(() => {
         CommonAudioManager.initBackgroundMusic();
     }, []);
-    
+
     useEffect(() => {
         Animated.timing(progress, {
             toValue: 1,

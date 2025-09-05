@@ -23,7 +23,7 @@ class FrogWebSocketService {
     const storedUserID = await AsyncStorage.getItem('userID');
 
     if (!this.accessToken || !storedUserID) {
-      console.error("❌ 액세스 토큰 또는 유저 ID가 없습니다.");
+      console.error('❌ 액세스 토큰 또는 유저 ID가 없습니다.');
       return false;
     }
 
@@ -37,7 +37,7 @@ class FrogWebSocketService {
     this.imageID = null;
     this.round = null;
     const isInitialized = await this.initialize();
-    if (!isInitialized) return;
+    if (!isInitialized) {return;}
 
     // URL 변경: 참새작 랜덤 매칭
     const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
@@ -51,7 +51,7 @@ class FrogWebSocketService {
     this.imageID = null;
     this.round = null;
     const isInitialized = await this.initialize();
-    if (!isInitialized) return;
+    if (!isInitialized) {return;}
 
     // URL 변경: 참새작 함께하기 방 생성
     const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/play/together/ws?tkn=${this.accessToken}`;
@@ -65,7 +65,7 @@ class FrogWebSocketService {
     this.imageID = null;
     this.round = null;
     const isInitialized = await this.initialize();
-    if (!isInitialized) return;
+    if (!isInitialized) {return;}
     // URL 변경: 참새작 방 참여
     const wsUrl = WS_BASE_URL + `/frog/v0.1/rooms/join/play/ws?tkn=${this.accessToken}&password=${password}`;
     webSocketService.connect(wsUrl, this.handleMessage);
@@ -73,7 +73,7 @@ class FrogWebSocketService {
   }
 
   handleMessage = async (eventType: string, data: any) => {
-    console.log("📩 서버 응답 전체 데이터:", JSON.stringify(data, null, 2));
+    console.log('📩 서버 응답 전체 데이터:', JSON.stringify(data, null, 2));
     const navigation = webSocketService.getNavigation();
 
     try {
@@ -82,14 +82,14 @@ class FrogWebSocketService {
         try {
             parsedData = JSON.parse(data.message);
         } catch (e) {
-            console.error("❌ 메시지 파싱 실패:", e);
+            console.error('❌ 메시지 파싱 실패:', e);
             return;
         }
 
         // 유저 정보 업데이트
         if (parsedData.users && Array.isArray(parsedData.users)) {
             gameService.setUsers(parsedData.users);
-            
+
             // 내 user 정보 추출
             const myUser = parsedData.users.find((u: any) => u.id === this.userID);
             if (myUser) {
@@ -102,7 +102,7 @@ class FrogWebSocketService {
                     frogViewModel.updateTurn(parsedData.FrogGameInfo.round, myUser.turn);
                 }
             }
-            
+
             // 컬러타입 저장
             if (parsedData.users.length === 2) {
                 if (parsedData.users[0].id === this.userID) {
@@ -111,7 +111,7 @@ class FrogWebSocketService {
                     frogViewModel.setOpponentID(parsedData.users[0].id);
                 }
             }
-            
+
             // 카드 정보 저장
             parsedData.users.forEach((user: any) => {
                 if (user.id === this.userID) {
@@ -129,64 +129,64 @@ class FrogWebSocketService {
 
         // 게임 정보 처리
         if (parsedData.gameInfo) {
-            console.log("게임 정보:", parsedData.gameInfo);
+            console.log('게임 정보:', parsedData.gameInfo);
             await gameService.setRoomID(parsedData.gameInfo.roomID);
             frogViewModel.setRound(parsedData.gameInfo.round);
-            
+
             // 내 차례 갱신
             frogViewModel.updateTurn(parsedData.gameInfo.round, frogViewModel.playTurn);
-            
-            if (!this.gameStarted && parsedData.gameInfo.allReady && 
+
+            if (!this.gameStarted && parsedData.gameInfo.allReady &&
                 parsedData.gameInfo.isFull && parsedData.users) {
-                const isOwner = parsedData.users.some((user: any) => 
+                const isOwner = parsedData.users.some((user: any) =>
                     user.id === this.userID && user.isOwner
                 );
                 if (isOwner) {
-                    console.log("방장이 게임 시작합니다.");
+                    console.log('방장이 게임 시작합니다.');
                     this.sendStartEvent();
                 } else {
-                    console.log("게임 시작 대기 중...");
+                    console.log('게임 시작 대기 중...');
                 }
             }
         }
 
         // 이벤트 타입에 따른 처리
         switch (eventType) {
-            case "JOIN":
+            case 'JOIN':
                 this.handleJoinEvent(data);
                 break;
-            case "MATCH":
+            case 'MATCH':
                 this.handleMatchEvent(data);
                 break;
-            case "QUIT_GAME":
+            case 'QUIT_GAME':
                 this.handleQuitGameEvent(data);
                 break;
-          case "START":
+          case 'START':
               frogService.deductCoin(-100);
               if (navigation) {
                 navigation.navigate('Frog');
               }
               this.handleStartEvent(parsedData);
               break;
-            case "DORA":
+            case 'DORA':
              this.handleDoraEvent(parsedData);
                 break;
-            case "IMPORT_CARDS":
+            case 'IMPORT_CARDS':
                 this.handleImportCardsEvent(parsedData);
                 break;
-            case "IMPORT_SINGLE_CARD":
+            case 'IMPORT_SINGLE_CARD':
                 this.handleImportSingleCardEvent(parsedData);
                 break;
-            case "DISCARD":
+            case 'DISCARD':
                 this.handleDiscardEvent(parsedData);
                 break;
-            case "LOAN":
+            case 'LOAN':
                 this.handleLoanEvent(parsedData);
                 break;
-            case "FAILED_LOAN":
+            case 'FAILED_LOAN':
                 this.handleFailedLoanEvent(parsedData);
                 break;
-            case "GAME_OVER":
+            case 'GAME_OVER':
                      // ✅ 게임 결과 정보 호출
                      const result = await frogService.fetchGameResult();
                      let isSuccess = false;
@@ -204,7 +204,7 @@ class FrogWebSocketService {
                          }
                      }
                      await frogService.sendGameOver(isSuccess, this.roomID as number);
-     
+
                      // ✅ 웹소켓 종료
                      this.disconnect();
                      //현재 유저ID가 스코어가 더 높으면 isSuccess true, 낮으면 false
@@ -213,26 +213,26 @@ class FrogWebSocketService {
                          navigation.navigate('SequenceResult', { isSuccess: isSuccess, myScore: result[0].score, opponentScore: result[1].score });
                      }
                 break;
-            case "SUCCESS_LOAN":
+            case 'SUCCESS_LOAN':
                 this.handleSuccessLoanEvent(parsedData);
                 break;
-            case "TIME_OUT":
+            case 'TIME_OUT':
                 this.handleTimeoutEvent(parsedData);
                 break;
-            case "CANCEL_MATCH":
+            case 'CANCEL_MATCH':
                 this.handleCancelMatchEvent(data);
                 break;
-            case "PLAY_TOGETHER":
+            case 'PLAY_TOGETHER':
                 this.handlePlayTogetherEvent(data);
                 break;
-            case "JOIN_PLAY":
+            case 'JOIN_PLAY':
                 this.handleJoinPlayEvent(data);
                 break;
-            case "REQUEST_WIN":
+            case 'REQUEST_WIN':
                 this.handleRequestWinEvent(data);
                 break;
             default:
-                console.warn("⚠️ 알 수 없는 이벤트:", data.event);
+                console.warn('⚠️ 알 수 없는 이벤트:', data.event);
         }
 
         // 게임 정보에 gameOver가 true인 경우에도 결과 호출
@@ -249,14 +249,14 @@ class FrogWebSocketService {
             }
         }
     } catch (error) {
-        console.error("❌ 데이터 처리 중 오류 발생:", error);
+        console.error('❌ 데이터 처리 중 오류 발생:', error);
     }
   };
 
   handleJoinEvent(data: any) { /* TODO: 구현 */ }
   handleMatchEvent(data: any) { /* TODO: 구현 */ }
   handleQuitGameEvent(data: any) { /* TODO: 구현 */ }
-  handleDoraEvent(data: any) { 
+  handleDoraEvent(data: any) {
     frogViewModel.setDora(data.gameInfo.dora.cardID);
   }
   handleImportCardsEvent(data: any) { /* TODO: 구현 */ }
@@ -294,58 +294,58 @@ class FrogWebSocketService {
 
   // ====== 이벤트 전송 메서드도 16개로 맞춤 ======
   sendJoinEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", {});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'JOIN', {});
   }
   sendMatchEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "MATCH", { userID: this.userID });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'MATCH', { userID: this.userID });
   }
   sendQuitGameEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "QUIT_GAME", {});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'QUIT_GAME', {});
   }
   sendStartEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "START", { userID: this.userID, roomID: this.roomID });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'START', { userID: this.userID, roomID: this.roomID });
   }
   sendDoraEvent(dora: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DORA", { cardID: dora });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'DORA', { cardID: dora });
   }
   sendImportCardsEvent(cardIds: number[]) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_CARDS", { cards: cardIds });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'IMPORT_CARDS', { cards: cardIds });
   }
   sendImportSingleCardEvent(cardId: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "IMPORT_SINGLE_CARD", { cardID: cardId });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'IMPORT_SINGLE_CARD', { cardID: cardId });
   }
   sendDiscardEvent(cardId: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "DISCARD", { cardID: cardId });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'DISCARD', { cardID: cardId });
   }
   sendLoanEvent(cardId: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "LOAN", { cardID: cardId ,opponentID: this.opponentID });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'LOAN', { cardID: cardId ,opponentID: this.opponentID });
   }
   sendFailedLoanEvent(cardId: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "FAILED_LOAN", {cardID: cardId ,opponentID: this.opponentID});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'FAILED_LOAN', {cardID: cardId ,opponentID: this.opponentID});
   }
   sendGameOverEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "GAME_OVER", {});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'GAME_OVER', {});
   }
   sendSuccessLoanEvent(cardId: number,score: number,loanInfo: any ) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "SUCCESS_LOAN", {cardID: cardId,score: score,loanInfo: loanInfo});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'SUCCESS_LOAN', {cardID: cardId,score: score,loanInfo: loanInfo});
   }
   sendTimeoutEvent(cardId:number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { cardID: cardId });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'TIME_OUT', { cardID: cardId });
   }
   sendCancelMatchEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "CANCEL_MATCH", { userID: this.userID });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'CANCEL_MATCH', { userID: this.userID });
   }
   sendPlayTogetherEvent() {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "PLAY_TOGETHER", { userID: this.userID });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'PLAY_TOGETHER', { userID: this.userID });
   }
   sendJoinPlayEvent(password: string) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN_PLAY", { password });
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'JOIN_PLAY', { password });
   }
   sendRequestWinEvent(cards: number[],score: number) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "REQUEST_WIN", {cards: cards,score: score});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'REQUEST_WIN', {cards: cards,score: score});
   }
   sendWinRequestEvent(score: number, cards: number[]) {
-    webSocketService.sendMessage(this.userID as number, this.roomID as number, "WIN_REQUEST", {cards: cards,score: score});
+    webSocketService.sendMessage(this.userID as number, this.roomID as number, 'WIN_REQUEST', {cards: cards,score: score});
   }
   disconnect() {
     webSocketService.disconnect();

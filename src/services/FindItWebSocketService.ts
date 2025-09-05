@@ -21,7 +21,7 @@ class FindItWebSocketService {
         const storedUserID = await AsyncStorage.getItem('userID');
 
         if (!this.accessToken || !storedUserID) {
-            console.error("❌ 액세스 토큰 또는 유저 ID가 없습니다.");
+            console.error('❌ 액세스 토큰 또는 유저 ID가 없습니다.');
             return false;
         }
 
@@ -35,9 +35,9 @@ class FindItWebSocketService {
         this.imageID = null;
         this.round = null;
         const isInitialized = await this.initialize();
-        if (!isInitialized) return;
+        if (!isInitialized) {return;}
 
-        const wsUrl = WS_BASE_URL +`/find-it/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
+        const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/match/ws?tkn=${this.accessToken}`;
         webSocketService.connect(wsUrl, this.handleMessage);
         this.sendMatchEvent();
     }
@@ -48,7 +48,7 @@ class FindItWebSocketService {
         this.imageID = null;
         this.round = null;
         const isInitialized = await this.initialize();
-        if (!isInitialized) return;
+        if (!isInitialized) {return;}
 
         const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/play/together/ws?tkn=${this.accessToken}`;
         webSocketService.connect(wsUrl, this.handleMessage);
@@ -61,10 +61,10 @@ class FindItWebSocketService {
         this.imageID = null;
         this.round = null;
         const isInitialized = await this.initialize();
-        if (!isInitialized) return;
+        if (!isInitialized) {return;}
         const wsUrl = WS_BASE_URL + `/find-it/v0.1/rooms/play/join/ws?tkn=${this.accessToken}&password=${password}`;
         webSocketService.connect(wsUrl, this.handleMessage);
-        console.log("password", password);
+        console.log('password', password);
         this.sendJoinMatchEvent(password);
     }
 
@@ -74,11 +74,11 @@ class FindItWebSocketService {
         try {
             data = JSON.parse(resData.message);
         } catch (e) {
-            console.error("❌ 메시지 파싱 실패:", e);
+            console.error('❌ 메시지 파싱 실패:', e);
             return;
         }
         try {
-            
+
             // ✅ 유저 정보 업데이트 (정답 좌표 저장)
             if (data.users) {
                 gameService.setUsers(data.users);
@@ -92,11 +92,11 @@ class FindItWebSocketService {
                             let x, y;
                             if (Array.isArray(pos) && pos.length === 2) {
                                 [x, y] = pos; // ✅ 배열 형태일 경우
-                            } else if (typeof pos === "object" && pos !== null) {
+                            } else if (typeof pos === 'object' && pos !== null) {
                                 x = pos.x;
                                 y = pos.y;
                             } else {
-                                console.warn("⚠️ 올바르지 않은 좌표 데이터:", pos);
+                                console.warn('⚠️ 올바르지 않은 좌표 데이터:', pos);
                                 return;
                             }
 
@@ -118,7 +118,7 @@ class FindItWebSocketService {
                     }
 
                     // ✅ 오답 처리 (모든 유저에게 동일한 오답 표시)
-                    if (data.gameInfo && data.gameInfo.wrongPosition && 
+                    if (data.gameInfo && data.gameInfo.wrongPosition &&
                         (data.gameInfo.wrongPosition.x !== 0 || data.gameInfo.wrongPosition.y !== 0)) {
                         findItViewModel.addWrongClick(
                             data.gameInfo.wrongPosition.x,
@@ -130,16 +130,16 @@ class FindItWebSocketService {
             }
 
 
-            console.log("응답으로 온 타입 , ",eventType);
-            // 게임이 시작한다. START 이벤트 
+            console.log('응답으로 온 타입 , ',eventType);
+            // 게임이 시작한다. START 이벤트
             // next_round -> round_start
             // 다음 라운드 진출하면 next_round 이벤트 호출
-            //next_round : 라운드 실패하거나 성공했을때 호출, 좌표 5개 모두 맞췄을 때 
-            // round_start : next_round에서 호출 
+            //next_round : 라운드 실패하거나 성공했을때 호출, 좌표 5개 모두 맞췄을 때
+            // round_start : next_round에서 호출
             switch (eventType) {
-                case "MATCH":
-                    console.log("✅ 매칭 성공!", data.message);
-                    
+                case 'MATCH':
+                    console.log('✅ 매칭 성공!', data.message);
+
 
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
@@ -154,13 +154,13 @@ class FindItWebSocketService {
                                 console.log(this.roomID);
                                 this.sendStartEvent();
                             } else {
-                                console.log("🕒 게임 시작 대기 중...");
+                                console.log('🕒 게임 시작 대기 중...');
                             }
                         }
                     }
                     break;
-                case "TOGETHER":
-                    console.log("✅ 함께하기 매칭 성공!", data.message);
+                case 'TOGETHER':
+                    console.log('✅ 함께하기 매칭 성공!', data.message);
 
                     // ✅ 게임 정보가 있는 경우 처리
                     if (data.gameInfo) {
@@ -168,23 +168,23 @@ class FindItWebSocketService {
                         this.roomID = data.gameInfo.roomID;
                         gameService.setRound(data.gameInfo.round);
                         gameService.setPassword(data.gameInfo.password);
-                        console.log("함께하기 비밀번호 : ", data.gameInfo.password);
+                        console.log('함께하기 비밀번호 : ', data.gameInfo.password);
                         // ✅ 모든 플레이어가 준비되었고, 방이 가득 찼으며, 내가 방장인 경우 "START" 이벤트 요청
                         if (!this.gameStarted && data.gameInfo.allReady && data.gameInfo.isFull && data.users) {
 
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
-                                console.log("방장이 게임 시작한다. ");
+                                console.log('방장이 게임 시작한다. ');
                                 this.sendStartEvent();
                             } else {
-                                console.log("🕒 게임 시작 대기 중...");
+                                console.log('🕒 게임 시작 대기 중...');
                             }
                         }
                     }
                     break;
-                case "JOIN":
-                    console.log("✅ 참여 매칭 성공!", data.message);
+                case 'JOIN':
+                    console.log('✅ 참여 매칭 성공!', data.message);
                     if (data.gameInfo) {
                         await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
                         await gameService.setRound(data.gameInfo.round);
@@ -195,15 +195,15 @@ class FindItWebSocketService {
                             const isOwner = data.users.some((user: any) => user.id === this.userID && user.isOwner);
                             if (isOwner) {
                                 console.log(this.roomID);
-                                console.log("방장이 게임 시작한다. ");
+                                console.log('방장이 게임 시작한다. ');
                                 this.sendStartEvent();
                             } else {
-                                console.log("🕒 게임 시작 대기 중...");
+                                console.log('🕒 게임 시작 대기 중...');
                             }
                         }
                     }
                     break;
-                case "START":
+                case 'START':
                     findItService.deductCoin(-100);
                     if (navigation) {
                         navigation.navigate('FindIt');
@@ -219,9 +219,9 @@ class FindItWebSocketService {
                     );
                     setTimeout(() => {
                     }, 2000);
-                    
+
                     break;
-                case "SUBMIT_POSITION":
+                case 'SUBMIT_POSITION':
                     // ✅ 게임 정보 저장
                     findItViewModel.updateGameState(
                         data.gameInfo.life,
@@ -230,9 +230,9 @@ class FindItWebSocketService {
                         data.gameInfo.round,
                         data.gameInfo.timer
                     );
-                    console.log("📥 좌표 제출 이벤트 수신:", data.message);
+                    console.log('📥 좌표 제출 이벤트 수신:', data.message);
                     break;
-                case "TIMER_ITEM":
+                case 'TIMER_ITEM':
                     // ✅ 게임 정보 저장
                     findItViewModel.updateGameState(
                         data.gameInfo.life,
@@ -243,7 +243,7 @@ class FindItWebSocketService {
                     );
                     findItViewModel.useTimerStopItem();
                     break;
-                case "HINT_ITEM":
+                case 'HINT_ITEM':
                     // ✅ 게임 정보 저장
                     findItViewModel.updateGameState(
                         data.gameInfo.life,
@@ -253,18 +253,18 @@ class FindItWebSocketService {
                         data.gameInfo.timer
                     );
                     if (data.gameInfo.hintPosition) {
-                        console.log("🔍 힌트 아이템 사용:", data.gameInfo.hintPosition);
+                        console.log('🔍 힌트 아이템 사용:', data.gameInfo.hintPosition);
                         findItViewModel.setHintPosition(data.gameInfo.hintPosition.x, data.gameInfo.hintPosition.y);
                     }
                     break;
-                case "ROUND_START":
+                case 'ROUND_START':
                     this.handleGameStart(data);
                     setTimeout(() => {
                     }, 2000);
                     break;
-                case "TIME_OUT":
+                case 'TIME_OUT':
                     break;
-                case "NEXT_ROUND":
+                case 'NEXT_ROUND':
                     findItViewModel.setTimer(data.gameInfo.timer);
                     findItViewModel.startTimer();
                     await gameService.setRoomID(data.gameInfo.roomID);  // ✅ roomID 저장
@@ -277,11 +277,11 @@ class FindItWebSocketService {
                         data.gameInfo.round,
                         data.gameInfo.timer
                     );
-                    console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
+                    console.log('🎉 라운드 클리어! 2초 후 다음 라운드 시작');
                     break;
-                case "ROUND_FAIL":
+                case 'ROUND_FAIL':
                     findItViewModel.setRoundFailEffect(true);
-                    console.log("❌ 못 맞춘 좌표:", data.gameInfo.failedPositions);
+                    console.log('❌ 못 맞춘 좌표:', data.gameInfo.failedPositions);
                     if (Array.isArray(data.gameInfo.failedPositions) && data.gameInfo.failedPositions.length > 0) {
                         findItViewModel.setMissedPositions(data.gameInfo.failedPositions);
                     }
@@ -292,15 +292,15 @@ class FindItWebSocketService {
                         this.sendNextRoundEvent();
                     }, 3000);
                     break;
-                case "ROUND_CLEAR":
-                    console.log("🎉 라운드 클리어! 2초 후 다음 라운드 시작");
+                case 'ROUND_CLEAR':
+                    console.log('🎉 라운드 클리어! 2초 후 다음 라운드 시작');
                     findItViewModel.setRoundClearEffect(true);
                     setTimeout(() => {
                         findItViewModel.setRoundClearEffect(false);
                         this.sendNextRoundEvent();
                     }, 3000);
                     break;
-                case "GAME_CLEAR":
+                case 'GAME_CLEAR':
                     // ✅ 웹소켓 종료
                     // ✅ 게임 결과 정보 가져오기
                     try {
@@ -308,9 +308,9 @@ class FindItWebSocketService {
                         // ✅ 게임 결과 화면으로 이동
                         if (navigation) {
                             findItService.deductCoin(500);
-                            navigation.navigate('MultiFindItResult', { 
+                            navigation.navigate('MultiFindItResult', {
                                 isSuccess: true,
-                                gameResult: result 
+                                gameResult: result,
                             });
                         }
                     } catch (error) {
@@ -322,7 +322,7 @@ class FindItWebSocketService {
                     this.disconnect();
 
                     break;
-                case "GAME_OVER":
+                case 'GAME_OVER':
                     // ✅ 웹소켓 종료
 
                     // ✅ 게임 결과 정보 가져오기
@@ -330,9 +330,9 @@ class FindItWebSocketService {
                         const result = await findItService.getGameResult(this.roomID as number);
                         // ✅ 게임 결과 화면으로 이동
                         if (navigation) {
-                            navigation.navigate('MultiFindItResult', { 
+                            navigation.navigate('MultiFindItResult', {
                                 isSuccess: false,
-                                gameResult: result 
+                                gameResult: result,
                             });
                         }
                     } catch (error) {
@@ -344,11 +344,11 @@ class FindItWebSocketService {
                     this.disconnect();
 
                     break;
-                case "MATCH_CANCEL":
-                    console.log("🚫 매칭 취소:", data.message);
+                case 'MATCH_CANCEL':
+                    console.log('🚫 매칭 취소:', data.message);
                     break;
-                case "DISCONNECT":
-                    console.log("❌ 서버와 연결이 끊어졌습니다.");
+                case 'DISCONNECT':
+                    console.log('❌ 서버와 연결이 끊어졌습니다.');
                     this.disconnect();
                     // ✅ 게임 결과 화면으로 이동
                     if (navigation) {
@@ -356,11 +356,11 @@ class FindItWebSocketService {
                     }
                     break;
                 default:
-                    console.warn("⚠️ 알 수 없는 이벤트:", data.event);
+                    console.warn('⚠️ 알 수 없는 이벤트:', data.event);
             }
-            
+
         } catch (error) {
-            console.error("❌ 데이터 처리 중 오류 발생:", error);
+            console.error('❌ 데이터 처리 중 오류 발생:', error);
         }
     };
 
@@ -382,50 +382,50 @@ class FindItWebSocketService {
 
     }
     sendNextRoundEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "NEXT_ROUND", { round: this.round, imageID: this.imageID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'NEXT_ROUND', { round: this.round, imageID: this.imageID });
     }
     sendTimeoutEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIME_OUT", { round: this.round, imageID: this.imageID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'TIME_OUT', { round: this.round, imageID: this.imageID });
     }
 
     sendMatchEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "MATCH", { userID: this.userID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'MATCH', { userID: this.userID });
     }
     sendTogetherMatchEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TOGETHER", { userID: this.userID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'TOGETHER', { userID: this.userID });
     }
     sendJoinMatchEvent(password: string) {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "JOIN", { password: password });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'JOIN', { password: password });
     }
 
     sendStartEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "START", { userID: this.userID, roomID: this.roomID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'START', { userID: this.userID, roomID: this.roomID });
     }
 
     sendMatchCancelEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "MATCH_CANCEL", { userID: this.userID });
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'MATCH_CANCEL', { userID: this.userID });
     }
 
     sendSubmitPosition(xPosition: number, yPosition: number) {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "SUBMIT_POSITION", {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'SUBMIT_POSITION', {
             round: this.round,
             imageId: this.imageID,
             xPosition,
-            yPosition
+            yPosition,
         });
     }
 
     sendHintItemEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "HINT_ITEM", {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'HINT_ITEM', {
             round: this.round,
-            imageID: this.imageID
+            imageID: this.imageID,
         });
     }
 
     sendTimerItemEvent() {
-        webSocketService.sendMessage(this.userID as number, this.roomID as number, "TIMER_ITEM", {
+        webSocketService.sendMessage(this.userID as number, this.roomID as number, 'TIMER_ITEM', {
             round: this.round,
-            imageID: this.imageID
+            imageID: this.imageID,
         });
     }
 

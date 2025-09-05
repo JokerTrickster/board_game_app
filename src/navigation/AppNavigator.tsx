@@ -1,74 +1,125 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
-import HomeScreen from '../screens/HomeScreen';
-import LoginScreen from '../screens/LoginScreen';
-import SignUpScreen from '../screens/SignUpScreen';
-import FindItScreen from '../games/find-it/FindItScreen';
+import { RootStackParamList } from './navigationTypes';
+import { webSocketService } from '../services/WebSocketService';
+import { globalContainer } from '../infrastructure/mvvm/DIContainer';
+import { NavigationViewModel } from './viewModels/NavigationViewModel';
+import { AuthViewModel } from '../auth/viewModels/AuthViewModel';
+
+// MVVM Screens
+import { HomeScreen } from '../screens/home';
+import { LoginScreen, SignUpScreen } from '../auth';
+import { SoloFindItScreen, FindItScreen } from '../games/find-it';
+import { SlimeWarScreen } from '../games/slime-war';
+
+// Legacy screens (to be migrated)
 import FindItGameOverScreen from '../games/find-it/FindItGameOverScreen';
-import SoloFindItScreen from '../games/find-it/SoloFindItScreen';
 import SoloFindItResultScreen from '../games/find-it/SoloFindItResultScreen';
 import MultiFindItResultScreen from '../games/find-it/MultiFindItResultScreen';
 import GameDetailScreen from '../screens/GameDetailScreen';
 import LoadingScreen from '../screens/LoadingScreen';
 import PasswordScreen from '../screens/PasswordScreen';
-import { RootStackParamList } from './navigationTypes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { webSocketService } from '../services/WebSocketService';
 import SlimeWarResultScreen from '../games/slime-war/screens/SlimeWarResultScreen';
-import SlimeWarScreen from '../games/slime-war/screens/SlimeWarScreen';
 import SequenceScreen from '../games/sequence/screens/SequenceScreen';
 import FrogResultScreen from '../games/frog/screens/FrogResultScreen';
 import FrogScreen from '../games/frog/screens/FrogScreen';
 import SequenceResultScreen from '../games/sequence/screens/SequenceResultScreen';
+
 const Stack = createStackNavigator<RootStackParamList>();
 
-// ✅ NavigationContainerRef 생성 (React Navigation 공식 방법)
+// Navigation container reference
 export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 const AppNavigator: React.FC = () => {
     const [initialRoute, setInitialRoute] = useState<'Login' | 'Home'>('Login');
+    const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-    // ✅ 저장된 토큰 확인 후 초기 화면 설정
+    // Initialize navigation and auth
     useEffect(() => {
-        const checkAuthStatus = async () => {
-            const token = await AsyncStorage.getItem('accessToken');
-            setInitialRoute(token ? 'Home' : 'Login');
+        const initializeApp = async () => {
+            // Get ViewModels from DI container
+            const navigationViewModel = globalContainer.resolve<NavigationViewModel>('NavigationViewModel');
+            const authViewModel = globalContainer.resolve<AuthViewModel>('AuthViewModel');
+
+            // Initialize ViewModels
+            await navigationViewModel.initialize();
+            await authViewModel.initialize();
+
+            // Check auth status and set initial route
+            const isAuthenticated = await authViewModel.checkAuthStatus();
+            setInitialRoute(isAuthenticated ? 'Home' : 'Login');
+
+            // Set navigation reference in NavigationViewModel
+            navigationViewModel.setNavigationRef(navigationRef);
         };
 
-        checkAuthStatus();
+        initializeApp();
     }, []);
 
-    // ✅ 웹소켓 서비스에 네비게이션 설정
-    useEffect(() => {
-        if (navigationRef.isReady()) {
-            webSocketService.setNavigation(navigationRef);
+    // Handle navigation ready state
+    const handleNavigationReady = () => {
+        setIsNavigationReady(true);
+
+        // Set navigation reference for WebSocket service
+        webSocketService.setNavigation(navigationRef);
+
+        // Get NavigationViewModel and notify it's ready
+        const navigationViewModel = globalContainer.resolve<NavigationViewModel>('NavigationViewModel');
+        navigationViewModel.processPendingDeepLink();
+    };
+
+    // Handle navigation state change
+    const handleNavigationStateChange = (state: any) => {
+        if (!isNavigationReady) {return;}
+
+        const navigationViewModel = globalContainer.resolve<NavigationViewModel>('NavigationViewModel');
+
+        // Get current route info
+        if (state && state.routes && state.routes.length > 0) {
+            const currentRoute = state.routes[state.index];
+            navigationViewModel.setCurrentRoute(currentRoute.name, currentRoute.params);
         }
-    }, []);
+    };
 
     return (
-            <NavigationContainer ref={navigationRef}>
-                <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="Login" component={LoginScreen} />
-                    <Stack.Screen name="SignUp" component={SignUpScreen} />
-                    <Stack.Screen name="Home" component={HomeScreen} />
-                    <Stack.Screen name="FindIt" component={FindItScreen} />
-                    <Stack.Screen name="SoloFindIt" component={SoloFindItScreen} />
-                    <Stack.Screen name="SlimeWar" component={SlimeWarScreen} />
-                    <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
-                    <Stack.Screen name="Password" component={PasswordScreen} />
-                    <Stack.Screen name="GameDetail" component={GameDetailScreen} />
-                    <Stack.Screen name="Loading" component={LoadingScreen} />
-                    <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
-                    <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
-                    <Stack.Screen name="SlimeWarResult" component={SlimeWarResultScreen} />
-                    <Stack.Screen name="Sequence" component={SequenceScreen} />
-                    <Stack.Screen name="SequenceResult" component={SequenceResultScreen} />
-                    <Stack.Screen name="Frog" component={FrogScreen} />
-                    <Stack.Screen name= "FrogResult" component={FrogResultScreen}/>
-            </Stack.Navigator>
-            </NavigationContainer>
+        <NavigationContainer
+            ref={navigationRef}
+            onReady={handleNavigationReady}
+            onStateChange={handleNavigationStateChange}
+        >
+            <Stack.Navigator
+                initialRouteName={initialRoute}
+                screenOptions={{ headerShown: false }}
+            >
+                {/* Authentication Screens */}
+                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="SignUp" component={SignUpScreen} />
 
+                {/* Main Application Screens */}
+                <Stack.Screen name="Home" component={HomeScreen} />
+
+                {/* Game Screens - MVVM */}
+                <Stack.Screen name="FindIt" component={FindItScreen} />
+                <Stack.Screen name="SoloFindIt" component={SoloFindItScreen} />
+                <Stack.Screen name="SlimeWar" component={SlimeWarScreen} />
+
+                {/* Legacy Game Screens - To be migrated */}
+                <Stack.Screen name="FindItGameOver" component={FindItGameOverScreen} />
+                <Stack.Screen name="SoloFindItResult" component={SoloFindItResultScreen} />
+                <Stack.Screen name="MultiFindItResult" component={MultiFindItResultScreen} />
+                <Stack.Screen name="SlimeWarResult" component={SlimeWarResultScreen} />
+                <Stack.Screen name="Sequence" component={SequenceScreen} />
+                <Stack.Screen name="SequenceResult" component={SequenceResultScreen} />
+                <Stack.Screen name="Frog" component={FrogScreen} />
+                <Stack.Screen name="FrogResult" component={FrogResultScreen} />
+
+                {/* Utility Screens */}
+                <Stack.Screen name="GameDetail" component={GameDetailScreen} />
+                <Stack.Screen name="Loading" component={LoadingScreen} />
+                <Stack.Screen name="Password" component={PasswordScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 };
 

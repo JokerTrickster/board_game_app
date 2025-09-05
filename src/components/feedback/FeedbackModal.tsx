@@ -78,7 +78,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
   };
 
   const takeScreenshot = async () => {
-    if (!allowScreenshot) return;
+    if (!allowScreenshot) {return;}
 
     try {
       // Haptic feedback

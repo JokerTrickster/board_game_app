@@ -39,7 +39,7 @@ export const ACCESSIBILITY_CONSTANTS = {
       shape: 'diamond',      // Diamond shape
       accessibilityLabel: '상대방 선택',
       borderStyle: 'dashed' as 'dashed',
-    }
+    },
   },
 
   // Game feedback indicators (not relying only on color)
@@ -67,7 +67,7 @@ export const ACCESSIBILITY_CONSTANTS = {
       accessibilityLabel: '힌트',
       soundFeedback: 'hint',
       hapticFeedback: 'light',
-    }
+    },
   },
 
   // Screen reader announcements
@@ -87,7 +87,7 @@ export const ACCESSIBILITY_CONSTANTS = {
     TAB_ORDER: [
       'gameImage',
       'hintButton',
-      'timerButton', 
+      'timerButton',
       'zoomInButton',
       'zoomOutButton',
       'menuButton',

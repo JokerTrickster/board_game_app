@@ -15,7 +15,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   const [alerts, setAlerts] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {return;}
 
     const updateData = () => {
       setSummary(performanceMonitor.getPerformanceSummary());
@@ -31,7 +31,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
     return () => clearInterval(interval);
   }, [visible]);
 
-  if (!visible || !summary) return null;
+  if (!visible || !summary) {return null;}
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -62,7 +62,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
   };
 
   const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 B';
+    if (bytes === 0) {return '0 B';}
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
