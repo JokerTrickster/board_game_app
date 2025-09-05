@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/JokerTrickster/board_game_app/compare/v1.0.0...v1.0.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* Resolve lint issues in Epic 1 codebase ([657014e](https://github.com/JokerTrickster/board_game_app/commit/657014e5721851a239aec271227ee7692419fdc7))
+
 ## 1.0.0 (2025-09-05)
 
 
