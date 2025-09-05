@@ -1,11 +1,5 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
-const guidelineBaseWidth = 414;
-const guidelineBaseHeight = 736;
-
-const scale = (size: number) => (width / guidelineBaseWidth) * size;
-const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
+import { StyleSheet } from 'react-native';
+import { responsive, ASPECT_RATIOS, TOUCH_TARGETS } from '../../utils';
 
 export default StyleSheet.create({
     container: {
@@ -17,7 +11,8 @@ export default StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: scale(10),
+        padding: responsive.spacing(10),
+        minHeight: responsive.touchTarget(),
     },
     soloHeader: {
         flexDirection: 'row',
@@ -25,7 +20,7 @@ export default StyleSheet.create({
         justifyContent: 'space-between',
         width: '90%',
         height: '20%',
-        paddingBottom: verticalScale(50),
+        paddingBottom: responsive.verticalScale(50),
     },
     // 프로필
     profileContainer: {
