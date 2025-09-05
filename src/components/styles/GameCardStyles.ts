@@ -14,16 +14,17 @@ export default StyleSheet.create({
    
     imageWrapper: {
         width: '100%',
-        height: verticalScale(190),
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        aspectRatio: 1.2, // Maintain consistent image ratio
     },
     overlay: {
         position: 'absolute',
-        top: 20,
-        left: 30,
-        right: 30,
-        bottom: 100,
+        top: '10%',
+        left: '15%',
+        right: '15%',
+        bottom: '35%',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
@@ -36,7 +37,6 @@ export default StyleSheet.create({
 
     gameCard: {
         width: '45%',
-        height: verticalScale(255),
         backgroundColor: '#fff',
         marginVertical: verticalScale(10),
         borderRadius: scale(10),
@@ -44,14 +44,15 @@ export default StyleSheet.create({
         alignItems: 'center',
         borderWidth: scale(1),
         borderColor: '#000',
+        aspectRatio: 0.8, // Consistent aspect ratio instead of fixed height
     },
     gameImage: {
         width: '90%',
-        height: verticalScale(190),
+        flex: 1,
         borderRadius: scale(10),
         borderWidth: scale(1),
-        resizeMode: 'cover', // 이미지 전체가 보이도록 설정
-        marginBottom: verticalScale(-10), // 음수 값을 제거 또는 양수로 조정
+        resizeMode: 'cover',
+        marginBottom: verticalScale(5), // Fixed negative margin
     },
     gameTitle: {
         marginTop: verticalScale(5),
