@@ -1,50 +1,45 @@
 
 
 
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width, height } = Dimensions.get('window');
-const guidelineBaseWidth = 414;
-const guidelineBaseHeight = 736;
-
-const scale = (size: number) => (width / guidelineBaseWidth) * size;
-const verticalScale = (size: number) => (height / guidelineBaseHeight) * size;
+import { StyleSheet } from 'react-native';
+import { responsive, ASPECT_RATIOS } from '../utils';
 
 export default StyleSheet.create({
    
     imageWrapper: {
         width: '100%',
-        height: verticalScale(190),
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        aspectRatio: ASPECT_RATIOS.PHOTO,
     },
     overlay: {
         position: 'absolute',
-        top: 20,
-        left: 30,
-        right: 30,
-        bottom: 100,
+        top: '10%',
+        left: '15%',
+        right: '15%',
+        bottom: '35%',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'rgba(255, 255, 255, 1)',
     },
     overlayText: {
         color: '#000',
-        fontSize: 18,
+        fontSize: responsive.font(18),
         fontWeight: 'bold',
     },
 
     gameCard: {
         width: '45%',
-        height: verticalScale(255),
         backgroundColor: '#fff',
-        marginVertical: verticalScale(10),
-        borderRadius: scale(10),
-        padding: scale(5),
-        elevation: scale(6),
+        marginVertical: responsive.verticalScale(10),
+        borderRadius: responsive.borderRadius(10),
+        padding: responsive.scale(5),
+        elevation: responsive.elevation(6),
         alignItems: 'center',
-        borderWidth: scale(1),
+        borderWidth: responsive.scale(1),
         borderColor: '#000',
+        aspectRatio: ASPECT_RATIOS.CARD,
     },
     gameImage: {
         width: '90%',
